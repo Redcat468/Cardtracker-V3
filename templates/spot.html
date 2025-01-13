@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Spot Cards</h2>
+
+<!-- Include TimelineJS -->
+<script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+<link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+
+<!-- Onglets de navigation -->
+<ul class="flex border-b">
+    <li class="mr-1">
+        <a class="bg-white inline-block py-2 px-4 text-blue-500 font-semibold" href="#" onclick="showTab('operations')">Operations</a>
+    </li>
+    <li class="mr-1">
+        <a class="bg-white inline-block py-2 px-4 text-blue-500 font-semibold" href="#" onclick="showTab('card_focus')">Card Focus</a>
+    </li>
+    <li class="mr-1">
+        <a class="bg-white inline-block py-2 px-4 text-blue-500 font-semibold" href="#" onclick="showTab('equipes')">Equipes</a>
+    </li>
+</ul>
+
+<!-- Tab content -->
+<div id="tab_content" class="mt-4">
+
+    <!-- Card Focus tab -->
+    <div id="card_focus" class="tab">
+        <h3 class="text-lg font-semibold mb-2">Card Focus</h3>
+
+        <!-- Sélection de carte avec menu déroulant filtré -->
+        <form method="POST" action="{{ url_for('spot') }}">
+            <input list="card_list" id="card_input" name="selected_card" placeholder="Chercher une carte..." class="border p-2 rounded w-1/3" oninput="filterOptions('card_input', 'card_list')" value="{{ selected_card if selected_card is not none }}">
+            <datalist id="card_list">
+                {% for card in cards %}
+                    <option value="{{ card.card_name }}">{{ card.card_name }}</option>
+                {% endfor %}
+            </datalist>
+
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Sélectionner la carte</button>
+        </form>
+
+        <!-- Affichage des informations de la carte sélectionnée -->
+        {% if card_info %}
+        <div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
+            <h4 class="text-xl font-bold">{{ card_info.card_name }} - Informations</h4>
+            <ul>
+                <li><strong>Capacité:</strong> {{ card_info.capacity }} Go</li>
+                <li><strong>Marque:</strong> {{ card_info.brand }}</li>
+                <li><strong>Type:</strong> {{ card_info.card_type }}</li>
+                <li><strong>Date de naissance:</strong> {{ card_info.card_birth }}</li>
+                <li><strong>Statut de quarantaine:</strong> {{ 'Oui' if card_info.quarantine else 'Non' }}</li>
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Affichage de la timeline -->
+        {% if selected_card %}
+            <h4 class="mt-4 text-lg font-semibold">Timeline pour la carte {{ selected_card }}</h4>
+            <div id="timeline-embed" style="width: 100%; height: 400px"></div>
+            <script>
+                // Créer l'objet de la timeline avec les données fournies
+                var timeline_data = {
+                    "events": {{ timeline_data | tojson }}
+                };
+
+                // Initialiser la timeline
+                window.timeline = new TL.Timeline('timeline-embed', timeline_data);
+            </script>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    // Gestion des onglets
+    function showTab(tabName) {
+        var tabs = document.getElementsByClassName('tab');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].style.display = 'none';  // Masquer tous les onglets
+        }
+        document.getElementById(tabName).style.display = 'block';  // Afficher l'onglet sélectionné
+    }
+
+    // Initialiser l'affichage sur l'onglet "Card Focus"
+    document.addEventListener('DOMContentLoaded', function() {
+        showTab('card_focus');
+    });
+</script>
+
+{% endblock %}
