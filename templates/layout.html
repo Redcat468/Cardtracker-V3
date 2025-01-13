@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Card Tracker V3.0</title>
+        
+        <!-- Lien vers le fichier CSS Tailwind compilé -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+    </head>    
+    
+<body class="bg-gray-100 text-gray-900">
+
+    <!-- Header avec navigation -->
+    <header class="bg-blue-600 p-4 shadow-lg">
+        <nav class="container mx-auto">
+            <ul class="flex space-x-4">
+                <li><a href="{{ url_for('track') }}" class="text-white font-bold">Track</a></li>
+                <li><a href="{{ url_for('spot') }}" class="text-white font-bold">Spot</a></li>
+                {% if current_user.is_authenticated and current_user.level >= 47 %}
+                    <li><a href="{{ url_for('manage') }}" class="text-white font-bold">Manage</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}" class="text-white font-bold">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Contenu principal -->
+    <main class="container mx-auto py-8">
+        <div class="content bg-white p-6 shadow-md rounded-lg">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    
+    <!-- Footer avec informations génériques -->
+    <footer class="bg-gray-800 text-white text-center py-4 mt-8">
+        <p>&copy; 2024 Card Tracker V3.0 | All rights reserved.</p>
+    </footer>
+
+    <!-- Lien vers le fichier JS Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.0/dist/vue.global.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Track Cards</h2>
+
+<!-- RETOUR POST-PROD -->
+<div class="mb-8">
+    <h3 class="text-lg font-semibold mb-2">Retour Post-Prod</h3>
+    <form method="POST" action="{{ url_for('track') }}">
+        <input list="retour_cards" id="retour_input" name="retour_card" placeholder="Chercher une carte..." class="border p-2 rounded w-1/3" oninput="filterOptions('retour_input', 'retour_cards')" value="{{ request.form.get('retour_card', '') }}">
+        <datalist id="retour_cards">
+            {% for card in retour_cartes %}
+                <option value="{{ card.card_name }}">{{ card.card_name }}</option>
+            {% endfor %}
+        </datalist>
+        <button type="submit" name="retour" class="bg-blue-500 text-white px-4 py-2 rounded">Retour</button>
+    </form>
+</div>
+
+<!-- SORTIE PLATEAU -->
+<div class="mb-8">
+    <h3 class="text-lg font-semibold mb-2">Sortie Plateau</h3>
+    <form method="POST" action="{{ url_for('track') }}">
+        <input list="sortie_cards" id="sortie_input" name="sortie_card" placeholder="Chercher une carte..." class="border p-2 rounded w-1/3" oninput="filterOptions('sortie_input', 'sortie_cards')" value="{{ request.form.get('sortie_card', '') }}">
+        <datalist id="sortie_cards">
+            {% for card in sortie_cartes %}
+                <option value="{{ card.card_name }}">{{ card.card_name }}</option>
+            {% endfor %}
+        </datalist>
+
+        <!-- Statut Géo avec conservation de la valeur -->
+        <select id="status_geo" name="status_geo" class="border p-2 rounded w-1/3">
+            {% for status in status_geo %}
+                <option value="{{ status.status_name }}" {% if request.form.get('status_geo') == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" name="sortie" class="bg-blue-500 text-white px-4 py-2 rounded">Sortir la carte</button>
+    </form>
+</div>
+
+<script>
+    // Fonction pour conserver le statut géo après la soumission du formulaire
+    window.onload = function() {
+        const savedStatusGeo = localStorage.getItem('selectedStatusGeo');
+        if (savedStatusGeo) {
+            document.getElementById('status_geo').value = savedStatusGeo;
+        }
+    };
+
+    document.getElementById('status_geo').addEventListener('change', function() {
+        localStorage.setItem('selectedStatusGeo', this.value);  // Sauvegarder la valeur sélectionnée dans le stockage local
+    });
+
+    document.querySelector('form').addEventListener('submit', function() {
+        localStorage.setItem('selectedStatusGeo', document.getElementById('status_geo').value);  // Sauvegarder à la soumission
+    });
+</script>
+
+<!-- HISTORIQUE DES OPERATIONS -->
+<div class="mb-8">
+    <h3 class="text-lg font-semibold mb-2">Historique des opérations</h3>
+    <table class="min-w-full table-auto">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2">Card Name</th>
+                <th class="px-4 py-2">Statut Géo</th>
+                <th class="px-4 py-2">Timestamp</th>
+                <th class="px-4 py-2">Username</th>
+                <th class="px-4 py-2">Annuler</th> <!-- Nouvelle colonne -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for operation in operations %}
+                <tr>
+                    <td class="border px-4 py-2">{{ operation.card_name }}</td>
+                    <td class="border px-4 py-2">{{ operation.statut_geo }}</td>
+                    <td class="border px-4 py-2">{{ operation.timestamp }}</td>
+                    <td class="border px-4 py-2">{{ operation.username }}</td>
+                    <td class="border px-4 py-2">
+                        <form method="POST" action="{{ url_for('cancel_operation', operation_id=operation.id) }}">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Annuler</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

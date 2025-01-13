@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Manage Cards</h2>
+
+<div class="manage-section">
+    <h3>Ajouter une Carte</h3>
+    <form method="POST" action="/add_card">
+        <label for="card_name">Nom de la Carte:</label>
+        <input type="text" name="card_name" required>
+        <button type="submit">Ajouter</button>
+    </form>
+</div>
+
+<div class="manage-section">
+    <h3>Modifier les Cartes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Date de Création</th>
+                <th>Quarantaine</th>
+                <th>Statut Géo</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for card in cards %}
+                <tr>
+                    <td>{{ card.id }}</td>
+                    <td>{{ card.card_name }}</td>
+                    <td>{{ card.card_birth }}</td>
+                    <td>{{ card.quarantine }}</td>
+                    <td>{{ card.statut_geo }}</td>
+                    <td>
+                        <button>Modifier</button>
+                        <button>Supprimer</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
