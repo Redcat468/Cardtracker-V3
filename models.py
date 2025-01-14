@@ -1,3 +1,5 @@
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 
@@ -22,14 +24,18 @@ class Operation(db.Model):
 
 class Card(db.Model):
     __tablename__ = 'CARDS'
-    id = db.Column(db.Integer, primary_key=True)  # Clé primaire auto-incrémentée
-    card_name = db.Column(db.String(50), nullable=False)
-    card_birth = db.Column(db.String(50))
+    id = db.Column(db.Integer, primary_key=True)
+    card_name = db.Column(db.String(50), unique=True, nullable=False)
+    card_birth = db.Column(db.DateTime, nullable=False)
     quarantine = db.Column(db.Boolean, default=False)
-    statut_geo = db.Column(db.String(50))
-    capacity = db.Column(db.Integer)
-    brand = db.Column(db.String(50))
-    card_type = db.Column(db.String(50))
+    statut_geo = db.Column(db.String(50), nullable=False)
+    capacity = db.Column(db.Integer)  # Capacité en Go
+    brand = db.Column(db.String(50))  # Marque de la carte
+    card_type = db.Column(db.String(50))  # Type de la carte (CFAST, SD, etc.)
+    usage = db.Column(db.Integer, default=0)  # Nombre d'opérations effectuées sur la carte
+    last_operation = Column(DateTime, nullable=True)
+
+
 
 
 class StatusGeo(db.Model):
