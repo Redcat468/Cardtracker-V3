@@ -191,6 +191,10 @@ def spot():
 
     return render_template('spot.html', cards=cards, selected_card=selected_card, card_info=card_info, timeline_data=timeline_data)
 
+@app.route('/offload')
+@login_required
+def offload():
+    return render_template('offload.html')
 
 
 @app.route('/card-focus', methods=['GET', 'POST'])
