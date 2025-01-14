@@ -17,6 +17,7 @@
             <ul class="flex space-x-4">
                 <li><a href="{{ url_for('track') }}" class="text-white font-bold">Track</a></li>
                 <li><a href="{{ url_for('spot') }}" class="text-white font-bold">Spot</a></li>
+                <li><a href="{{ url_for('offload') }}" class="text-white font-bold">Offload</a></li>
                 {% if current_user.is_authenticated and current_user.level >= 47 %}
                     <li><a href="{{ url_for('manage') }}" class="text-white font-bold">Manage</a></li>
                 {% endif %}
