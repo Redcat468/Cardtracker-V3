@@ -102,6 +102,7 @@ def track():
                 # Mettre à jour la carte
                 card.statut_geo = target
                 card.last_operation = datetime.now()
+                card.usage += 1  # Incrémenter l'usage
                 db.session.commit()
 
                 flash(f"Carte {card_name} déplacée avec succès.")
@@ -111,6 +112,7 @@ def track():
             flash("Veuillez sélectionner une carte.")
 
     return render_template('track.html', status_geo=status_geo, operations=operations)
+
 
 
 @app.route('/get_cards_by_status/<status>', methods=['GET'])
@@ -158,7 +160,7 @@ def cancel_operation(operation_id):
             print(f"Carte trouvée : {card.card_name}")
 
             # Désincrémenter le compteur d'usage
-            card.usage = max(card.usage - 1, 0)
+            card.usage = max(card.usage - 1, 0)  # Ne pas aller en dessous de 0
             print(f"Usage désincrémenté : {card.usage}")
 
             # Créer une nouvelle entrée dans la table CanceledOperation
@@ -198,6 +200,7 @@ def cancel_operation(operation_id):
         flash("Opération introuvable.")
 
     return redirect(url_for('track'))
+
 
 
 
