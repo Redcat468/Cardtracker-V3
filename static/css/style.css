@@ -10,7 +10,7 @@ body {
 nav ul {
     list-style-type: none;
     padding: 0;
-    background-color: #333;
+    background-color: #33333300;
 }
 
 nav ul li {
@@ -21,4 +21,19 @@ nav ul li {
 nav ul li a {
     color: white;
     text-decoration: none;
+}
+nav ul li a:hover {
+    background-color: #555;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:active {
+    background-color: #777;
+    color: #fff;
+}
+
+nav ul li a:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }

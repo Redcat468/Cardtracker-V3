@@ -9,41 +9,81 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>    
-    
-<body class="bg-gray-100 text-gray-900">
 
-    <!-- Header avec navigation -->
-    <header class="bg-blue-600 p-4 shadow-lg">
-        <nav class="container mx-auto">
-            <ul class="flex space-x-4">
-                <li><a href="{{ url_for('track') }}" class="text-white font-bold">Track</a></li>
-                <li><a href="{{ url_for('spot') }}" class="text-white font-bold">Spot</a></li>
-                <li><a href="{{ url_for('offload') }}" class="text-white font-bold">Offload</a></li>
-                {% if current_user.is_authenticated and current_user.level >= 47 %}
-                    <li><a href="{{ url_for('manage') }}" class="text-white font-bold">Manage</a></li>
-                {% endif %}
-                <li><a href="{{ url_for('logout') }}" class="text-white font-bold">Logout</a></li>
-            </ul>
-        </nav>
-    </header>
-    
-    <!-- Contenu principal -->
-    <main class="container mx-auto py-8">
-        <div id="app" class="content bg-white p-6 shadow-md rounded-lg">
-            {% block content %}
-            {% endblock %}
+    <body class="bg-gray-100 text-gray-900">
+        <!-- Bandeau SVG -->
+        <div class="w-full bg-white-500">
+            <img src="{{ url_for('static', filename='images/bandeau.svg') }}" alt="Bandeau" class="mx-auto max-w-full h-auto py-4" style="max-width: 50%;">
         </div>
-    </main>
-    
-    <!-- Footer avec informations génériques -->
-    <footer class="bg-gray-800 text-white text-center py-4 mt-8">
-        <p>&copy; 2025 Card Tracker V3.0 | All rights reserved.</p>
-    </footer>
+        <header>
+            <nav class="container mx-auto">
+                {% if request.endpoint != 'login' %}
+                <ul class="flex justify-center space-x-4">
+                    <li>
+                        <a href="{{ url_for('track') }}" 
+                           class="font-bold px-4 py-2 rounded bg-blue-600 text-white 
+                                  transition duration-200 ease-in-out 
+                                  hover:bg-blue-700 hover:text-white 
+                                  active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Track
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('spot') }}" 
+                           class="font-bold px-4 py-2 rounded bg-blue-600 text-white 
+                                  transition duration-200 ease-in-out 
+                                  hover:bg-blue-700 hover:text-white 
+                                  active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                            Spot
+                        </a>
+                    </li>
+                {% endif %}
+                    {% if current_user.is_authenticated and current_user.level >= 47 %}
+                        <li>
+                            <a href="{{ url_for('manage') }}" 
+                               class="font-bold px-4 py-2 rounded bg-blue-600 text-white 
+                                      transition duration-200 ease-in-out 
+                                      hover:bg-blue-700 hover:text-white 
+                                      active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                Manage
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if request.endpoint != 'login' %}
+                    <li>
+                        <a href="{{ url_for('logout') }}" 
+                           class="font-bold px-4 py-2 rounded bg-red-500 text-white 
+                                  transition duration-200 ease-in-out 
+                                  hover:bg-red-700 hover:text-white 
+                                  active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300">
+                            Logout
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>                       
+                 
+        </header>
+        
+        
+        
+        <!-- Contenu principal -->
+        <main class="container mx-auto py-8">
+            <div id="app" class="content bg-white p-6 shadow-md rounded-lg">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </main>
+        
+        <!-- Footer avec informations génériques -->
+        <footer class="bg-gray-800 text-white text-center py-4 mt-8">
+            <p>&copy; 2025 Card Tracker V3.0 | All rights reserved.</p>
+        </footer>
 
-    <!-- Lien vers Vue.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.js"></script>
+        <!-- Lien vers Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.js"></script>
 
-    <!-- Lien vers le fichier JS personnalisé -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-</body>
+        <!-- Lien vers le fichier JS personnalisé -->
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    </body>
 </html>

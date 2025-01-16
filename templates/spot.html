@@ -49,9 +49,11 @@
                 <li><strong>Type:</strong> {{ card_info.card_type }}</li>
                 <li><strong>Date de naissance:</strong> {{ card_info.card_birth }}</li>
                 <li><strong>Statut de quarantaine:</strong> {{ 'Oui' if card_info.quarantine else 'Non' }}</li>
+                <li><strong>Usage:</strong> {{ card_info.usage }}</li> <!-- Ajout du champ "usage" -->
             </ul>
         </div>
         {% endif %}
+
 
         <!-- Affichage de la timeline -->
         {% if selected_card %}
