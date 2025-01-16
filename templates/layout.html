@@ -7,6 +7,7 @@
         
         <!-- Lien vers le fichier CSS Tailwind compilé -->
         <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>    
     
 <body class="bg-gray-100 text-gray-900">
@@ -28,7 +29,7 @@
     
     <!-- Contenu principal -->
     <main class="container mx-auto py-8">
-        <div class="content bg-white p-6 shadow-md rounded-lg">
+        <div id="app" class="content bg-white p-6 shadow-md rounded-lg">
             {% block content %}
             {% endblock %}
         </div>
@@ -36,11 +37,13 @@
     
     <!-- Footer avec informations génériques -->
     <footer class="bg-gray-800 text-white text-center py-4 mt-8">
-        <p>&copy; 2024 Card Tracker V3.0 | All rights reserved.</p>
+        <p>&copy; 2025 Card Tracker V3.0 | All rights reserved.</p>
     </footer>
 
-    <!-- Lien vers le fichier JS Vue.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.0/dist/vue.global.js"></script>
+    <!-- Lien vers Vue.js -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.js"></script>
+
+    <!-- Lien vers le fichier JS personnalisé -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

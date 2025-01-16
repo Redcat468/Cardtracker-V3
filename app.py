@@ -3,6 +3,8 @@ from models import db, User, Operation, Card, StatusGeo
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import os
 from datetime import datetime
+from flask import jsonify
+
 
 app = Flask(__name__)
 
@@ -70,57 +72,77 @@ def search_cards():
 
     return jsonify([])
 
-# Route principale pour le tracking des cartes
 @app.route('/track', methods=['GET', 'POST'])
 @login_required
 def track():
-    retour_cartes = Card.query.filter_by(quarantine=False).filter(Card.statut_geo != 'POST-PROD').all()
-    sortie_cartes = Card.query.filter_by(statut_geo='POST-PROD', quarantine=False).all()
-    status_geo = StatusGeo.query.filter(StatusGeo.status_name != 'POST-PROD').all()
+    # Récupérer tous les statuts géographiques
+    status_geo = StatusGeo.query.all()
 
+    # Initialiser les opérations pour l'historique
+    operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
+
+    # Logique pour déplacer les cartes (si nécessaire)
     if request.method == 'POST':
-        if 'retour' in request.form:
-            card_name = request.form['retour_card']
+        source = request.form.get('source')
+        target = request.form.get('target')
+        card_name = request.form.get('card')
+
+        if card_name:
             card = Card.query.filter_by(card_name=card_name).first()
             if card:
+                # Créer une nouvelle opération
                 new_operation = Operation(
                     username=current_user.username,
                     card_name=card_name,
-                    statut_geo='POST-PROD',
+                    statut_geo=target,
                     timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S')
                 )
                 db.session.add(new_operation)
-                card.statut_geo = 'POST-PROD'
-                card.usage += 1
-                card.last_operation = datetime.now()  # Mise à jour de last_operation
+
+                # Mettre à jour la carte
+                card.statut_geo = target
+                card.last_operation = datetime.now()
                 db.session.commit()
-                flash(f"Carte {card_name} retournée à la post-prod.")
-        elif 'sortie' in request.form:
-            card_name = request.form['sortie_card']
-            statut_geo = request.form['status_geo']
-            card = Card.query.filter_by(card_name=card_name).first()
-            if card:
-                new_operation = Operation(
-                    username=current_user.username,
-                    card_name=card_name,
-                    statut_geo=statut_geo,
-                    timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S')
-                )
-                db.session.add(new_operation)
-                card.statut_geo = statut_geo
-                card.usage += 1
-                card.last_operation = datetime.now()  # Mise à jour de last_operation
-                db.session.commit()
-                flash(f"Carte {card_name} envoyée au statut {statut_geo}.")
 
-        return redirect(url_for('track'))
+                flash(f"Carte {card_name} déplacée avec succès.")
+            else:
+                flash("Carte introuvable.")
+        else:
+            flash("Veuillez sélectionner une carte.")
 
-    operations = Operation.query.filter_by(username=current_user.username).order_by(Operation.timestamp.desc()).limit(50).all()
-
-    return render_template('track.html', retour_cartes=retour_cartes, sortie_cartes=sortie_cartes, status_geo=status_geo, operations=operations)
+    return render_template('track.html', status_geo=status_geo, operations=operations)
 
 
-from datetime import datetime
+@app.route('/get_cards_by_status/<status>', methods=['GET'])
+@login_required
+def get_cards_by_status(status):
+    cards = Card.query.filter_by(statut_geo=status).all()
+    return jsonify([{"card_name": card.card_name} for card in cards])
+
+
+
+@app.route('/get_status_geo', methods=['GET'])
+@login_required
+def get_status_geo():
+    statuses = StatusGeo.query.all()
+    return jsonify([{"status_name": status.status_name} for status in statuses])
+
+
+@app.route('/get_operations', methods=['GET'])
+@login_required
+def get_operations():
+    # Récupérer les opérations
+    operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
+    return jsonify([
+        {
+            "id": operation.id,
+            "card_name": operation.card_name,
+            "statut_geo": operation.statut_geo,
+            "timestamp": operation.timestamp,
+            "username": operation.username
+        }
+        for operation in operations
+    ])
 
 # Route pour annuler une opération
 @app.route('/cancel_operation/<int:operation_id>', methods=['POST'])
@@ -164,7 +186,6 @@ def cancel_operation(operation_id):
         flash("Opération introuvable.")
 
     return redirect(url_for('track'))
-
 
 
 # Route pour afficher les opérations de "Spot"
