@@ -78,7 +78,7 @@ def track():
     # Récupérer tous les statuts géographiques
     status_geo = StatusGeo.query.all()
 
-    # Initialiser les opérations pour l'historique
+    # Initialiser les opérations pour l'historique (limitées aux 50 dernières)
     operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
     # Logique pour déplacer les cartes (si nécessaire)
@@ -112,7 +112,6 @@ def track():
             flash("Veuillez sélectionner une carte.")
 
     return render_template('track.html', status_geo=status_geo, operations=operations)
-
 
 
 @app.route('/get_cards_by_status/<status>', methods=['GET'])
