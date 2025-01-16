@@ -41,7 +41,7 @@
     </form>
 </div>
 
-<!-- HISTORIQUE DES OPERATIONS -->
+<!-- Historique des opérations -->
 <div class="mb-8">
     <h3 class="text-lg font-semibold mb-2">Historique des opérations</h3>
     <table class="min-w-full table-auto">
@@ -51,26 +51,84 @@
                 <th class="px-4 py-2">Statut Géo</th>
                 <th class="px-4 py-2">Timestamp</th>
                 <th class="px-4 py-2">Username</th>
-                <th class="px-4 py-2">Annuler</th> <!-- Nouvelle colonne -->
+                <th class="px-4 py-2">Annuler</th>
             </tr>
         </thead>
-        <tbody>
-            {% for operation in operations %}
-                <tr>
-                    <td class="border px-4 py-2">{{ operation.card_name }}</td>
-                    <td class="border px-4 py-2">{{ operation.statut_geo }}</td>
-                    <td class="border px-4 py-2">{{ operation.timestamp }}</td>
-                    <td class="border px-4 py-2">{{ operation.username }}</td>
-                    <td class="border px-4 py-2">
-                        <form method="POST" action="{{ url_for('cancel_operation', operation_id=operation.id) }}">
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Annuler</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
+        <tbody id="operations_table_body">
+            <!-- Les opérations seront ajoutées dynamiquement ici -->
         </tbody>
     </table>
 </div>
+
+<!-- Historique des opérations -->
+<div class="mb-8">
+    <h3 class="text-lg font-semibold mb-2">Historique des opérations</h3>
+    <table class="min-w-full table-auto">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2">Card Name</th>
+                <th class="px-4 py-2">Statut Géo</th>
+                <th class="px-4 py-2">Timestamp</th>
+                <th class="px-4 py-2">Username</th>
+                <th class="px-4 py-2">Annuler</th>
+            </tr>
+        </thead>
+        <tbody id="operations_table_body">
+            <!-- Les opérations seront ajoutées dynamiquement ici -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Fonction pour récupérer les opérations
+    function fetchOperations() {
+        fetch('/get_operations')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('operations_table_body');
+                tableBody.innerHTML = ''; // Réinitialiser le tableau
+                data.forEach(operation => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="border px-4 py-2">${operation.card_name}</td>
+                        <td class="border px-4 py-2">${operation.statut_geo}</td>
+                        <td class="border px-4 py-2">${operation.timestamp}</td>
+                        <td class="border px-4 py-2">${operation.username}</td>
+                        <td class="border px-4 py-2">
+                            <button onclick="confirmDeletion(${operation.id})" class="bg-red-500 text-white px-4 py-2 rounded">Annuler</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la récupération des opérations :', error));
+    }
+
+    // Fonction pour confirmer la suppression
+    function confirmDeletion(operationId) {
+        const confirmation = confirm("Êtes-vous sûr de vouloir annuler cette opération ?");
+        if (confirmation) {
+            fetch(`/cancel_operation/${operationId}`, { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Opération annulée avec succès.");
+                        fetchOperations(); // Mettre à jour le tableau
+                    } else {
+                        alert("Erreur lors de l'annulation de l'opération.");
+                    }
+                })
+                .catch(error => console.error('Erreur lors de la suppression de cette opération :', error));
+        }
+    }
+
+    // Mettre à jour l'historique toutes les 5 secondes
+    setInterval(fetchOperations, 5000);
+
+    // Charger les opérations immédiatement au chargement de la page
+    document.addEventListener('DOMContentLoaded', fetchOperations);
+</script>
+
+
 
 <script>
     // Filtre les cartes dynamiquement
