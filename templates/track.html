@@ -11,7 +11,9 @@
             <label for="source" class="block text-sm font-medium text-gray-700">Source</label>
             <select id="source" name="source" class="border p-2 rounded w-1/3" onchange="updateCards()">
                 {% for status in status_geo %}
-                    <option value="{{ status.status_name }}">{{ status.status_name }}</option>
+                    <option value="{{ status.status_name }}" {% if request.form.get('source') == status.status_name %}selected{% endif %}>
+                        {{ status.status_name }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
@@ -21,7 +23,9 @@
             <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
             <select id="target" name="target" class="border p-2 rounded w-1/3">
                 {% for status in status_geo %}
-                    <option value="{{ status.status_name }}">{{ status.status_name }}</option>
+                    <option value="{{ status.status_name }}" {% if request.form.get('target') == status.status_name %}selected{% endif %}>
+                        {{ status.status_name }}
+                    </option>
                 {% endfor %}
             </select>
         </div>
@@ -29,35 +33,16 @@
         <!-- Sélection de carte avec menu déroulant filtré -->
         <div class="mb-4">
             <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
-            <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." class="border p-2 rounded w-1/3" oninput="filterOptions('card_input', 'card_list')">
+            <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." class="border p-2 rounded w-1/3" onfocus="updateCards()">
             <datalist id="card_list">
-                {% for card in cards %}
-                    <option value="{{ card.card_name }}">{{ card.card_name }}</option>
-                {% endfor %}
+                <!-- Les options seront mises à jour dynamiquement via JavaScript -->
             </datalist>
         </div>
 
+
+
         <button type="submit" name="move_card" class="bg-blue-500 text-white px-4 py-2 rounded">Déplacer la carte</button>
     </form>
-</div>
-
-<!-- Historique des opérations -->
-<div class="mb-8">
-    <h3 class="text-lg font-semibold mb-2">Historique des opérations</h3>
-    <table class="min-w-full table-auto">
-        <thead>
-            <tr class="bg-gray-100">
-                <th class="px-4 py-2">Card Name</th>
-                <th class="px-4 py-2">Statut Géo</th>
-                <th class="px-4 py-2">Timestamp</th>
-                <th class="px-4 py-2">Username</th>
-                <th class="px-4 py-2">Annuler</th>
-            </tr>
-        </thead>
-        <tbody id="operations_table_body">
-            <!-- Les opérations seront ajoutées dynamiquement ici -->
-        </tbody>
-    </table>
 </div>
 
 <!-- Historique des opérations -->
@@ -128,43 +113,63 @@
     document.addEventListener('DOMContentLoaded', fetchOperations);
 </script>
 
-
-
 <script>
-    // Filtre les cartes dynamiquement
-    function filterOptions(inputId, datalistId) {
-        const input = document.getElementById(inputId);
-        const filter = input.value.toUpperCase();
-        const datalist = document.getElementById(datalistId);
-        const options = datalist.getElementsByTagName('option');
-
-        for (let i = 0; i < options.length; i++) {
-            const txtValue = options[i].value || options[i].textContent;
-            if (txtValue.toUpperCase().startsWith(filter)) {
-                options[i].style.display = ""; // Afficher si cela commence par le texte
-            } else {
-                options[i].style.display = "none"; // Masquer sinon
-            }
-        }
-    }
-
-    // Mise à jour des cartes en fonction du statut source
+    // Fonction pour mettre à jour les options dans le datalist
     function updateCards() {
         const source = document.getElementById('source').value;
+        const datalist = document.getElementById('card_list');
+        const cardInput = document.getElementById('card_input');
 
+        // Réinitialiser la valeur du champ d'entrée pour éviter les anciennes sélections
+        cardInput.value = '';
+
+        // Récupérer les cartes pour la source sélectionnée
         fetch(`/get_cards_by_status/${source}`)
             .then(response => response.json())
             .then(data => {
-                const datalist = document.getElementById('card_list');
-                datalist.innerHTML = '';
+                datalist.innerHTML = ''; // Réinitialiser le datalist
                 data.forEach(card => {
                     const option = document.createElement('option');
                     option.value = card.card_name;
                     datalist.appendChild(option);
                 });
+
+                // Sauvegarder les cartes disponibles pour vérification
+                window.availableCards = data.map(card => card.card_name);
             })
-            .catch(error => console.error('Erreur lors de la mise à jour des cartes :', error));
+            .catch(error => console.error('Erreur lors de la récupération des cartes :', error));
     }
+
+    // Vérification avant d'envoyer le formulaire
+    function validateAndSubmitForm(event) {
+        const source = document.getElementById('source').value;
+        const target = document.getElementById('target').value;
+        const cardInput = document.getElementById('card_input').value;
+
+        // Vérification si la carte est dans la liste des cartes disponibles
+        if (!window.availableCards || !window.availableCards.includes(cardInput)) {
+            event.preventDefault(); // Empêcher l'envoi du formulaire
+            alert('Erreur : La carte sélectionnée n’est pas disponible dans la source sélectionnée.');
+            return;
+        }
+
+        // Vérification si la source et la target sont identiques
+        if (source === target) {
+            event.preventDefault(); // Empêcher l'envoi du formulaire
+            alert('Erreur : La source et la cible ne peuvent pas être identiques.');
+            return;
+        }
+
+        // Si tout est correct, le formulaire sera envoyé
+    }
+
+    // Ajouter un gestionnaire d'événements au bouton "Déplacer la carte"
+    document.querySelector('form').addEventListener('submit', validateAndSubmitForm);
+
+    // Appeler la fonction de mise à jour lors de la sélection ou du focus sur le champ
+    document.getElementById('card_input').addEventListener('focus', updateCards);
 </script>
+
+
 
 {% endblock %}
