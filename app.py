@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from models import db, User, Operation, Card, StatusGeo
+from models import db, User, Operation, Card, StatusGeo, CanceledOperation
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import os
 from datetime import datetime
@@ -150,42 +150,56 @@ def get_operations():
 def cancel_operation(operation_id):
     operation = Operation.query.get(operation_id)
     if operation:
+        print(f"Opération trouvée : {operation.card_name}, {operation.statut_geo}, {operation.timestamp}")
+
         # Récupérer la carte associée à l'opération
         card = Card.query.filter_by(card_name=operation.card_name).first()
-
         if card:
+            print(f"Carte trouvée : {card.card_name}")
+
             # Désincrémenter le compteur d'usage
-            card.usage = max(card.usage - 1, 0)  # S'assurer que l'usage ne soit pas négatif
+            card.usage = max(card.usage - 1, 0)
+            print(f"Usage désincrémenté : {card.usage}")
+
+            # Créer une nouvelle entrée dans la table CanceledOperation
+            canceled_operation = CanceledOperation(
+                card_name=operation.card_name,
+                statut_geo=operation.statut_geo,
+                timestamp=operation.timestamp,
+                username=current_user.username
+            )
+            db.session.add(canceled_operation)
+            print(f"Opération annulée ajoutée à CanceledOperation : {canceled_operation}")
 
             # Supprimer l'opération actuelle
             db.session.delete(operation)
             db.session.commit()
+            print("Opération supprimée de la table Operation")
 
             # Trouver la dernière opération pour cette carte
             last_operation = Operation.query.filter_by(card_name=card.card_name).order_by(Operation.timestamp.desc()).first()
-
-            # Mettre à jour le statut géo et le champ last_operation de la carte
             if last_operation:
                 card.statut_geo = last_operation.statut_geo
-                # Convertir le timestamp en datetime
                 if isinstance(last_operation.timestamp, str):
                     card.last_operation = datetime.strptime(last_operation.timestamp, '%Y%m%d-%H:%M:%S')
                 else:
                     card.last_operation = last_operation.timestamp
             else:
-                card.statut_geo = 'INCONNU'  # Statut par défaut si aucune opération précédente n'existe
-                card.last_operation = None  # Aucun timestamp disponible
+                card.statut_geo = 'INCONNU'
+                card.last_operation = None
 
-            # Sauvegarder les modifications sur la carte
             db.session.commit()
-
-            flash(f"L'opération a été annulée et la carte {card.card_name} a été mise à jour avec le statut géo {card.statut_geo}.")
+            print("Carte mise à jour avec le dernier statut géographique")
         else:
+            print("Carte introuvable.")
             flash("Carte introuvable.")
     else:
+        print("Opération introuvable.")
         flash("Opération introuvable.")
 
     return redirect(url_for('track'))
+
+
 
 
 # Route pour afficher les opérations de "Spot"

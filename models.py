@@ -22,6 +22,16 @@ class Operation(db.Model):
     statut_geo = db.Column(db.String(50), nullable=False)
 
 
+class CanceledOperation(db.Model):
+    __tablename__ = 'canceled_operations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    card_name = db.Column(db.String(50), nullable=False)
+    statut_geo = db.Column(db.String(50), nullable=False)
+    timestamp = db.Column(db.String(20), nullable=False)
+    username = db.Column(db.String(50), nullable=False)  # Utilisateur qui a annulé l’opération
+
+
 class Card(db.Model):
     __tablename__ = 'CARDS'
     id = db.Column(db.Integer, primary_key=True)
