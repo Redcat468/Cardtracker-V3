@@ -57,19 +57,24 @@
 
         <!-- Affichage de la timeline -->
         {% if selected_card %}
-            <h4 class="mt-4 text-lg font-semibold">Timeline pour la carte {{ selected_card }}</h4>
-            <div id="timeline-embed" style="width: 100%; height: 400px"></div>
-            <script>
-                // Créer l'objet de la timeline avec les données fournies
-                var timeline_data = {
-                    "events": {{ timeline_data | tojson }}
-                };
-
-                // Initialiser la timeline
-                window.timeline = new TL.Timeline('timeline-embed', timeline_data);
-            </script>
-    </div>
-        {% endif %}
+        <h4 class="mt-4 text-lg font-semibold">Timeline pour la carte {{ selected_card }}</h4>
+        <div id="timeline-embed" style="width: 100%; height: 400px"></div>
+        <script>
+            // Créer l'objet de la timeline avec les données fournies
+            var timeline_data = {{ timeline_data | tojson }};
+    
+            // Initialiser la timeline
+            window.timeline = new TL.Timeline('timeline-embed', timeline_data);
+    
+            // Se positionner sur le dernier événement après le chargement
+            window.timeline.on('loaded', function() {
+                const defaultPosition = timeline_data.default_position;
+                if (defaultPosition !== undefined && defaultPosition >= 0) {
+                    window.timeline.goTo(defaultPosition);
+                }
+            });
+        </script>
+    {% endif %}
     </div>
     <!-- Statut Géo tab -->
     <div id="status_geo" class="tab">
@@ -95,35 +100,37 @@
 
         <!-- Tableau des cartes associées au statut sélectionné -->
         {% if selected_status and cards_by_status %}
-            <div class="mt-4">
-                <h4 class="text-lg font-semibold mb-2">Cartes pour le statut : {{ selected_status }}</h4>
-                <table class="min-w-full table-auto border">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="px-4 py-2 border">Nom de la Carte</th>
-                            <th class="px-4 py-2 border">Capacité</th>
-                            <th class="px-4 py-2 border">Type</th>
-                            <th class="px-4 py-2 border">Actions</th>
+        <div class="mt-4">
+            <h4 class="text-lg font-semibold mb-2">Cartes pour le statut : {{ selected_status }}</h4>
+            <table class="min-w-full table-auto border">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 border">Nom de la Carte</th>
+                        <th class="px-4 py-2 border">Capacité</th>
+                        <th class="px-4 py-2 border">Type</th>
+                        <th class="px-4 py-2 border">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for card in cards_by_status %}
+                        <tr>
+                            <td class="border px-4 py-2">{{ card.card_name }}</td>
+                            <td class="border px-4 py-2">{{ card.capacity }} Go</td>
+                            <td class="border px-4 py-2">{{ card.card_type }}</td>
+                            <td class="border px-4 py-2">
+                                <form method="POST" action="{{ url_for('spot') }}">
+                                    <input type="hidden" name="action" value="card_focus">
+                                    <input type="hidden" name="selected_card" value="{{ card.card_name }}">
+                                    <button type="submit" class="text-blue-500 hover:underline">Voir</button>
+                                </form>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        {% for card in cards_by_status %}
-                            <tr>
-                                <td class="border px-4 py-2">{{ card.card_name }}</td>
-                                <td class="border px-4 py-2">{{ card.capacity }} Go</td>
-                                <td class="border px-4 py-2">{{ card.card_type }}</td>
-                                <td class="border px-4 py-2">
-                                    <form method="POST" action="{{ url_for('spot') }}">
-                                        <input type="hidden" name="selected_card" value="{{ card.card_name }}">
-                                        <button type="submit" class="text-blue-500 hover:underline">Voir</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% endif %}
+
     </div>
 
 <script>
