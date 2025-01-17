@@ -253,11 +253,14 @@ def spot():
                 operations = Operation.query.filter_by(card_name=selected_card).all()
 
                 # Formater les données pour TimelineJS
-                timeline_data = []
+                timeline_data = {
+                    "events": [],
+                    "default_position": len(operations) - 1  # Index du dernier événement
+                }
                 for op in operations:
                     try:
                         timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
-                        timeline_data.append({
+                        timeline_data["events"].append({
                             "start_date": {
                                 "year": timestamp.year,
                                 "month": timestamp.month,
@@ -284,6 +287,7 @@ def spot():
         cards_by_status=cards_by_status,
         current_tab=current_tab
     )
+
 
 
 @app.route('/card-focus', methods=['GET', 'POST'])
