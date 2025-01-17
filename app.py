@@ -14,11 +14,15 @@ app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'instance', 'card_tracker.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 # Initialisation de la base de données et Flask-Login
 db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# Configurer la redirection pour les utilisateurs non authentifiés
+login_manager.login_view = 'login'
+login_manager.login_message = "Vous devez vous connecter pour accéder à cette page."
+login_manager.login_message_category = "warning"
 
 # Initialiser les tables dans la base de données
 with app.app_context():
@@ -47,10 +51,22 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user:
             login_user(user)
-            return redirect(url_for('track'))
+            flash("Connexion réussie.", "success")
+            return redirect(request.args.get('next') or url_for('track'))
         else:
-            flash("Nom d'utilisateur incorrect.")
+            flash("Nom d'utilisateur incorrect.", "danger")
     return render_template('login.html')
+
+# Gestion des accès non autorisés
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash("Vous devez être connecté pour accéder à cette page.", "warning")
+    return redirect(url_for('login'))
+
+@app.errorhandler(401)
+def unauthorized_error(error):
+    flash("Vous devez être connecté pour accéder à cette page.", "warning")
+    return redirect(url_for('login'))
 
 # Route pour se déconnecter
 @app.route('/logout')
@@ -58,6 +74,7 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
 
 @app.route('/search_cards')
 @login_required
@@ -201,54 +218,73 @@ def cancel_operation(operation_id):
     return redirect(url_for('track'))
 
 
-
-
-
 # Route pour afficher les opérations de "Spot"
 from datetime import datetime
 
 @app.route('/spot', methods=['GET', 'POST'])
 @login_required
 def spot():
-    # Récupérer toutes les cartes de la table CARDS
+    # Charger tous les statuts géographiques et toutes les cartes
+    status_geo = StatusGeo.query.all()
     cards = Card.query.all()
 
+    # Variables pour différencier les onglets
+    current_tab = "card_focus"  # Par défaut, afficher Card Focus
     selected_card = None
     card_info = None
     timeline_data = None
+    selected_status = None
+    cards_by_status = []
 
     if request.method == 'POST':
-        selected_card = request.form.get('selected_card')
+        action = request.form.get('action')  # Identifier l'origine du formulaire
 
-        # Si une carte est sélectionnée, récupérer ses informations
-        if selected_card:
-            card_info = Card.query.filter_by(card_name=selected_card).first()
-            operations = Operation.query.filter_by(card_name=selected_card).all()
+        if action == "status_geo":
+            current_tab = "status_geo"
+            selected_status = request.form.get('selected_status')
+            if selected_status:
+                cards_by_status = Card.query.filter_by(statut_geo=selected_status).all()
 
-            # Formater les données pour TimelineJS
-            timeline_data = []
-            for op in operations:
-                try:
-                    timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
+        elif action == "card_focus":
+            current_tab = "card_focus"
+            selected_card = request.form.get('selected_card')
+            if selected_card:
+                card_info = Card.query.filter_by(card_name=selected_card).first()
+                operations = Operation.query.filter_by(card_name=selected_card).all()
 
-                    # Ajouter les données de timeline
-                    timeline_data.append({
-                        "start_date": {
-                            "year": timestamp.year,
-                            "month": timestamp.month,
-                            "day": timestamp.day,
-                            "hour": timestamp.hour,
-                            "minute": timestamp.minute
-                        },
-                        "text": {
-                            "headline": f"Position : {op.statut_geo}",
-                            "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo}"
-                        }
-                    })
-                except ValueError:
-                    print(f"Erreur de conversion de la date pour l'opération {op.id}: {op.timestamp}")
+                # Formater les données pour TimelineJS
+                timeline_data = []
+                for op in operations:
+                    try:
+                        timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
+                        timeline_data.append({
+                            "start_date": {
+                                "year": timestamp.year,
+                                "month": timestamp.month,
+                                "day": timestamp.day,
+                                "hour": timestamp.hour,
+                                "minute": timestamp.minute
+                            },
+                            "text": {
+                                "headline": f"Position : {op.statut_geo}",
+                                "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo}"
+                            }
+                        })
+                    except ValueError:
+                        print(f"Erreur de conversion de la date pour l'opération {op.id}: {op.timestamp}")
 
-    return render_template('spot.html', cards=cards, selected_card=selected_card, card_info=card_info, timeline_data=timeline_data)
+    return render_template(
+        'spot.html',
+        cards=cards,
+        status_geo=status_geo,
+        selected_card=selected_card,
+        card_info=card_info,
+        timeline_data=timeline_data,
+        selected_status=selected_status,
+        cards_by_status=cards_by_status,
+        current_tab=current_tab
+    )
+
 
 @app.route('/card-focus', methods=['GET', 'POST'])
 def card_focus():
@@ -259,6 +295,10 @@ def card_focus():
         card_details = Card.query.filter_by(card_name=selected_card).first()
     
     return render_template('spot.html', card_details=card_details)
+
+@app.route('/')
+def home():
+    return redirect(url_for('track'))
 
 
 # Route pour les utilisateurs administrateurs
@@ -271,4 +311,4 @@ def manage():
 
 # Lancement de l'application Flask
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=10000)
