@@ -4,12 +4,12 @@
 <h2 class="text-2xl font-semibold mb-4">Track Cards</h2>
 
 <!-- Bloc de gestion des cartes -->
-<div class="mb-8">
-    <form method="POST" action="{{ url_for('track') }}">
+<div class="mb-8 flex justify-center">
+    <form method="POST" action="{{ url_for('track') }}" class="w-full max-w-xs" style="max-width: 500px;">
         <!-- Champ Source -->
         <div class="mb-4">
             <label for="source" class="block text-sm font-medium text-gray-700">Source</label>
-            <select id="source" name="source" class="border p-2 rounded w-1/3" onchange="updateCards()">
+            <select id="source" name="source" class="border p-2 rounded w-full" onchange="updateCards()">
                 {% for status in status_geo %}
                     <option value="{{ status.status_name }}" {% if request.form.get('source') == status.status_name %}selected{% endif %}>
                         {{ status.status_name }}
@@ -21,7 +21,7 @@
         <!-- Champ Target -->
         <div class="mb-4">
             <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
-            <select id="target" name="target" class="border p-2 rounded w-1/3">
+            <select id="target" name="target" class="border p-2 rounded w-full">
                 {% for status in status_geo %}
                     <option value="{{ status.status_name }}" {% if request.form.get('target') == status.status_name %}selected{% endif %}>
                         {{ status.status_name }}
@@ -33,15 +33,13 @@
         <!-- Sélection de carte avec menu déroulant filtré -->
         <div class="mb-4">
             <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
-            <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." class="border p-2 rounded w-1/3" onfocus="updateCards()">
+            <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." class="border p-2 rounded w-full" onfocus="updateCards()">
             <datalist id="card_list">
                 <!-- Les options seront mises à jour dynamiquement via JavaScript -->
             </datalist>
         </div>
 
-
-
-        <button type="submit" name="move_card" class="bg-blue-500 text-white px-4 py-2 rounded">Déplacer la carte</button>
+        <button type="submit" name="move_card" class="btn">Déplacer la carte</button>
     </form>
 </div>
 
@@ -80,7 +78,7 @@
                         <td class="border px-4 py-2">${operation.timestamp}</td>
                         <td class="border px-4 py-2">${operation.username}</td>
                         <td class="border px-4 py-2">
-                            <button onclick="confirmDeletion(${operation.id})" class="bg-red-500 text-white px-4 py-2 rounded">Annuler</button>
+                            <button onclick="confirmDeletion(${operation.id})" class="btn btn-logout">Annuler</button>
                         </td>
                     `;
                     tableBody.appendChild(row);
