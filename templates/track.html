@@ -1,47 +1,73 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="text-2xl font-semibold mb-4">Track Cards</h2>
+<div class="flex items-center justify-center h-full space-x-4">
+    <img src="{{ url_for('static', filename='images/track.png') }}" alt="Target Icon" 
+        style="height: 2rem; width: auto;">
+    <h1><strong>Track Cards</strong></h1>
+</div>
 
 <!-- Bloc de gestion des cartes -->
 <div class="mb-8 flex justify-center">
     <form method="POST" action="{{ url_for('track') }}" class="w-full max-w-xs" style="max-width: 500px;">
         <!-- Champ Source -->
-        <div class="mb-4">
-            <label for="source" class="block text-sm font-medium text-gray-700">Source</label>
-            <select id="source" name="source" class="border p-2 rounded w-full" onchange="updateCards()">
-                {% for status in status_geo %}
-                    <option value="{{ status.status_name }}" {% if request.form.get('source') == status.status_name %}selected{% endif %}>
-                        {{ status.status_name }}
-                    </option>
-                {% endfor %}
-            </select>
+        <div class="mb-4 flex items-center">
+            <div class="flex items-center justify-center h-full">
+                <img src="{{ url_for('static', filename='images/source.png') }}" alt="Source Icon" 
+                     style="height: 2rem; width: auto;margin-right: 1rem;">
+            </div>
+            <div class="w-full">
+                <label for="source" class="block text-sm font-medium text-gray-700">Source</label>
+                <select id="source" name="source" class="border p-2 rounded w-full" onchange="updateCards()">
+                    {% for status in status_geo %}
+                        <option value="{{ status.status_name }}" {% if request.form.get('source') == status.status_name %}selected{% endif %}>
+                            {{ status.status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
         <!-- Champ Target -->
-        <div class="mb-4">
-            <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
-            <select id="target" name="target" class="border p-2 rounded w-full">
-                {% for status in status_geo %}
-                    <option value="{{ status.status_name }}" {% if request.form.get('target') == status.status_name %}selected{% endif %}>
-                        {{ status.status_name }}
-                    </option>
-                {% endfor %}
-            </select>
+        <div class="mb-4 flex items-center">
+            <div class="flex items-center justify-center h-full">
+                <img src="{{ url_for('static', filename='images/target.png') }}" alt="Target Icon" 
+                     style="height: 2rem; width: auto;margin-right: 1rem">
+            </div>
+            <div class="w-full">
+                <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
+                <select id="target" name="target" class="border p-2 rounded w-full">
+                    {% for status in status_geo %}
+                        <option value="{{ status.status_name }}" {% if request.form.get('target') == status.status_name %}selected{% endif %}>
+                            {{ status.status_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
 
         <!-- Sélection de carte avec menu déroulant filtré -->
-        <div class="mb-4">
-            <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
-            <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." class="border p-2 rounded w-full" onfocus="updateCards()">
-            <datalist id="card_list">
-                <!-- Les options seront mises à jour dynamiquement via JavaScript -->
-            </datalist>
+        <div class="mb-4 flex items-center">
+            <div class="flex items-center justify-center h-full">
+                <img src="{{ url_for('static', filename='images/sdcard.png') }}" alt="SD Card Icon" 
+                    style="height: 2rem; width: auto;margin-right: 1rem">
+            </div>
+            <div class="w-full">
+                <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
+                <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." 
+                       class="border p-2 rounded w-full" onfocus="updateCards()">
+                <datalist id="card_list">
+                    <!-- Les options seront mises à jour dynamiquement via JavaScript -->
+                </datalist>
+            </div>
         </div>
 
-        <button type="submit" name="move_card" class="btn">Déplacer la carte</button>
+        <div class="flex justify-center">
+            <button type="submit" name="move_card" class="btn">Déplacer la carte</button>
+        </div>
     </form>
 </div>
+
 
 <!-- Historique des opérations -->
 <div class="mb-8">
