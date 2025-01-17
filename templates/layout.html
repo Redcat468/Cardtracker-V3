@@ -16,52 +16,26 @@
             <img src="{{ url_for('static', filename='images/bandeau.svg') }}" alt="Bandeau" class="mx-auto max-w-full h-auto py-4" style="max-width: 50%;">
         </div>
         <header>
+            {% if request.endpoint != 'login' %}
             <nav class="container mx-auto">
-                {% if request.endpoint != 'login' %}
                 <ul class="flex justify-center space-x-4">
                     <li>
-                        <a href="{{ url_for('track') }}" 
-                           class="font-bold px-4 py-2 rounded bg-blue-600 text-white 
-                                  transition duration-200 ease-in-out 
-                                  hover:bg-blue-700 hover:text-white 
-                                  active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            Track
-                        </a>
+                        <a href="{{ url_for('track') }}" class="btn btn-secondary">Track</a>
                     </li>
                     <li>
-                        <a href="{{ url_for('spot') }}" 
-                           class="font-bold px-4 py-2 rounded bg-blue-600 text-white 
-                                  transition duration-200 ease-in-out 
-                                  hover:bg-blue-700 hover:text-white 
-                                  active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                            Spot
-                        </a>
+                        <a href="{{ url_for('spot') }}" class="btn btn-secondary">Spot</a>
                     </li>
-                {% endif %}
                     {% if current_user.is_authenticated and current_user.level >= 47 %}
                         <li>
-                            <a href="{{ url_for('manage') }}" 
-                               class="font-bold px-4 py-2 rounded bg-blue-600 text-white 
-                                      transition duration-200 ease-in-out 
-                                      hover:bg-blue-700 hover:text-white 
-                                      active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                Manage
-                            </a>
+                            <a href="{{ url_for('manage') }}" class="btn btn-purple">Manage</a>
                         </li>
                     {% endif %}
-                    {% if request.endpoint != 'login' %}
                     <li>
-                        <a href="{{ url_for('logout') }}" 
-                           class="font-bold px-4 py-2 rounded bg-red-500 text-white 
-                                  transition duration-200 ease-in-out 
-                                  hover:bg-red-700 hover:text-white 
-                                  active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300">
-                            Logout
-                        </a>
+                        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
                     </li>
-                    {% endif %}
                 </ul>
-            </nav>                       
+            </nav>
+            {% endif %}
                  
         </header>
         
