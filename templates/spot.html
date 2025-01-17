@@ -98,38 +98,48 @@
             </div>
         </form>
 
-        <!-- Tableau des cartes associées au statut sélectionné -->
-        {% if selected_status and cards_by_status %}
-        <div class="mt-4">
-            <h4 class="text-lg font-semibold mb-2">Cartes pour le statut : {{ selected_status }}</h4>
-            <table class="min-w-full table-auto border">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-4 py-2 border">Nom de la Carte</th>
-                        <th class="px-4 py-2 border">Capacité</th>
-                        <th class="px-4 py-2 border">Type</th>
-                        <th class="px-4 py-2 border">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for card in cards_by_status %}
-                        <tr>
-                            <td class="border px-4 py-2">{{ card.card_name }}</td>
-                            <td class="border px-4 py-2">{{ card.capacity }} Go</td>
-                            <td class="border px-4 py-2">{{ card.card_type }}</td>
-                            <td class="border px-4 py-2">
-                                <form method="POST" action="{{ url_for('spot') }}">
-                                    <input type="hidden" name="action" value="card_focus">
-                                    <input type="hidden" name="selected_card" value="{{ card.card_name }}">
-                                    <button type="submit" class="text-blue-500 hover:underline">Voir</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
+<!-- Tableau des cartes associées au statut sélectionné -->
+{% if selected_status and cards_by_status %}
+<div class="mt-4">
+    <h4 class="text-lg font-semibold mb-2">Cartes pour le statut : {{ selected_status }}</h4>
+    <table class="min-w-full table-auto border">
+        <thead>
+            <tr class="bg-gray-100">
+                <th class="px-4 py-2 border">Nom de la Carte</th>
+                <th class="px-4 py-2 border">Capacité</th>
+                <th class="px-4 py-2 border">Type</th>
+                <th class="px-4 py-2 border">Dernière Opération</th>
+                <th class="px-4 py-2 border">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for card, last_operation_date in cards_by_status %}
+                <tr>
+                    <td class="border px-4 py-2">{{ card.card_name }}</td>
+                    <td class="border px-4 py-2">{{ card.capacity }} Go</td>
+                    <td class="border px-4 py-2">{{ card.card_type }}</td>
+                    <td class="border px-4 py-2">
+                        {% if last_operation_date %}
+                            {{ last_operation_date.strftime('%Y-%m-%d %H:%M:%S') if last_operation_date.__class__.__name__ == 'datetime' else last_operation_date }}
+                        {% else %}
+                            Aucune
+                        {% endif %}
+                    </td>
+                    <td class="border px-4 py-2">
+                        <form method="POST" action="{{ url_for('spot') }}">
+                            <input type="hidden" name="action" value="card_focus">
+                            <input type="hidden" name="selected_card" value="{{ card.card_name }}">
+                            <button type="submit" class="text-blue-500 hover:underline">Voir</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+
 
     </div>
 
