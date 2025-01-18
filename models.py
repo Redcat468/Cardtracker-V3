@@ -20,6 +20,7 @@ class Operation(db.Model):
     timestamp = db.Column(db.String(20), nullable=False)  # Ceci est un texte à convertir
     card_name = db.Column(db.String(50), nullable=False)
     statut_geo = db.Column(db.String(50), nullable=False)
+    offload_status = db.Column(db.String(50), default="Not Started")  # Nouveau champ
 
 
 class CanceledOperation(db.Model):
@@ -30,6 +31,7 @@ class CanceledOperation(db.Model):
     statut_geo = db.Column(db.String(50), nullable=False)
     timestamp = db.Column(db.String(20), nullable=False)
     username = db.Column(db.String(50), nullable=False)  # Utilisateur qui a annulé l’opération
+    offload_status = db.Column(db.String(50), default="Not Started")  # Nouveau champ
 
 
 class Card(db.Model):
@@ -43,9 +45,13 @@ class Card(db.Model):
     brand = db.Column(db.String(50))  # Marque de la carte
     card_type = db.Column(db.String(50))  # Type de la carte (CFAST, SD, etc.)
     usage = db.Column(db.Integer, default=0)  # Nombre d'opérations effectuées sur la carte
-    last_operation = Column(DateTime, nullable=True)
+    last_operation = Column(DateTime, nullable=True)  # Dernière opération
+    offload_status = db.Column(db.String(50), default="Not Started")  # Nouveau champ: statut de l'offload
 
-
+class OffloadStatus(db.Model):
+    __tablename__ = 'OFFLOAD_STATUS'
+    id = db.Column(db.Integer, primary_key=True)
+    status_name = db.Column(db.String(50), unique=True, nullable=False)
 
 
 class StatusGeo(db.Model):
