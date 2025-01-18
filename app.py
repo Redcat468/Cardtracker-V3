@@ -221,13 +221,12 @@ def cancel_operation(operation_id):
 # Route pour afficher les opérations de "Spot"
 from datetime import datetime
 
-from datetime import datetime
-
 @app.route('/spot', methods=['GET', 'POST'])
 @login_required
 def spot():
-    # Charger tous les statuts géographiques et toutes les cartes
+    # Charger tous les statuts géographiques, utilisateurs et cartes
     status_geo = StatusGeo.query.all()
+    users = User.query.all()
     cards = Card.query.all()
 
     # Variables pour différencier les onglets
@@ -237,6 +236,8 @@ def spot():
     timeline_data = None
     selected_status = None
     cards_by_status = []
+    selected_user = None
+    user_operations = []
 
     if request.method == 'POST':
         action = request.form.get('action')  # Identifier l'origine du formulaire
@@ -254,6 +255,15 @@ def spot():
                     .limit(1)
                     .as_scalar()
                 ).filter(Card.statut_geo == selected_status).all()
+
+        elif action == "user_focus":
+            current_tab = "user_focus"
+            selected_user = request.form.get('selected_user')
+            if selected_user:
+                # Récupérer les 100 dernières opérations de l'utilisateur sélectionné
+                user_operations = Operation.query.filter_by(username=selected_user)\
+                    .order_by(Operation.timestamp.desc())\
+                    .limit(100).all()
 
         elif action == "card_focus":
             current_tab = "card_focus"
@@ -291,11 +301,14 @@ def spot():
         'spot.html',
         cards=cards,
         status_geo=status_geo,
+        users=users,
         selected_card=selected_card,
         card_info=card_info,
         timeline_data=timeline_data,
         selected_status=selected_status,
         cards_by_status=cards_by_status,
+        selected_user=selected_user,
+        user_operations=user_operations,
         current_tab=current_tab
     )
 
