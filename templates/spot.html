@@ -54,6 +54,7 @@
                     <tr class="bg-gray-100">
                         <th class="px-4 py-2 border">Nom de la Carte</th>
                         <th class="px-4 py-2 border">Statut Géo</th>
+                        <th class="px-4 py-2 border">Statut Offload</th>
                         <th class="px-4 py-2 border">Timestamp</th>
                         <th class="px-4 py-2 border">Utilisateur</th>
                         <th class="px-4 py-2 border">Actions</th> <!-- Nouvelle colonne -->
@@ -64,6 +65,7 @@
                         <tr>
                             <td class="border px-4 py-2">{{ operation.card_name }}</td>
                             <td class="border px-4 py-2">{{ operation.statut_geo }}</td>
+                            <td class="border px-4 py-2">{{operation.offload_status}}</td>
                             <td class="border px-4 py-2">{{ operation.timestamp }}</td>
                             <td class="border px-4 py-2">{{ operation.username }}</td>
                             <td class="border px-4 py-2">
@@ -103,6 +105,7 @@
             <div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
                 <h4 class="text-xl font-bold">{{ card_info.card_name }} - Informations</h4>
                 <ul>
+                    <li><strong>Statut offload</strong> {{ card_info.offload_status }}</li>
                     <li><strong>Capacité:</strong> {{ card_info.capacity }} Go</li>
                     <li><strong>Marque:</strong> {{ card_info.brand }}</li>
                     <li><strong>Type:</strong> {{ card_info.card_type }}</li>

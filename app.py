@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-from models import db, User, Operation, Card, StatusGeo, CanceledOperation
+from models import db, User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import os
 from datetime import datetime
@@ -95,6 +95,9 @@ def track():
     # Récupérer tous les statuts géographiques
     status_geo = StatusGeo.query.all()
 
+    # Récupérer les statuts offload
+    offload_statuses = OffloadStatus.query.all()
+
     # Initialiser les opérations pour l'historique (limitées aux 50 dernières)
     operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
@@ -103,6 +106,7 @@ def track():
         source = request.form.get('source')
         target = request.form.get('target')
         card_name = request.form.get('card')
+        offload_status = request.form.get('offload_status')
 
         if card_name:
             card = Card.query.filter_by(card_name=card_name).first()
@@ -112,23 +116,26 @@ def track():
                     username=current_user.username,
                     card_name=card_name,
                     statut_geo=target,
-                    timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S')
+                    timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S'),
+                    offload_status=offload_status  # Ajout du statut offload
                 )
                 db.session.add(new_operation)
 
                 # Mettre à jour la carte
                 card.statut_geo = target
+                card.offload_status = offload_status  # Mise à jour du statut offload
                 card.last_operation = datetime.now()
                 card.usage += 1  # Incrémenter l'usage
                 db.session.commit()
 
-                flash(f"Carte {card_name} déplacée avec succès.")
+                flash(f"Carte {card_name} déplacée avec succès et statut offload mis à jour.")
             else:
                 flash("Carte introuvable.")
         else:
             flash("Veuillez sélectionner une carte.")
 
-    return render_template('track.html', status_geo=status_geo, operations=operations)
+    return render_template('track.html', status_geo=status_geo, offload_statuses=offload_statuses, operations=operations)
+
 
 
 @app.route('/get_cards_by_status/<status>', methods=['GET'])
@@ -156,11 +163,13 @@ def get_operations():
             "id": operation.id,
             "card_name": operation.card_name,
             "statut_geo": operation.statut_geo,
+            "offload_status": operation.offload_status,  # Inclure le statut offload
             "timestamp": operation.timestamp,
             "username": operation.username
         }
         for operation in operations
     ])
+
 
 # Route pour annuler une opération
 @app.route('/cancel_operation/<int:operation_id>', methods=['POST'])
@@ -184,7 +193,8 @@ def cancel_operation(operation_id):
                 card_name=operation.card_name,
                 statut_geo=operation.statut_geo,
                 timestamp=operation.timestamp,
-                username=current_user.username
+                username=current_user.username,
+                offload_status=operation.offload_status  # Sauvegarder le statut offload dans canceled_operations
             )
             db.session.add(canceled_operation)
             print(f"Opération annulée ajoutée à CanceledOperation : {canceled_operation}")
@@ -198,16 +208,18 @@ def cancel_operation(operation_id):
             last_operation = Operation.query.filter_by(card_name=card.card_name).order_by(Operation.timestamp.desc()).first()
             if last_operation:
                 card.statut_geo = last_operation.statut_geo
+                card.offload_status = last_operation.offload_status  # Rétablir le dernier statut offload
                 if isinstance(last_operation.timestamp, str):
                     card.last_operation = datetime.strptime(last_operation.timestamp, '%Y%m%d-%H:%M:%S')
                 else:
                     card.last_operation = last_operation.timestamp
             else:
                 card.statut_geo = 'INCONNU'
+                card.offload_status = None  # Réinitialiser le statut offload
                 card.last_operation = None
 
             db.session.commit()
-            print("Carte mise à jour avec le dernier statut géographique")
+            print("Carte mise à jour avec le dernier statut géographique et offload")
         else:
             print("Carte introuvable.")
             flash("Carte introuvable.")
@@ -216,6 +228,7 @@ def cancel_operation(operation_id):
         flash("Opération introuvable.")
 
     return redirect(url_for('track'))
+
 
 
 # Route pour afficher les opérations de "Spot"
@@ -290,8 +303,8 @@ def spot():
                                 "minute": timestamp.minute
                             },
                             "text": {
-                                "headline": f"Position : {op.statut_geo}",
-                                "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo}"
+                                "headline": f"Position : {op.statut_geo} / {op.offload_status} ",
+                                "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo} | Statut Offload: {op.offload_status}"
                             }
                         })
                     except ValueError:
