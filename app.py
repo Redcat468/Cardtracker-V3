@@ -255,6 +255,38 @@ def spot():
                     .as_scalar()
                 ).filter(Card.statut_geo == selected_status).all()
 
+        elif action == "card_focus":
+            current_tab = "card_focus"
+            selected_card = request.form.get('selected_card')
+            if selected_card:
+                # Charger les informations de la carte et les opérations associées
+                card_info = Card.query.filter_by(card_name=selected_card).first()
+                operations = Operation.query.filter_by(card_name=selected_card).all()
+
+                # Formater les données pour TimelineJS
+                timeline_data = {
+                    "events": [],
+                    "default_position": len(operations) - 1  # Index du dernier événement
+                }
+                for op in operations:
+                    try:
+                        timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
+                        timeline_data["events"].append({
+                            "start_date": {
+                                "year": timestamp.year,
+                                "month": timestamp.month,
+                                "day": timestamp.day,
+                                "hour": timestamp.hour,
+                                "minute": timestamp.minute
+                            },
+                            "text": {
+                                "headline": f"Position : {op.statut_geo}",
+                                "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo}"
+                            }
+                        })
+                    except ValueError:
+                        print(f"Erreur de conversion de la date pour l'opération {op.id}: {op.timestamp}")
+
     return render_template(
         'spot.html',
         cards=cards,
@@ -266,6 +298,7 @@ def spot():
         cards_by_status=cards_by_status,
         current_tab=current_tab
     )
+
 
 
 @app.route('/card-focus', methods=['GET', 'POST'])
