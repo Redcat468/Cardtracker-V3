@@ -41,30 +41,7 @@ createApp({
                 this.selectedCard = '';
                 this.currentOffloadStatus = '';
             }
-        },
-        function updateOffloadStatus() {
-            const selectedCard = document.getElementById('card_input').value;
-            const offloadStatusElement = document.getElementById('current_offload_status');
-            
-            console.log(`Carte sélectionnée : ${selectedCard}`); // Vérifier la carte sélectionnée
-        
-            if (selectedCard) {
-                fetch(`/get_offload_status/${selectedCard}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const offloadStatus = data.offload_status || 'Non défini';
-                        console.log(`Statut Offload Actuel : ${offloadStatus}`); // Vérifier les données récupérées
-                        offloadStatusElement.textContent = `Statut Offload Actuel : ${offloadStatus}`;
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la récupération du statut d\'offload :', error);
-                        offloadStatusElement.textContent = 'Erreur lors de la récupération du statut.';
-                    });
-            } else {
-                offloadStatusElement.textContent = 'Veuillez sélectionner une carte pour afficher son statut offload.';
-            }
         }
-        
         
         // Soumet le formulaire pour déplacer une carte
         moveCard() {
