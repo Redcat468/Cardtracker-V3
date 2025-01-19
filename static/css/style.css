@@ -97,3 +97,7 @@ nav ul li a {
         border-color: #000000; /* Bordure */
     }
     
+    .hidden {
+        display: none;
+    }
+    
