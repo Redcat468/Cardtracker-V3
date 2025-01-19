@@ -337,15 +337,13 @@ def spot():
             current_tab = "card_focus"
             selected_card = request.form.get('selected_card')
             if selected_card:
-                # Charger les informations de la carte et les opérations associées
                 card_info = Card.query.filter_by(card_name=selected_card).first()
                 operations = Operation.query.filter_by(card_name=selected_card).all()
 
-                # Formater les données pour TimelineJS
                 timeline_data = {
                     "events": [],
-                    "default_position": len(operations) - 1  # Index du dernier événement
                 }
+
                 for op in operations:
                     try:
                         timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
@@ -358,7 +356,7 @@ def spot():
                                 "minute": timestamp.minute
                             },
                             "text": {
-                                "headline": f"Position : {op.statut_geo} / {op.offload_status} ",
+                                "headline": f"Position : {op.statut_geo} / {op.offload_status}",
                                 "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo} | Statut Offload: {op.offload_status}"
                             }
                         })

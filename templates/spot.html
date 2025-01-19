@@ -139,16 +139,10 @@
             <div id="timeline-embed" style="width: 100%; height: 400px"></div>
             <script>
                 var timeline_data = {{ timeline_data | tojson }};
-                window.timeline = new TL.Timeline('timeline-embed', timeline_data);
-
-                // Positionner automatiquement sur le dernier événement
-                window.timeline.on('loaded', function() {
-                    const defaultPosition = timeline_data.default_position;
-                    if (defaultPosition !== undefined && defaultPosition >= 0) {
-                        window.timeline.goTo(defaultPosition);
-                    }
+                window.timeline = new TL.Timeline('timeline-embed', timeline_data, {
+                    start_at_end: true  // Ajoute l'option pour démarrer à la fin
                 });
-            </script>
+            </script>       
         {% endif %}
     </div>
 
