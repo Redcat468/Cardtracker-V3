@@ -105,6 +105,12 @@ def track():
     preloaded_source = request.args.get('source', '')
     preloaded_card = request.args.get('card', '')
 
+    # Vérifier que la carte préchargée existe et est valide
+    if preloaded_card:
+        valid_card = Card.query.filter_by(card_name=preloaded_card).first()
+        if not valid_card:
+            preloaded_card = ''  # Réinitialiser si la carte n'existe pas
+
     # Logique pour déplacer les cartes (si nécessaire)
     if request.method == 'POST':
         source = request.form.get('source')
