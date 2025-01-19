@@ -7,9 +7,12 @@ createApp({
             operations: [], // Les opérations seront chargées depuis le backend
             statusGeo: [], // Liste des statuts géographiques
             cards: [], // Liste des cartes correspondant au statut source
+            offloadStatuses: [], // Liste des statuts offload
             selectedSource: '', // Statut source sélectionné
             selectedTarget: '', // Statut cible sélectionné
             selectedCard: '', // Carte sélectionnée
+            currentOffloadStatus: '', // Statut offload actuel de la carte sélectionnée
+            selectedOffloadStatus: '', // Nouveau statut offload sélectionné
             showDeleteConfirmation: false,
             operationToDelete: null,
         };
@@ -30,33 +33,39 @@ createApp({
                     .then(data => {
                         this.cards = data;
                         this.selectedCard = ''; // Réinitialiser la sélection
+                        this.currentOffloadStatus = ''; // Réinitialiser le statut offload
                     })
                     .catch(error => console.error('Erreur lors de la récupération des cartes :', error));
             } else {
                 this.cards = [];
                 this.selectedCard = '';
+                this.currentOffloadStatus = '';
             }
         },
-        // Chargement des statuts géographiques
-        fetch('/get_status_geo')
-        .then(response => response.json())
-        .then(data => {
-            this.statusGeo = data;
-            if (this.statusGeo.length > 0) {
-                this.selectedSource = this.statusGeo[0].status_name;
-                this.updateCards();
+        function updateOffloadStatus() {
+            const selectedCard = document.getElementById('card_input').value;
+            const offloadStatusElement = document.getElementById('current_offload_status');
+            
+            console.log(`Carte sélectionnée : ${selectedCard}`); // Vérifier la carte sélectionnée
+        
+            if (selectedCard) {
+                fetch(`/get_offload_status/${selectedCard}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const offloadStatus = data.offload_status || 'Non défini';
+                        console.log(`Statut Offload Actuel : ${offloadStatus}`); // Vérifier les données récupérées
+                        offloadStatusElement.textContent = `Statut Offload Actuel : ${offloadStatus}`;
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération du statut d\'offload :', error);
+                        offloadStatusElement.textContent = 'Erreur lors de la récupération du statut.';
+                    });
+            } else {
+                offloadStatusElement.textContent = 'Veuillez sélectionner une carte pour afficher son statut offload.';
             }
-        })
-        .catch(error => console.error('Erreur lors du chargement des statuts géographiques :', error));
-
-        // Chargement des opérations
-        fetch('/get_operations')
-        .then(response => response.json())
-        .then(data => {
-            this.operations = data;
-        })
-        .catch(error => console.error('Erreur lors du chargement des opérations :', error));
-
+        }
+        
+        
         // Soumet le formulaire pour déplacer une carte
         moveCard() {
             if (this.selectedCard && this.selectedTarget) {
@@ -69,6 +78,7 @@ createApp({
                         card: this.selectedCard,
                         source: this.selectedSource,
                         target: this.selectedTarget,
+                        offload_status: this.selectedOffloadStatus,
                     }),
                 })
                     .then(response => response.json())
@@ -82,7 +92,7 @@ createApp({
                     })
                     .catch(error => console.error('Erreur lors du déplacement de la carte :', error));
             } else {
-                alert('Veuillez sélectionner une carte et une destination.');
+                alert('Veuillez sélectionner une carte, une source et une destination.');
             }
         },
         // Affiche la boîte de confirmation pour la suppression
@@ -107,10 +117,10 @@ createApp({
                             this.showDeleteConfirmation = false;
                             this.operationToDelete = null;
                         } else {
-                            alert('Erreur lors de la suppression de l\'opération.');
+                            alert('Erreur lors de la suppression de l'opération.');
                         }
                     })
-                    .catch(error => console.error('Erreur lors de la suppression de l\'opération :', error));
+                    .catch(error => console.error('Erreur lors de la suppression de l'opération :', error));
             }
         },
     },
@@ -127,7 +137,15 @@ createApp({
             })
             .catch(error => console.error('Erreur lors du chargement des statuts géographiques :', error));
 
-        // Chargement simulé des opérations
+        // Chargement des statuts offload
+        fetch('/get_offload_status_list')
+            .then(response => response.json())
+            .then(data => {
+                this.offloadStatuses = data;
+            })
+            .catch(error => console.error('Erreur lors du chargement des statuts offload :', error));
+
+        // Chargement initial des opérations
         fetch('/get_operations')
             .then(response => response.json())
             .then(data => {
