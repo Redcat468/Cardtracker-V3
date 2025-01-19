@@ -153,6 +153,50 @@ def track():
         preloaded_card=preloaded_card
     )
 
+@app.route('/update_card', methods=['POST'])
+@login_required
+def update_card():
+    card_id = request.form.get('card_id')
+    offload_status = request.form.get('offload_status')
+    statut_geo = request.form.get('statut_geo')
+    quarantine = request.form.get('quarantine') == 'on'
+    capacity = request.form.get('capacity')
+    brand = request.form.get('brand')
+    card_type = request.form.get('card_type')
+
+    card = Card.query.get(card_id)
+    if card:
+        # Conserver les anciens statuts pour l'opération
+        old_geo_status = card.statut_geo
+        old_offload_status = card.offload_status
+
+        # Mise à jour de la carte
+        card.offload_status = offload_status
+        card.statut_geo = statut_geo
+        card.quarantine = quarantine
+        card.capacity = capacity
+        card.brand = brand
+        card.card_type = card_type
+        card.last_operation = datetime.now()
+
+        # Ajouter une ligne dans la table Operation
+        new_operation = Operation(
+            username=current_user.username,
+            card_name=card.card_name,
+            statut_geo=statut_geo,
+            offload_status=offload_status,
+            timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S')
+        )
+        db.session.add(new_operation)
+
+        # Sauvegarder les modifications dans la base de données
+        db.session.commit()
+        flash(f"Carte {card.card_name} mise à jour avec succès.", "success")
+    else:
+        flash("Carte introuvable.", "danger")
+
+    return redirect(url_for('manage', current_tab='card_manager'))
+
 
 
 @app.route('/get_cards_by_status/<status>', methods=['GET'])
@@ -399,12 +443,41 @@ def home():
 
 
 # Route pour les utilisateurs administrateurs
-@app.route('/manage')
+@app.route('/manage', methods=['GET', 'POST'])
 @login_required
 def manage():
-    if current_user.level >= 47:
-        return render_template('manage.html')
-    return redirect(url_for('track'))
+    current_tab = request.args.get('current_tab', 'card_manager')
+    selected_card = None
+    offload_statuses = OffloadStatus.query.all()  # Récupérer tous les statuts offload
+    status_geo = StatusGeo.query.all()  # Récupérer tous les statuts géographiques
+    cards = Card.query.all()  # Charger toutes les cartes
+
+    # Récupérer la carte sélectionnée si elle existe
+    selected_card_name = request.form.get('selected_card', None)
+    if selected_card_name:
+        selected_card = Card.query.filter_by(card_name=selected_card_name).first()
+
+    return render_template(
+        'manage.html',
+        current_tab=current_tab,
+        cards=cards,
+        offload_statuses=offload_statuses,  # Passer les statuts offload au template
+        status_geo=status_geo,
+        selected_card_info=selected_card
+    )
+
+@app.route('/delete_card/<int:card_id>', methods=['POST'])
+@login_required
+def delete_card(card_id):
+    card = Card.query.get(card_id)
+    if card:
+        db.session.delete(card)
+        db.session.commit()
+        flash(f"La carte {card.card_name} a été supprimée avec succès.", "success")
+    else:
+        flash("Carte introuvable.", "danger")
+    return redirect(url_for('manage', current_tab='card_manager'))
+
 
 # Lancement de l'application Flask
 if __name__ == '__main__':
