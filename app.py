@@ -101,6 +101,10 @@ def track():
     # Initialiser les opérations pour l'historique (limitées aux 50 dernières)
     operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
+    # Précharger les valeurs "Source" et "Carte" si présentes dans la requête GET
+    preloaded_source = request.args.get('source', '')
+    preloaded_card = request.args.get('card', '')
+
     # Logique pour déplacer les cartes (si nécessaire)
     if request.method == 'POST':
         source = request.form.get('source')
@@ -117,15 +121,15 @@ def track():
                     card_name=card_name,
                     statut_geo=target,
                     timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S'),
-                    offload_status=offload_status  # Ajout du statut offload
+                    offload_status=offload_status
                 )
                 db.session.add(new_operation)
 
                 # Mettre à jour la carte
                 card.statut_geo = target
-                card.offload_status = offload_status  # Mise à jour du statut offload
+                card.offload_status = offload_status
                 card.last_operation = datetime.now()
-                card.usage += 1  # Incrémenter l'usage
+                card.usage += 1
                 db.session.commit()
 
                 flash(f"Carte {card_name} déplacée avec succès et statut offload mis à jour.")
@@ -134,7 +138,14 @@ def track():
         else:
             flash("Veuillez sélectionner une carte.")
 
-    return render_template('track.html', status_geo=status_geo, offload_statuses=offload_statuses, operations=operations)
+    return render_template(
+        'track.html',
+        status_geo=status_geo,
+        offload_statuses=offload_statuses,
+        operations=operations,
+        preloaded_source=preloaded_source,
+        preloaded_card=preloaded_card
+    )
 
 
 
@@ -277,8 +288,16 @@ def spot():
                     .filter(Operation.card_name == Card.card_name)
                     .order_by(Operation.timestamp.desc())
                     .limit(1)
+                    .as_scalar(),
+                    db.session.query(Operation.username)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
                     .as_scalar()
                 ).filter(Card.statut_geo == selected_status).all()
+
+
+
 
         elif action == "user_focus":
             current_tab = "user_focus"

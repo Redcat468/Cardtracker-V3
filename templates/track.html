@@ -14,13 +14,13 @@
         <div class="mb-4 flex items-center">
             <div class="flex items-center justify-center h-full">
                 <img src="{{ url_for('static', filename='images/source.png') }}" alt="Source Icon" 
-                     style="height: 2rem; width: auto;margin-right: 1rem;">
+                    style="height: 2rem; width: auto;margin-right: 1rem;">
             </div>
             <div class="w-full">
                 <label for="source" class="block text-sm font-medium text-gray-700">Source</label>
                 <select id="source" name="source" class="border p-2 rounded w-full" onchange="updateCards()">
                     {% for status in status_geo %}
-                        <option value="{{ status.status_name }}" {% if request.form.get('source') == status.status_name %}selected{% endif %}>
+                        <option value="{{ status.status_name }}" {% if status.status_name == preloaded_source %}selected{% endif %}>
                             {{ status.status_name }}
                         </option>
                     {% endfor %}
@@ -46,18 +46,21 @@
             </div>
         </div>
 
+
         <!-- Sélection de carte avec menu déroulant filtré -->
         <div class="mb-4 flex items-center">
             <div class="flex items-center justify-center h-full">
                 <img src="{{ url_for('static', filename='images/sdcard.png') }}" alt="SD Card Icon" 
-                    style="height: 2rem; width: auto; margin-right: 1rem;">
+                    style="height: 2rem; width: auto;margin-right: 1rem;">
             </div>
             <div class="w-full">
                 <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
                 <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." 
-                class="border p-2 rounded w-full" oninput="updateOffloadStatus()">         
+                    class="border p-2 rounded w-full" value="{{ preloaded_card if preloaded_card else '' }}">
                 <datalist id="card_list">
-                    <!-- Les options seront mises à jour dynamiquement via JavaScript -->
+                    {% for card in cards %}
+                        <option value="{{ card.card_name }}">{{ card.card_name }}</option>
+                    {% endfor %}
                 </datalist>
             </div>
         </div>
@@ -89,7 +92,7 @@
 
 
         <div class="flex justify-center">
-            <button type="submit" name="move_card" class="btn">Déplacer la carte</button>
+            <button type="submit" name="move_card" class="btn">Enregistrer</button>
         </div>
     </form>
 </div>
