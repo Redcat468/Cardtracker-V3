@@ -35,7 +35,13 @@
                      style="height: 2rem; width: auto;margin-right: 1rem">
             </div>
             <div class="w-full">
-                <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
+                <div class="flex items-center justify-end" style="gap: 2rem;">
+                    <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
+                    <div class="flex items-center justify-end" style="gap: 0.2rem;">
+                        <input type="checkbox" id="no_move" name="no_move" onchange="toggleTarget()">
+                        <label for="no_move" class="text-sm text-gray-700">Offload seulement</label>
+                    </div>
+                </div>
                 <select id="target" name="target" class="border p-2 rounded w-full">
                     {% for status in status_geo %}
                         <option value="{{ status.status_name }}" {% if request.form.get('target') == status.status_name %}selected{% endif %}>
@@ -43,6 +49,22 @@
                         </option>
                     {% endfor %}
                 </select>
+                <script>
+                    function toggleTarget() {
+                        const noMove = document.getElementById('no_move');
+                        const target = document.getElementById('target');
+                        const source = document.getElementById('source');
+                        
+                        if (noMove.checked) {
+                            target.disabled = true;
+                            target.style.backgroundColor = '#e5e7eb';
+                            target.value = source.value;
+                        } else {
+                            target.disabled = false;
+                            target.style.backgroundColor = '';
+                        }
+                    }
+                </script>
             </div>
         </div>
 
@@ -56,7 +78,7 @@
             <div class="w-full">
                 <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
                 <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." 
-                    class="border p-2 rounded w-full" value="{{ preloaded_card if preloaded_card else '' }}">
+                class="border p-2 rounded w-full" value="{{ preloaded_card if preloaded_card else '' }}">            
                 <datalist id="card_list">
                     {% for card in cards %}
                         <option value="{{ card.card_name }}">{{ card.card_name }}</option>
@@ -117,6 +139,54 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    function preloadCard() {
+        const preloadedCard = "{{ preloaded_card }}";
+        const datalist = document.getElementById('card_list');
+        const cardInput = document.getElementById('card_input');
+
+        if (preloadedCard) {
+            const existingOption = Array.from(datalist.options).find(option => option.value === preloadedCard);
+            if (!existingOption) {
+                const option = document.createElement('option');
+                option.value = preloadedCard;
+                datalist.appendChild(option);
+            }
+            cardInput.value = preloadedCard;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', preloadCard);
+</script>
+
+<script>
+    let availableCards = [];
+
+    function preloadCard() {
+        const preloadedCard = "{{ preloaded_card }}";
+        const datalist = document.getElementById('card_list');
+        const cardInput = document.getElementById('card_input');
+
+        if (preloadedCard) {
+            // Ajouter la carte préchargée dans le datalist si elle n'existe pas
+            const existingOption = Array.from(datalist.options).find(option => option.value === preloadedCard);
+            if (!existingOption) {
+                const option = document.createElement('option');
+                option.value = preloadedCard;
+                datalist.appendChild(option);
+            }
+
+            // Ajouter à la liste des cartes disponibles
+            availableCards.push(preloadedCard);
+
+            // Précharger la valeur dans le champ de saisie
+            cardInput.value = preloadedCard;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', preloadCard);
+</script>
 
 
 <script>
@@ -207,7 +277,6 @@
 
 
 <script>
-    // Fonction pour mettre à jour les options dans le datalist
     function updateCards() {
         const source = document.getElementById('source').value;
         const datalist = document.getElementById('card_list');
@@ -221,42 +290,73 @@
             .then(response => response.json())
             .then(data => {
                 datalist.innerHTML = ''; // Réinitialiser le datalist
+                availableCards = []; // Réinitialiser la liste des cartes disponibles
                 data.forEach(card => {
                     const option = document.createElement('option');
                     option.value = card.card_name;
                     datalist.appendChild(option);
+                    availableCards.push(card.card_name); // Ajouter à la liste disponible
                 });
-
-                // Sauvegarder les cartes disponibles pour vérification
-                window.availableCards = data.map(card => card.card_name);
             })
             .catch(error => console.error('Erreur lors de la récupération des cartes :', error));
     }
 
+    document.getElementById('source').addEventListener('change', updateCards);
+</script>
+
+<script>
     // Vérification avant d'envoyer le formulaire
     function validateAndSubmitForm(event) {
         const source = document.getElementById('source').value;
         const target = document.getElementById('target').value;
         const cardInput = document.getElementById('card_input').value;
+        const noMoveCheckbox = document.getElementById('no_move');
+        const offloadStatus = document.getElementById('offload_status').value;
+        const currentOffloadStatus = document.getElementById('current_offload_status').textContent;
 
         // Vérification si la carte est dans la liste des cartes disponibles
-        if (!window.availableCards || !window.availableCards.includes(cardInput)) {
+        if (!availableCards.includes(cardInput)) {
             event.preventDefault(); // Empêcher l'envoi du formulaire
-            alert('Erreur : La carte sélectionnée n’est pas disponible dans la source sélectionnée.');
+            alert('Erreur : La carte sélectionnée n\'est pas disponible dans la source sélectionnée.');
             return;
         }
 
-        // Vérification si la source et la target sont identiques
-        if (source === target) {
-            event.preventDefault(); // Empêcher l'envoi du formulaire
-            alert('Erreur : La source et la cible ne peuvent pas être identiques.');
+        // Si la case "Ne pas déplacer" est cochée, s'assurer que target = source
+        if (noMoveCheckbox.checked) {
+            document.getElementById('target').value = source;
+            
+            // Vérifier si le statut d'offload est identique au statut actuel
+            if (currentOffloadStatus.includes(offloadStatus)) {
+                event.preventDefault();
+                alert('Erreur : Vous avez coché "Offload seulement" mais le statut d\'offload choisi est identique au statut actuel. Aucune modification n\'est nécessaire.');
+                return;
+            }
+        }
+
+        // Vérification que target n'est pas null/undefined/vide
+        if (!target || target.trim() === '') {
+            event.preventDefault();
+            alert('Erreur : La destination (target) doit être spécifiée.');
             return;
+        }
+
+        // Vérification si la source et la target sont identiques sans case cochée
+        if (source === target && !noMoveCheckbox.checked) {
+            event.preventDefault();
+            alert('Erreur : La source et la cible ne peuvent pas être identiques si la case "Offload seulement" n\'est pas cochée.');
+            return;
+        }
+
+        // S'assurer que le champ target est bien défini dans le formulaire
+        const targetField = document.getElementById('target');
+        if (targetField.disabled) {
+            targetField.disabled = false; // Réactiver temporairement pour l'envoi
         }
 
         // Si tout est correct, le formulaire sera envoyé
     }
 
-    // Ajouter un gestionnaire d'événements au bouton "Déplacer la carte"
+    // Ajouter un gestionnaire d'événements au bouton "Déplacer la carte" 
     document.querySelector('form').addEventListener('submit', validateAndSubmitForm);
 
     // Appeler la fonction de mise à jour lors de la sélection ou du focus sur le champ
