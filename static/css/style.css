@@ -86,3 +86,14 @@ nav ul li a {
     .btn-purple:active {
         background-color: #29006b; /* Bleu encore plus foncé au clic */
     }
+
+    .tab-link {
+        transition: all 0.3s ease;
+    }
+    
+    .tab-link.border-b-4 {
+        font-weight: bold;
+        color: #00b688; /* Bleu foncé */
+        border-color: #000000; /* Bordure */
+    }
+    

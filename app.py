@@ -248,6 +248,7 @@ def spot():
     status_geo = StatusGeo.query.all()
     users = User.query.all()
     cards = Card.query.all()
+    offload_statuses = OffloadStatus.query.all()  # Ajout du chargement des statuts offload
 
     # Variables pour différencier les onglets
     current_tab = "card_focus"  # Par défaut, afficher Card Focus
@@ -258,9 +259,12 @@ def spot():
     cards_by_status = []
     selected_user = None
     user_operations = []
+    selected_offload = None
+    cards_by_offload = []
 
     if request.method == 'POST':
         action = request.form.get('action')  # Identifier l'origine du formulaire
+        current_tab = request.form.get('current_tab', current_tab)
 
         if action == "status_geo":
             current_tab = "status_geo"
@@ -284,6 +288,25 @@ def spot():
                 user_operations = Operation.query.filter_by(username=selected_user)\
                     .order_by(Operation.timestamp.desc())\
                     .limit(100).all()
+
+        elif action == "offload_focus":
+            current_tab = "offload_focus"
+            selected_offload = request.form.get('selected_offload')
+            if selected_offload:
+                # Récupérer les cartes associées au statut offload avec leur dernière opération et utilisateur
+                cards_by_offload = db.session.query(
+                    Card,
+                    db.session.query(Operation.timestamp)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
+                    .as_scalar().label('last_timestamp'),
+                    db.session.query(Operation.username)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
+                    .as_scalar().label('last_user')
+                ).filter(Card.offload_status == selected_offload).all()
 
         elif action == "card_focus":
             current_tab = "card_focus"
@@ -329,7 +352,10 @@ def spot():
         cards_by_status=cards_by_status,
         selected_user=selected_user,
         user_operations=user_operations,
-        current_tab=current_tab
+        current_tab=current_tab,
+        offload_statuses=offload_statuses,  # Ajout des statuts offload
+        selected_offload=selected_offload,  # Ajout du statut offload sélectionné
+        cards_by_offload=cards_by_offload  # Ajout des cartes filtrées par statut offload
     )
 
 
