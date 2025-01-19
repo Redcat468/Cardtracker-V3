@@ -35,18 +35,46 @@
     <h3 class="text-lg font-semibold mb-2">Card Manager</h3>
     
     <!-- Champ de recherche de carte avec menu déroulant filtré -->
-    <form method="POST" action="{{ url_for('manage') }}">
-        <input type="hidden" name="current_tab" value="card_manager">
-        <input list="card_list" id="card_input" name="selected_card" placeholder="Chercher une carte..." 
-               class="border p-2 rounded w-1/3" value="{{ selected_card if selected_card is not none }}">
-        <datalist id="card_list">
-            {% for card in cards %}
-                <option value="{{ card.card_name }}">{{ card.card_name }}</option>
-            {% endfor %}
-        </datalist>
+    <div class="flex justify-center">
+        <form method="POST" action="{{ url_for('manage') }}" class="w-full max-w-3xl">
+            <input type="hidden" name="current_tab" value="card_manager">
+            
+            <div class="flex justify-between items-center space-x-4">
+                <!-- Champ de recherche -->
+                <div class="flex-1">
+                    <input list="card_list" 
+                        id="card_input" 
+                        name="selected_card" 
+                        placeholder="Chercher une carte..." 
+                        class="w-full border p-2 rounded"
+                        value="{{ selected_card if selected_card is not none }}">
+                </div>
 
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Rechercher</button>
-    </form>
+                <!-- Bouton Rechercher -->
+                <div>
+                    <button type="submit" class="btn btn-secondary">
+                        Rechercher
+                    </button>
+                </div>
+
+                <!-- Bouton Créer une carte -->
+                <div>
+                    <a href="{{ url_for('create_card') }}" 
+                    class="btn btn-secondary">
+                        Créer une carte
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+            <datalist id="card_list">
+                {% for card in cards %}
+                    <option value="{{ card.card_name }}">{{ card.card_name }}</option>
+                {% endfor %}
+            </datalist>
+        </form>
+    </div>
     
     <!-- Informations et modification de la carte sélectionnée -->
     {% if selected_card_info %}
@@ -116,6 +144,7 @@
             </form>
             </div>
 </div>
+
 {% endif %}
 </div>
 
