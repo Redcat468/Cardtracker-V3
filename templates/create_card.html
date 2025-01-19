@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Créer une carte</h2>
+<form method="POST" action="{{ url_for('create_card') }}" class="space-y-4">
+    <div>
+        <label for="card_name" class="block text-sm font-medium text-gray-700">Nom de la Carte</label>
+        <input type="text" id="card_name" name="card_name" class="border p-2 rounded w-full" required>
+    </div>
+
+    <div>
+        <label for="card_birth" class="block text-sm font-medium text-gray-700">Naissance</label>
+        <input type="datetime-local" id="card_birth" name="card_birth" class="border p-2 rounded w-full"
+               value="{{ datetime.now().strftime('%Y-%m-%dT%H:%M:%S') }}" required>
+    </div>
+
+    <div>
+        <label for="capacity" class="block text-sm font-medium text-gray-700">Capacité (Go)</label>
+        <input type="number" id="capacity" name="capacity" class="border p-2 rounded w-full">
+    </div>
+
+    <div>
+        <label for="brand" class="block text-sm font-medium text-gray-700">Marque</label>
+        <input type="text" id="brand" name="brand" class="border p-2 rounded w-full">
+    </div>
+
+    <div>
+        <label for="card_type" class="block text-sm font-medium text-gray-700">Type de Carte</label>
+        <input type="text" id="card_type" name="card_type" class="border p-2 rounded w-full">
+    </div>
+
+    <div>
+        <label for="offload_status" class="block text-sm font-medium text-gray-700">Statut Offload</label>
+        <select id="offload_status" name="offload_status" class="border p-2 rounded w-full">
+            <option value="" selected>-- Choisissez un statut offload --</option>
+            {% for status in offload_statuses %}
+                <option value="{{ status.status_name }}">{{ status.status_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="statut_geo" class="block text-sm font-medium text-gray-700">Statut Géo</label>
+        <select id="statut_geo" name="statut_geo" class="border p-2 rounded w-full" required>
+            <option value="" selected>-- Choisissez un statut géographique --</option>
+            {% for status in status_geo %}
+                <option value="{{ status.status_name }}">{{ status.status_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="flex items-center space-x-4">
+        <input type="checkbox" id="quarantine" name="quarantine" class="mr-2">
+        <label for="quarantine" class="text-sm text-gray-700">Mettre en quarantaine</label>
+    </div>
+
+    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        Créer la carte
+    </button>
+</form>
+{% endblock %}

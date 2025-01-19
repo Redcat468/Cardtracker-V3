@@ -466,6 +466,53 @@ def manage():
         selected_card_info=selected_card
     )
 
+
+@app.route('/create_card', methods=['GET', 'POST'])
+@login_required
+def create_card():
+    # Récupérer les statuts géographiques et offload pour les menus déroulants
+    status_geo = StatusGeo.query.all()
+    offload_statuses = OffloadStatus.query.all()
+
+    if request.method == 'POST':
+        # Logique pour créer une carte
+        card_name = request.form.get('card_name')
+        card_birth = request.form.get('card_birth')
+        quarantine = bool(request.form.get('quarantine'))
+        statut_geo = request.form.get('statut_geo')
+        offload_status = request.form.get('offload_status')
+        capacity = request.form.get('capacity')
+        brand = request.form.get('brand')
+        card_type = request.form.get('card_type')
+
+        # Vérifier que le nom de la carte est unique
+        existing_card = Card.query.filter_by(card_name=card_name).first()
+        if existing_card:
+            flash(f"Une carte avec le nom '{card_name}' existe déjà.", "danger")
+        else:
+            new_card = Card(
+                card_name=card_name,
+                card_birth=datetime.strptime(card_birth, '%Y-%m-%dT%H:%M:%S'),
+                quarantine=quarantine,
+                statut_geo=statut_geo,
+                offload_status=offload_status,
+                capacity=int(capacity),
+                brand=brand,
+                card_type=card_type,
+            )
+            db.session.add(new_card)
+            db.session.commit()
+            flash(f"Carte '{card_name}' créée avec succès.", "success")
+            return redirect(url_for('manage'))
+
+    return render_template(
+        'create_card.html', 
+        status_geo=status_geo, 
+        offload_statuses=offload_statuses, 
+        datetime=datetime  # Passer datetime au contexte
+    )
+
+
 @app.route('/delete_card/<int:card_id>', methods=['POST'])
 @login_required
 def delete_card(card_id):
