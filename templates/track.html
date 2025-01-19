@@ -50,16 +50,21 @@
         <div class="mb-4 flex items-center">
             <div class="flex items-center justify-center h-full">
                 <img src="{{ url_for('static', filename='images/sdcard.png') }}" alt="SD Card Icon" 
-                    style="height: 2rem; width: auto;margin-right: 1rem">
+                    style="height: 2rem; width: auto; margin-right: 1rem;">
             </div>
             <div class="w-full">
                 <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
                 <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." 
-                       class="border p-2 rounded w-full" onfocus="updateCards()">
+                class="border p-2 rounded w-full" oninput="updateOffloadStatus()">         
                 <datalist id="card_list">
                     <!-- Les options seront mises à jour dynamiquement via JavaScript -->
                 </datalist>
             </div>
+        </div>
+
+        <!-- Statut actuel de l'offload -->
+        <div id="current_offload_status" class="mb-4 text-sm text-gray-700 flex justify-center">
+            <!-- Ce contenu sera mis à jour dynamiquement via JavaScript -->
         </div>
 
         <!-- Champ Statut Offload -->
@@ -69,16 +74,18 @@
                     style="height: 2rem; width: auto;margin-right: 1rem;">
             </div>
             <div class="w-full">
-                <label for="offload_status" class="block text-sm font-medium text-gray-700">Statut Offload</label>
+                <label for="offload_status" class="block text-sm font-medium text-gray-700">Nouveau statut offload</label>
                 <select id="offload_status" name="offload_status" class="border p-2 rounded w-full">
                     {% for status in offload_statuses %}
-                        <option value="{{ status.status_name }}" {% if request.form.get('offload_status') == status.status_name %}selected{% endif %}>
+                        <option value="{{ status.status_name }}" 
+                                {% if selected_offload_status == status.status_name %}selected{% endif %}>
                             {{ status.status_name }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
         </div>
+
 
 
         <div class="flex justify-center">
@@ -158,6 +165,43 @@
     // Charger les opérations immédiatement au chargement de la page
     document.addEventListener('DOMContentLoaded', fetchOperations);
 </script>
+<script>
+    function updateOffloadStatus() {
+        const selectedCard = document.getElementById('card_input').value;
+        const offloadStatusElement = document.getElementById('current_offload_status');
+        const offloadSelect = document.getElementById('offload_status');
+
+        if (selectedCard) {
+            fetch(`/get_offload_status/${selectedCard}`)
+                .then(response => response.json())
+                .then(data => {
+                    const offloadStatus = data.offload_status || 'Non défini';
+                    offloadStatusElement.innerHTML = `Statut Offload Actuel :&nbsp;<strong>${offloadStatus}</strong>`;
+
+                    // Précharger le statut actuel dans le menu déroulant
+                    Array.from(offloadSelect.options).forEach(option => {
+                        if (option.value === offloadStatus) {
+                            option.selected = true;
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération du statut d\'offload :', error);
+                    offloadStatusElement.innerHTML = '<strong>Erreur lors de la récupération du statut.</strong>';
+                });
+        } else {
+            offloadStatusElement.innerHTML = '<strong>Veuillez sélectionner une carte pour afficher son statut offload.</strong>';
+        }
+    }
+
+    // Ajoutez l'événement pour mettre à jour le statut lorsqu'une carte est sélectionnée
+    document.getElementById('card_input').addEventListener('input', updateOffloadStatus);
+
+    // Appeler la fonction au chargement initial si une carte est déjà sélectionnée
+    document.addEventListener('DOMContentLoaded', updateOffloadStatus);
+</script>
+
+
 
 <script>
     // Fonction pour mettre à jour les options dans le datalist

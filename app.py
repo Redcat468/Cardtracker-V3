@@ -170,6 +170,13 @@ def get_operations():
         for operation in operations
     ])
 
+@app.route('/get_offload_status/<card_name>', methods=['GET'])
+@login_required
+def get_offload_status(card_name):
+    card = Card.query.filter_by(card_name=card_name).first()
+    if card:
+        return jsonify({"offload_status": card.offload_status})
+    return jsonify({"offload_status": "Non défini"}), 404
 
 # Route pour annuler une opération
 @app.route('/cancel_operation/<int:operation_id>', methods=['POST'])
