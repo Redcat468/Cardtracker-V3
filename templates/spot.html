@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="text-2xl font-semibold mb-4">Spot Cards</h2>
+<div class="flex items-center justify-center h-full space-x-4">
+    <img src="{{ url_for('static', filename='images/spot.png') }}" alt="Target Icon" 
+        style="height: 3rem; width: auto;">
+    <h1 style="font-size: 2rem; font-weight: 600;">Spot Cards</h1>
+    <div style="margin-bottom: 5rem;"></div>
+</div>
 
 <!-- Include TimelineJS -->
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>

@@ -1,7 +1,12 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="text-2xl font-semibold mb-4">Gestion</h2>
+<div class="flex items-center justify-center h-full space-x-4">
+    <img src="{{ url_for('static', filename='images/manage.png') }}" alt="Target Icon" 
+        style="height: 3rem; width: auto;">
+    <h1 style="font-size: 2rem; font-weight: 600;">Manage</h1>
+<div style="margin-bottom: 5rem;"></div>
+</div>
 
 <!-- Onglets de navigation -->
 <ul class="flex border-b" id="tabs">
@@ -33,7 +38,7 @@
 
 <!-- Contenu des onglets -->
 <div id="tab_content" class="mt-4">
-    
+
     <!-- Card Manager Tab -->
     <div id="card_manager" class="tab hidden">
         <h3 class="text-lg font-semibold mb-2">Card Manager</h3>
