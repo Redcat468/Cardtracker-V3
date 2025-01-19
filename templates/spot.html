@@ -10,13 +10,13 @@
 <!-- Onglets de navigation -->
 <ul class="flex border-b" id="tabs">
     <li class="mr-1">
-        <a href="#" onclick="showTab('user_focus')" class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="user_focus">User Focus</a>
-    </li>
-    <li class="mr-1">
         <a href="#" onclick="showTab('card_focus')"
         class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
            data-tab="card_focus">Card Focus</a>
+    </li>
+    <li class="mr-1">
+        <a href="#" onclick="showTab('user_focus')" class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
+           data-tab="user_focus">User Focus</a>
     </li>
     <li class="mr-1">
         <a href="#" onclick="showTab('status_geo')" class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
@@ -65,7 +65,6 @@
                         <th class="px-4 py-2 border">Statut Géo</th>
                         <th class="px-4 py-2 border">Statut Offload</th>
                         <th class="px-4 py-2 border">Timestamp</th>
-                        <th class="px-4 py-2 border">Utilisateur</th>
                         <th class="px-4 py-2 border">Actions</th> <!-- Nouvelle colonne -->
                     </tr>
                 </thead>
@@ -76,7 +75,6 @@
                             <td class="border px-4 py-2">{{ operation.statut_geo }}</td>
                             <td class="border px-4 py-2">{{operation.offload_status}}</td>
                             <td class="border px-4 py-2">{{ operation.timestamp }}</td>
-                            <td class="border px-4 py-2">{{ operation.username }}</td>
                             <td class="border px-4 py-2">
                                 <form method="POST" action="{{ url_for('spot') }}">
                                     <input type="hidden" name="action" value="card_focus">
@@ -123,6 +121,15 @@
                     <li><strong>Statut de quarantaine:</strong> {{ 'Oui' if card_info.quarantine else 'Non' }}</li>
                     <li><strong>Usage:</strong> {{ card_info.usage }}</li>
                 </ul>
+        
+                <!-- Bouton "Mettre à jour la carte" -->
+                <form method="GET" action="{{ url_for('track') }}" class="inline-block mt-4">
+                    <input type="hidden" name="source" value="{{ card_info.statut_geo }}">
+                    <input type="hidden" name="card" value="{{ card_info.card_name }}">
+                    <button type="submit" class="btn">
+                        Mettre à jour la carte
+                    </button>
+                </form>
             </div>
         {% endif %}
 
@@ -176,11 +183,12 @@
                         <th class="px-4 py-2 border">Capacité</th>
                         <th class="px-4 py-2 border">Type</th>
                         <th class="px-4 py-2 border">Dernière Opération</th>
+                        <th class="px-4 py-2 border">Utilisateur</th>
                         <th class="px-4 py-2 border">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for card, last_operation_date in cards_by_status %}
+                    {% for card, last_operation_date, last_user in cards_by_status %}
                         <tr>
                             <td class="border px-4 py-2">{{ card.card_name }}</td>
                             <td class="border px-4 py-2">{{ card.capacity }} Go</td>
@@ -190,6 +198,13 @@
                                     {{ last_operation_date.strftime('%Y-%m-%d %H:%M:%S') if last_operation_date.__class__.__name__ == 'datetime' else last_operation_date }}
                                 {% else %}
                                     Aucune
+                                {% endif %}
+                            </td>
+                            <td class="border px-4 py-2">
+                                {% if last_user %}
+                                    {{ last_user }}
+                                {% else %}
+                                    Aucun utilisateur
                                 {% endif %}
                             </td>
                             <td class="border px-4 py-2">
@@ -204,7 +219,8 @@
                 </tbody>
             </table>
         </div>
-        {% endif %}
+        {% endif %}        
+        
     </div>
 
     <div id="offload_focus" class="tab">
