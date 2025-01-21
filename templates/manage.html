@@ -9,43 +9,40 @@
 </div>
 
 <!-- Onglets de navigation -->
-<ul class="flex border-b" id="tabs">
+<ul class="flex border-b">
     <li class="mr-1">
-        <a href="#" 
-           onclick="showTab('card_manager')" 
-           class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="card_manager">Card Manager</a>
+        <a href="{{ url_for('manage', current_tab='card_manager') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'card_manager' else 'text-blue-500' }}">
+            Card Manager
+        </a>
     </li>
     <li class="mr-1">
-        <a href="#" 
-           onclick="showTab('user_manager')" 
-           class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="user_manager">User Manager</a>
+        <a href="{{ url_for('manage', current_tab='user_manager') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'user_manager' else 'text-blue-500' }}">
+            User Manager
+        </a>
     </li>
     <li class="mr-1">
-        <a href="#" 
-           onclick="showTab('geo_manager')" 
-           class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="geo_manager">Géo Manager</a>
+        <a href="{{ url_for('manage', current_tab='geo_manager') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'geo_manager' else 'text-blue-500' }}">
+            Géo Manager
+        </a>
     </li>
     <li class="mr-1">
-        <a href="#" 
-           onclick="showTab('offload_manager')" 
-           class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="offload_manager">Offload Manager</a>
+        <a href="{{ url_for('manage', current_tab='offload_manager') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'offload_manager' else 'text-blue-500' }}">
+            Offload Manager
+        </a>
     </li>
 </ul>
 
 <!-- Contenu des onglets -->
-<div id="tab_content" class="mt-4">
-
-    <!-- Card Manager Tab -->
-    <div id="card_manager" class="tab hidden">
-        <h3 class="text-lg font-semibold mb-2">Card Manager</h3>
-        
+<div class="mt-4">
+    {% if current_tab == 'card_manager' %}        <!-- Contenu de Card Manager -->
         <!-- Champ de recherche de carte avec menu déroulant filtré -->
         <div class="flex justify-center">
             <form method="POST" action="{{ url_for('manage') }}" class="w-full max-w-3xl">
+                <input type="hidden" name="action" value="card_manager">
                 <input type="hidden" name="current_tab" value="card_manager">
                 <div class="flex justify-between items-center space-x-4">
                     <!-- Champ de recherche -->
@@ -72,130 +69,167 @@
 
         <!-- Informations et modification de la carte sélectionnée -->
         {% if selected_card_info %}
-        <div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
-            <h4 class="text-xl font-bold mb-4">{{ selected_card_info.card_name }} - Modifier la Carte</h4>
-            <form method="POST" action="{{ url_for('update_card') }}">
-                <input type="hidden" name="card_id" value="{{ selected_card_info.id }}">
-                <div class="mb-4">
-                    <label for="offload_status" class="block text-sm font-medium text-gray-700">Statut Offload</label>
-                    <select id="offload_status" name="offload_status" class="border p-2 rounded w-full">
-                        {% for status in offload_statuses %}
-                        <option value="{{ status.status_name }}" {% if selected_card_info.offload_status == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
+                <h4 class="text-xl font-bold mb-4">{{ selected_card_info.card_name }} - Modifier la Carte</h4>
+                <form method="POST" action="{{ url_for('update_card') }}">
+                    <input type="hidden" name="card_id" value="{{ selected_card_info.id }}">
+                    <div class="mb-4">
+                        <label for="offload_status" class="block text-sm font-medium text-gray-700">Statut Offload</label>
+                        <select id="offload_status" name="offload_status" class="border p-2 rounded w-full">
+                            {% for status in offload_statuses %}
+                            <option value="{{ status.status_name }}" {% if selected_card_info.offload_status == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="statut_geo" class="block text-sm font-medium text-gray-700">Statut Géo</label>
+                        <select id="statut_geo" name="statut_geo" class="border p-2 rounded w-full">
+                            {% for status in status_geo %}
+                            <option value="{{ status.status_name }}" {% if selected_card_info.statut_geo == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4 flex items-center" style="gap: 0.2rem;">
+                        <input type="checkbox" id="quarantine" name="quarantine" class="mr-2" {% if selected_card_info.quarantine %}checked{% endif %}>
+                        <label for="quarantine" class="text-sm text-gray-700">En Quarantaine</label>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="capacity" class="block text-sm font-medium text-gray-700">Capacité (Go)</label>
+                        <input type="number" id="capacity" name="capacity" class="border p-2 rounded w-full" value="{{ selected_card_info.capacity }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="brand" class="block text-sm font-medium text-gray-700">Marque</label>
+                        <input type="text" id="brand" name="brand" class="border p-2 rounded w-full" value="{{ selected_card_info.brand }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="card_type" class="block text-sm font-medium text-gray-700">Type de Carte</label>
+                        <input type="text" id="card_type" name="card_type" class="border p-2 rounded w-full" value="{{ selected_card_info.card_type }}">
+                    </div>
+
+                    <div class="flex gap-4" style="gap: 1rem;">
+                        <button type="submit" class="btn">Enregistrer les modifications</button>
+                </form>
+                <!-- Bouton Supprimer -->
+                <form method="POST" action="{{ url_for('delete_card', card_id=selected_card_info.id) }}">
+                    <button type="submit" class="btn btn-logout" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette carte ? Cette action est irréversible.')">Supprimer la carte</button>
+                </form>
+                    </div>
+            </div>
+            {% endif %}
+        </div>
+    {% elif current_tab == 'user_manager' %}
+        <!-- Contenu de User Manager -->
+        <!-- Combo menu pour afficher les utilisateurs -->
+        <form method="POST" action="{{ url_for('manage') }}">
+            <input type="hidden" name="current_tab" value="user_manager">
+            <select id="user_input" name="selected_user" class="border p-2 rounded w-1/3">
+                <option value="" selected>-- Sélectionnez un utilisateur --</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                {% endfor %}
+                </select>
+                <button type="submit" name="action" value="edit_user" class="btn btn-secondary" style="margin-right: 1rem;margin-left: 1rem;">
+                    Modifier un utilisateur
+                </button>
+                <a href="{{ url_for('add_user') }}" class="btn btn-secondary">
+                    Ajouter un utilisateur
+                </a>
+            </div>
+        </form>
+        <!-- Formulaire pour modifier un utilisateur -->
+        {% if selected_user %}
+        <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
+            <h4 class="text-xl font-bold mb-4">Modifier l'utilisateur : {{ selected_user.username }}</h4>
+            <form method="POST" action="{{ url_for('update_user') }}">
+                <input type="hidden" name="user_id" value="{{ selected_user.id }}">
 
                 <div class="mb-4">
-                    <label for="statut_geo" class="block text-sm font-medium text-gray-700">Statut Géo</label>
-                    <select id="statut_geo" name="statut_geo" class="border p-2 rounded w-full">
-                        {% for status in status_geo %}
-                        <option value="{{ status.status_name }}" {% if selected_card_info.statut_geo == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="mb-4 flex items-center" style="gap: 0.2rem;">
-                    <input type="checkbox" id="quarantine" name="quarantine" class="mr-2" {% if selected_card_info.quarantine %}checked{% endif %}>
-                    <label for="quarantine" class="text-sm text-gray-700">En Quarantaine</label>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+                    <input type="text" id="username" name="username" class="border p-2 rounded w-full"
+                        value="{{ selected_user.username }}" required>
                 </div>
 
                 <div class="mb-4">
-                    <label for="capacity" class="block text-sm font-medium text-gray-700">Capacité (Go)</label>
-                    <input type="number" id="capacity" name="capacity" class="border p-2 rounded w-full" value="{{ selected_card_info.capacity }}">
+                    <label for="level" class="block text-sm font-medium text-gray-700">Niveau</label>
+                    <input type="number" id="level" name="level" class="border p-2 rounded w-full"
+                        value="{{ selected_user.level }}" required>
                 </div>
 
-                <div class="mb-4">
-                    <label for="brand" class="block text-sm font-medium text-gray-700">Marque</label>
-                    <input type="text" id="brand" name="brand" class="border p-2 rounded w-full" value="{{ selected_card_info.brand }}">
-                </div>
-
-                <div class="mb-4">
-                    <label for="card_type" class="block text-sm font-medium text-gray-700">Type de Carte</label>
-                    <input type="text" id="card_type" name="card_type" class="border p-2 rounded w-full" value="{{ selected_card_info.card_type }}">
-                </div>
-
-                <div class="flex gap-4" style="gap: 1rem;">
-                    <button type="submit" class="btn">Enregistrer les modifications</button>
+                <button type="submit" class="btn">
+                    Enregistrer les modifications
+                </button>
             </form>
-            <!-- Bouton Supprimer -->
-            <form method="POST" action="{{ url_for('delete_card', card_id=selected_card_info.id) }}">
-                <button type="submit" class="btn btn-logout" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette carte ? Cette action est irréversible.')">Supprimer la carte</button>
+            <!-- Formulaire pour supprimer un utilisateur -->
+            <form method="POST" action="{{ url_for('delete_user', user_id=selected_user.id) }}" class="mt-4">
+                <input type="hidden" name="current_tab" value="user_manager">
+                <button type="submit" class="btn btn-logout"
+                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')">
+                    Supprimer l'utilisateur
+                </button>
             </form>
-                </div>
         </div>
         {% endif %}
-    </div>
 
-    <!-- User Manager Tab -->
-    <div id="user_manager" class="tab hidden">
-        <h3 class="text-lg font-semibold mb-2">User Manager</h3>
-        <p>Contenu pour la gestion des utilisateurs. Ajoutez ici les outils pour gérer les comptes utilisateurs.</p>
     </div>
+    {% elif current_tab == 'geo_manager' %}
+    <!-- Contenu de Géo Manager -->
+    <form method="POST" action="{{ url_for('manage') }}">
+        <input type="hidden" name="current_tab" value="geo_manager">
+        <select id="status_geo_input" name="selected_status_geo" class="border p-2 rounded w-1/3">
+            <option value="" {% if not selected_status_geo %}selected{% endif %}>-- Sélectionnez un statut géographique --</option>
+            {% for status in status_geo %}
+                <option value="{{ status.id }}" {% if selected_status_geo and selected_status_geo.id == status.id %}selected{% endif %}>
+                    {{ status.status_name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="action" value="edit_status_geo" class="btn btn-secondary">
+            Modifier un statut géographique
+        </button>
+        <a href="{{ url_for('add_geo_status') }}" class="btn btn-secondary">
+            Ajouter un statut géographique
+        </a>
+    </form>
 
-    <!-- Géo Manager Tab -->
-    <div id="geo_manager" class="tab hidden">
-        <h3 class="text-lg font-semibold mb-2">Géo Manager</h3>
-        <p>Contenu pour la gestion des statuts géographiques. Ajoutez ici les outils pour gérer les statuts géo.</p>
+    <!-- Formulaire de modification -->
+    {% if selected_status_geo %}
+    <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
+        <h4 class="text-xl font-bold mb-4">Modifier le statut géographique : {{ selected_status_geo.status_name }}</h4>
+        <form method="POST" action="{{ url_for('update_geo_status') }}">
+            <input type="hidden" name="status_geo_id" value="{{ selected_status_geo.id }}">
+            <div class="mb-4">
+                <label for="status_name" class="block text-sm font-medium text-gray-700">Nom du statut géographique</label>
+                <input type="text" id="status_name" name="status_name" class="border p-2 rounded w-full"
+                       value="{{ selected_status_geo.status_name }}" required>
+            </div>
+            <div class="flex gap-4">
+                <button type="submit" class="btn">
+                    Enregistrer les modifications
+                </button>
+                <form method="POST" action="{{ url_for('delete_geo_status', status_geo_id=selected_status_geo.id) }}">
+                    <button type="submit" class="btn btn-logout"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce statut géographique ? Cette action est irréversible.')">
+                        Supprimer le statut géographique
+                    </button>
+                </form>
+            </div>
+        </form>
     </div>
-
-    <!-- Offload Manager Tab -->
-    <div id="offload_manager" class="tab hidden">
+    {% endif %}
+    
+    {% elif current_tab == 'offload_manager' %}
         <h3 class="text-lg font-semibold mb-2">Offload Manager</h3>
-        <p>Contenu pour la gestion des statuts d'offload. Ajoutez ici les outils pour gérer les statuts d'offload.</p>
-    </div>
+        <!-- Contenu de Offload Manager -->
+        <p>Outils pour gérer les statuts d'offload.</p>
+    {% endif %}
 </div>
 
-<!-- Script pour gérer les onglets -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const tabs = document.querySelectorAll('.tab-link'); // Liens des onglets
-        const tabContents = document.querySelectorAll('.tab'); // Contenus des onglets
-
-        console.log("Tabs found:", tabs.length);
-        console.log("Tab contents found:", tabContents.length);
-
-        function setActiveTab(tabName) {
-            console.log("Switching to tab:", tabName);
-
-            // Réinitialiser tous les onglets et masquer tous les contenus
-            tabs.forEach(tab => {
-                tab.classList.remove('border-b-4', 'border-blue-500', 'text-blue-600');
-                tab.classList.add('text-blue-500');
-            });
-            tabContents.forEach(content => {
-                content.classList.add('hidden');
-                console.log("Hiding tab:", content.id);
-            });
-
-            // Activer l'onglet sélectionné et afficher son contenu
-            const activeTab = document.querySelector(`.tab-link[data-tab="${tabName}"]`);
-            const activeContent = document.getElementById(tabName);
-
-            if (activeTab) {
-                activeTab.classList.add('border-b-4', 'border-blue-500', 'text-blue-600');
-                activeTab.classList.remove('text-blue-500');
-                console.log("Activated tab:", activeTab.getAttribute('data-tab'));
-            }
-
-            if (activeContent) {
-                activeContent.classList.remove('hidden');
-                console.log("Showing tab content:", activeContent.id);
-            }
-        }
-
-        // Gérer les clics sur les onglets
-        tabs.forEach(tab => {
-            tab.addEventListener('click', event => {
-                event.preventDefault();
-                const tabName = tab.getAttribute('data-tab');
-                setActiveTab(tabName);
-            });
-        });
-
-        // Activer un onglet par défaut
-        setActiveTab("card_manager"); // Onglet actif par défaut
-    });
-
-</script>
 
 {% endblock %}

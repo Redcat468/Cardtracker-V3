@@ -442,29 +442,53 @@ def home():
     return redirect(url_for('track'))
 
 
-# Route pour les utilisateurs administrateurs
 @app.route('/manage', methods=['GET', 'POST'])
 @login_required
 def manage():
-    current_tab = request.args.get('current_tab', 'card_manager')
-    selected_card = None
-    offload_statuses = OffloadStatus.query.all()  # Récupérer tous les statuts offload
-    status_geo = StatusGeo.query.all()  # Récupérer tous les statuts géographiques
-    cards = Card.query.all()  # Charger toutes les cartes
+    # Déterminer l'onglet actif
+    current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_manager')
 
-    # Récupérer la carte sélectionnée si elle existe
-    selected_card_name = request.form.get('selected_card', None)
-    if selected_card_name:
-        selected_card = Card.query.filter_by(card_name=selected_card_name).first()
+    # Charger les données nécessaires pour les onglets
+    cards = Card.query.all()
+    users = User.query.all()
+    status_geo = StatusGeo.query.all()
+    offload_statuses = OffloadStatus.query.all()
+
+    # Variables spécifiques pour chaque onglet
+    selected_card = None
+    selected_user = None
+    selected_status_geo = None
+
+    # Gestion des actions selon l'onglet actif
+    if current_tab == "card_manager":
+        selected_card_name = request.form.get('selected_card')
+        if selected_card_name:
+            selected_card = Card.query.filter_by(card_name=selected_card_name).first()
+
+    elif current_tab == "user_manager":
+        selected_user_id = request.form.get('selected_user')
+        if selected_user_id:
+            selected_user = User.query.get(selected_user_id)
+
+    elif current_tab == "geo_manager":
+        print(f"DEBUG: Statut en selection")
+        selected_status_geo_id = request.form.get('selected_status_geo')
+        if selected_status_geo_id:
+            selected_status_geo = StatusGeo.query.get(int(selected_status_geo_id))
+            print(f"DEBUG: Statut sélectionné - {selected_status_geo}")
 
     return render_template(
         'manage.html',
         current_tab=current_tab,
         cards=cards,
-        offload_statuses=offload_statuses,  # Passer les statuts offload au template
+        users=users,
         status_geo=status_geo,
-        selected_card_info=selected_card
+        offload_statuses=offload_statuses,
+        selected_card_info=selected_card,
+        selected_user=selected_user,
+        selected_status_geo=selected_status_geo  # Transmettre le statut sélectionné
     )
+
 
 
 @app.route('/create_card', methods=['GET', 'POST'])
@@ -524,6 +548,133 @@ def delete_card(card_id):
     else:
         flash("Carte introuvable.", "danger")
     return redirect(url_for('manage', current_tab='card_manager'))
+
+
+@app.route('/add_user', methods=['GET', 'POST'])
+@login_required
+def add_user():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        level = request.form.get('level')
+
+        if username and level.isdigit():
+            new_user = User(username=username, level=int(level))
+            db.session.add(new_user)
+            db.session.commit()
+            flash(f"L'utilisateur {username} a été créé avec succès.", "success")
+        else:
+            flash("Veuillez entrer un nom d'utilisateur valide et un niveau valide.", "danger")
+
+        # Rediriger vers User Manager après ajout
+        return redirect(url_for('manage', current_tab='user_manager'))
+
+    return render_template('add_user.html')
+
+
+@app.route('/create_user', methods=['POST'])
+@login_required
+def create_user():
+    # Logique pour créer un utilisateur
+    username = request.form.get('username')
+    level = request.form.get('level')
+
+    if username and level:
+        # Créer et ajouter l'utilisateur à la base de données
+        new_user = User(username=username, level=level)
+        db.session.add(new_user)
+        db.session.commit()
+        flash(f"Utilisateur '{username}' créé avec succès.", "success")
+    else:
+        flash("Veuillez remplir tous les champs.", "danger")
+
+    return redirect(url_for('manage'))
+
+@app.route('/update_user', methods=['POST'])
+@login_required
+def update_user():
+    # Logique pour mettre à jour un utilisateur
+    user_id = request.form.get('user_id')
+    username = request.form.get('username')
+    level = request.form.get('level')
+
+    user = User.query.get(user_id)
+    if user:
+        user.username = username
+        user.level = level
+        db.session.commit()
+        flash(f"Utilisateur '{username}' mis à jour avec succès.", "success")
+    else:
+        flash("Utilisateur introuvable.", "danger")
+
+    return redirect(url_for('manage', current_tab='user_manager'))
+
+@app.route('/delete_user/<int:user_id>', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    print(f"Route delete_user appelée pour user_id : {user_id}")
+    # Vérifier que l'utilisateur existe
+    user = User.query.get(user_id)
+    if user:
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            flash(f"Utilisateur '{user.username}' supprimé avec succès.", "success")
+            print(f"Utilisateur trouvé : {user.username}")  # Pour debug
+        except Exception as e:
+            db.session.rollback()  # Annuler les modifications en cas d'erreur
+            flash(f"Erreur lors de la suppression de l'utilisateur : {str(e)}", "danger")
+    else:
+        flash("Utilisateur introuvable.", "danger")
+
+    # Rester dans l'onglet User Manager après la suppression
+    return redirect(url_for('manage', current_tab='user_manager'))
+
+
+@app.route('/add_geo_status', methods=['GET', 'POST'])
+@login_required
+def add_geo_status():
+    if request.method == 'POST':
+        status_name = request.form.get('status_name')
+        if status_name:
+            new_status = StatusGeo(status_name=status_name)
+            db.session.add(new_status)
+            db.session.commit()
+            flash(f"Statut géographique '{status_name}' ajouté avec succès.", "success")
+            return redirect(url_for('manage', current_tab='geo_manager'))
+        else:
+            flash("Le nom du statut est requis.", "danger")
+
+    return render_template('add_geo_status.html')
+
+
+@app.route('/update_geo_status', methods=['POST'])
+@login_required
+def update_geo_status():
+    status_id = request.form.get('status_id')
+    status_name = request.form.get('status_name')
+    status = StatusGeo.query.get(status_id)
+    if status and status_name:
+        status.status_name = status_name
+        db.session.commit()
+        flash(f"Statut géographique '{status_name}' mis à jour avec succès.", "success")
+    else:
+        flash("Erreur lors de la mise à jour du statut géographique.", "danger")
+
+    return redirect(url_for('manage', current_tab='geo_manager'))
+
+@app.route('/delete_status_geo/<int:status_id>', methods=['POST'])
+@login_required
+def delete_status_geo(status_id):
+    status = StatusGeo.query.get(status_id)
+    if status:
+        db.session.delete(status)
+        db.session.commit()
+        flash(f"Statut géographique '{status.status_name}' supprimé avec succès.", "success")
+    else:
+        flash("Statut géographique introuvable.", "danger")
+
+    return redirect(url_for('manage', current_tab='geo_manager'))
+
 
 
 # Lancement de l'application Flask
