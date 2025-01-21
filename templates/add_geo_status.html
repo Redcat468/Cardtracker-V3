@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Ajouter un Statut Géographique</h2>
+
+<div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
+    <form method="POST" action="{{ url_for('add_geo_status') }}">
+        <div class="mb-4">
+            <label for="status_name" class="block text-sm font-medium text-gray-700">
+                Nom du Statut Géographique
+            </label>
+            <input type="text" id="status_name" name="status_name" 
+                   class="border p-2 rounded w-full" placeholder="Entrez un nom pour le statut géographique" required>
+        </div>
+        <div class="flex gap-4">
+            <button type="submit" class="btn">
+                Ajouter
+            </button>
+            <a href="{{ url_for('manage', current_tab='geo_manager') }}" class="btn btn-secondary">
+                Annuler
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
