@@ -56,5 +56,5 @@ class OffloadStatus(db.Model):
 
 class StatusGeo(db.Model):
     __tablename__ = 'STATUS_GEO'
-    
-    status_name = db.Column(db.String(50), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    status_name = db.Column(db.String(50), unique=True, nullable=False)

@@ -445,37 +445,52 @@ def home():
 @app.route('/manage', methods=['GET', 'POST'])
 @login_required
 def manage():
-    # Déterminer l'onglet actif
-    current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_manager')
 
-    # Charger les données nécessaires pour les onglets
+
+    current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_manager')
+    print(f"Current tab: {current_tab}")
     cards = Card.query.all()
     users = User.query.all()
     status_geo = StatusGeo.query.all()
     offload_statuses = OffloadStatus.query.all()
 
-    # Variables spécifiques pour chaque onglet
     selected_card = None
     selected_user = None
     selected_status_geo = None
+    selected_offload_status = None  # Initialiser la variable par défaut
 
-    # Gestion des actions selon l'onglet actif
-    if current_tab == "card_manager":
-        selected_card_name = request.form.get('selected_card')
-        if selected_card_name:
-            selected_card = Card.query.filter_by(card_name=selected_card_name).first()
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if current_tab == "card_manager":
+            selected_card_name = request.form.get('selected_card')
+            if selected_card_name:
+                selected_card = Card.query.filter_by(card_name=selected_card_name).first()
 
-    elif current_tab == "user_manager":
-        selected_user_id = request.form.get('selected_user')
-        if selected_user_id:
-            selected_user = User.query.get(selected_user_id)
+        elif current_tab == "user_manager":
+            if action == 'edit_user':
+                selected_user_id = request.form.get('selected_user')
+                if selected_user_id:
+                    selected_user = User.query.get(selected_user_id)
 
-    elif current_tab == "geo_manager":
-        print(f"DEBUG: Statut en selection")
-        selected_status_geo_id = request.form.get('selected_status_geo')
-        if selected_status_geo_id:
-            selected_status_geo = StatusGeo.query.get(int(selected_status_geo_id))
-            print(f"DEBUG: Statut sélectionné - {selected_status_geo}")
+        elif request.method == 'POST' and current_tab == "geo_manager":
+            action = request.form.get('action')
+            print(f"Action: {action}")
+            
+            if action == 'edit_status_geo':
+                selected_status_geo_id = request.form.get('selected_status_geo')
+                print(f"Selected status ID: {selected_status_geo_id}")                
+                if selected_status_geo_id:
+                    selected_status_geo = StatusGeo.query.get(int(selected_status_geo_id))
+                    print(f"Found status: {selected_status_geo.status_name if selected_status_geo else None}")
+
+        elif current_tab == "offload_manager":
+            action = request.form.get('action')
+            if action == 'edit_offload_status':
+                selected_offload_status_id = request.form.get('selected_offload_status')
+                if selected_offload_status_id:
+                    selected_offload_status = OffloadStatus.query.get(int(selected_offload_status_id))
+
 
     return render_template(
         'manage.html',
@@ -486,9 +501,9 @@ def manage():
         offload_statuses=offload_statuses,
         selected_card_info=selected_card,
         selected_user=selected_user,
-        selected_status_geo=selected_status_geo  # Transmettre le statut sélectionné
+        selected_status_geo=selected_status_geo,
+        selected_offload_status=selected_offload_status  # Assurez-vous que cette variable est bien transmise
     )
-
 
 
 @app.route('/create_card', methods=['GET', 'POST'])
@@ -650,9 +665,10 @@ def add_geo_status():
 @app.route('/update_geo_status', methods=['POST'])
 @login_required
 def update_geo_status():
-    status_id = request.form.get('status_id')
+    status_geo_id = request.form.get('status_geo_id')
     status_name = request.form.get('status_name')
-    status = StatusGeo.query.get(status_id)
+    
+    status = StatusGeo.query.get(status_geo_id)
     if status and status_name:
         status.status_name = status_name
         db.session.commit()
@@ -662,11 +678,13 @@ def update_geo_status():
 
     return redirect(url_for('manage', current_tab='geo_manager'))
 
+
 @app.route('/delete_status_geo/<int:status_id>', methods=['POST'])
 @login_required
 def delete_status_geo(status_id):
     status = StatusGeo.query.get(status_id)
     if status:
+        print(f"Tentative de suppression : {status.status_name} (ID: {status.id})")  # Debug
         db.session.delete(status)
         db.session.commit()
         flash(f"Statut géographique '{status.status_name}' supprimé avec succès.", "success")
@@ -675,6 +693,50 @@ def delete_status_geo(status_id):
 
     return redirect(url_for('manage', current_tab='geo_manager'))
 
+@app.route('/add_offload_status', methods=['GET', 'POST'])
+@login_required
+def add_offload_status():
+    if request.method == 'POST':
+        status_name = request.form.get('status_name')
+        if status_name:
+            new_status = OffloadStatus(status_name=status_name)
+            db.session.add(new_status)
+            db.session.commit()
+            flash(f"Statut d'offload '{status_name}' ajouté avec succès.", "success")
+            return redirect(url_for('manage', current_tab='offload_manager'))
+        else:
+            flash("Le nom du statut est requis.", "danger")
+
+    return render_template('add_offload_status.html')
+
+@app.route('/update_offload_status', methods=['POST'])
+@login_required
+def update_offload_status():
+    status_id = request.form.get('offload_status_id')
+    status_name = request.form.get('status_name')
+
+    status = OffloadStatus.query.get(status_id)
+    if status and status_name:
+        status.status_name = status_name
+        db.session.commit()
+        flash(f"Statut d'offload '{status_name}' mis à jour avec succès.", "success")
+    else:
+        flash("Erreur lors de la mise à jour du statut d'offload.", "danger")
+
+    return redirect(url_for('manage', current_tab='offload_manager'))
+
+@app.route('/delete_offload_status/<int:status_id>', methods=['POST'])
+@login_required
+def delete_offload_status(status_id):
+    status = OffloadStatus.query.get(status_id)
+    if status:
+        db.session.delete(status)
+        db.session.commit()
+        flash(f"Statut d'offload '{status.status_name}' supprimé avec succès.", "success")
+    else:
+        flash("Statut d'offload introuvable.", "danger")
+
+    return redirect(url_for('manage', current_tab='offload_manager'))
 
 
 # Lancement de l'application Flask
