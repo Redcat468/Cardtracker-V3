@@ -1,14 +1,29 @@
 {% extends "layout.html" %}
 
 {% block content %}
-        <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
-        <form method="POST" class="space-y-4 max-w-3xl mx-auto">
-                <div class="text-center">
-                    <label for="username" class="block text-gray-700 font-medium">Username:</label>
-                    <input type="text" name="username" id="username" required class="w-1/2 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mx-auto block">
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-secondary">Login</button>
-                    </div>
-                </div>
-        </form>
+<div class="flex justify-center mb-6">
+    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="h-24 w-auto" style="height: 15rem;">
+</div>
+<h2 class="text-center text-2xl font-bold mb-4">Connexion</h2>
+
+<form method="POST" class="max-w-md mx-auto">
+    <!-- Champ Username -->
+    <div class="text-center" style="margin-bottom: 1rem; gap: 1rem;">
+        <input type="text" name="username" id="username" required 
+                class="flex-1 ml-4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                placeholder="Nom d'utilisateur">
+    </div>
+
+    <!-- Champ Password -->
+    <div class="text-center" style="margin-bottom: 1rem; gap: 1rem;">
+        <input type="password" name="password" id="password" required 
+                class="flex-1 ml-4 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Mot de passe">
+    </div>
+
+    <!-- Bouton Submit -->
+    <div class="text-center" style="align-content: center;">
+        <button type="submit" class="btn btn-secondary mt-6">Login</button>
+    </div>
+</form>
 {% endblock %}

@@ -25,6 +25,7 @@ nav ul li a {
 
     /* Style générique pour les boutons */
     .btn {
+        margin: 0 0.1rem; /* Marges uniformes */
         display: inline-block;
         padding: 10px 20px;
         font-size: 16px;
@@ -51,6 +52,7 @@ nav ul li a {
     /* Style spécifique pour le bouton Logout */
     .btn-logout {
         background-color: #E53935; /* Rouge par défaut */
+        margin: 0 0.1rem; /* Marges uniformes */
     }
 
     .btn-logout:hover {
@@ -64,6 +66,7 @@ nav ul li a {
     /* Style spécifique pour des actions secondaires */
     .btn-secondary {
         background-color: #2196F3; /* Bleu par défaut */
+        margin: 0 0.1rem; /* Marges uniformes */
     }
 
     .btn-secondary:hover {
@@ -77,6 +80,7 @@ nav ul li a {
         /* Style spécifique pour des actions secondaires */
     .btn-purple {
         background-color: #7c21f3; /* Bleu par défaut */
+        margin: 0 0.1rem; /* Marges uniformes */
     }
 
     .btn-purple:hover {
@@ -100,4 +104,30 @@ nav ul li a {
     .hidden {
         display: none;
     }
+
+    .flash-success {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px;
+        background: #4CAF50;
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1000;
+        animation: slideIn 0.5s ease-out;
+    }
     
+    .btn img {
+        filter: invert(1); /* Rend les icônes blanches si elles sont sombres */
+        transition: transform 0.2s ease;
+    }
+    
+    .btn:hover img {
+        transform: translateX(2px); /* Petit effet au survol */
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
