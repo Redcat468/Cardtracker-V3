@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2 class="text-2xl font-semibold mb-4">Ajouter un utilisateur</h2>
+<h2 class="text-2xl font-semibold mb-4">Créer un utilisateur</h2>
 
 <form method="POST" action="{{ url_for('add_user') }}" class="max-w-lg mx-auto bg-gray-100 p-6 rounded shadow-md">
     <div class="mb-4">
@@ -17,7 +17,7 @@
         <input type="number" id="level" name="level" class="border p-2 rounded w-full" required>
     </div>
     <div class="flex justify" style="gap 2rem">
-        <button type="submit" class="btn">Ajouter</button>
+        <button type="submit" class="btn">Créer</button>
         <a href="{{ url_for('manage', current_tab='user_manager') }}" class="btn btn-secondary">
             Annuler
         </a>
