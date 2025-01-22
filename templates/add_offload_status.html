@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="flex items-center justify-center h-full space-x-4 mb-8">
+    <img src="{{ url_for('static', filename='images/add.png') }}" alt="Add Icon" 
+         style="height: 3rem; width: auto;">
+    <h1 style="font-size: 2rem; font-weight: 600;">Ajouter un statut d'Offload</h1>
+</div>
+
+<div class="max-w-lg mx-auto p-6 bg-white rounded shadow-lg">
+    <form method="POST" action="{{ url_for('add_offload_status') }}" class="space-y-4">
+        <div>
+            <label for="status_name" class="block text-sm font-medium text-gray-700">Nom du statut</label>
+            <input type="text" 
+                   id="status_name" 
+                   name="status_name" 
+                   class="mt-1 block w-full border rounded-md shadow-sm p-2"
+                   placeholder="Entrez le nom du statut" 
+                   required>
+        </div>
+        <div class="flex justify-end space-x-4">
+            <a href="{{ url_for('manage', current_tab='offload_manager') }}" class="btn btn-secondary">
+                Annuler
+            </a>
+            <button type="submit" class="btn">
+                Ajouter
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
