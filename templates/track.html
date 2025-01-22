@@ -21,7 +21,8 @@
                 <label for="source" class="block text-sm font-medium text-gray-700">Source</label>
                 <select id="source" name="source" class="border p-2 rounded w-full" onchange="updateCards()">
                     {% for status in status_geo %}
-                        <option value="{{ status.status_name }}" {% if status.status_name == preloaded_source %}selected{% endif %}>
+                        <option value="{{ status.status_name }}" 
+                                {% if status.status_name == selected_source %}selected{% endif %}>
                             {{ status.status_name }}
                         </option>
                     {% endfor %}
@@ -33,38 +34,46 @@
         <div class="mb-4 flex items-center">
             <div class="flex items-center justify-center h-full">
                 <img src="{{ url_for('static', filename='images/target.png') }}" alt="Target Icon" 
-                     style="height: 2rem; width: auto;margin-right: 1rem">
+                    style="height: 2rem; width: auto;margin-right: 1rem;">
             </div>
             <div class="w-full">
-                <div class="flex items-center justify-end" style="gap: 2rem;">
-                    <label for="target" class="block text-sm font-medium text-gray-700">Target</label>
-                    <div class="flex items-center justify-end" style="gap: 0.2rem;">
-                        <input type="checkbox" id="no_move" name="no_move" onchange="toggleTarget()">
-                        <label for="no_move" class="text-sm text-gray-700">Offload seulement</label>
+                <div class="flex items-center justify-between" style="gap: 1rem">
+                    <label for="target" class="block text-sm font-medium text-gray-700">Cible</label>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="no_move" name="no_move" 
+                            {% if offload_only %}checked{% endif %} onchange="toggleTarget()">
+                        <label for="no_move" class="ml-2 text-sm text-gray-700" style="font-style: italic;">Offload uniquement</label>
                     </div>
                 </div>
-                <select id="target" name="target" class="border p-2 rounded w-full">
+                <select id="target" name="target" class="border p-2 rounded w-full"
+                        {% if offload_only %}disabled{% endif %}>
                     {% for status in status_geo %}
-                        <option value="{{ status.status_name }}" {% if request.form.get('target') == status.status_name %}selected{% endif %}>
+                        <option value="{{ status.status_name }}" 
+                                {% if status.status_name == selected_target %}selected{% endif %}>
                             {{ status.status_name }}
                         </option>
                     {% endfor %}
                 </select>
                 <script>
                     function toggleTarget() {
-                        const noMove = document.getElementById('no_move');
+                        const noMoveCheckbox = document.getElementById('no_move');
                         const target = document.getElementById('target');
                         const source = document.getElementById('source');
-                        
-                        if (noMove.checked) {
+
+                        if (noMoveCheckbox.checked) {
                             target.disabled = true;
+                            target.value = source.value; // Synchroniser la cible avec la source
                             target.style.backgroundColor = '#e5e7eb';
-                            target.value = source.value;
                         } else {
                             target.disabled = false;
                             target.style.backgroundColor = '';
                         }
                     }
+
+                    // Initialiser l'état au chargement
+                    document.addEventListener('DOMContentLoaded', function () {
+                        toggleTarget();
+                    });
                 </script>
             </div>
         </div>
@@ -80,10 +89,9 @@
                 <label for="card_input" class="block text-sm font-medium text-gray-700">Carte</label>
                 <input list="card_list" id="card_input" name="card" placeholder="Chercher une carte..." 
                 class="border p-2 rounded w-full" value="{{ preloaded_card if preloaded_card else '' }}">            
+                <!-- Modification du datalist -->
                 <datalist id="card_list">
-                    {% for card in cards %}
-                        <option value="{{ card.card_name }}">{{ card.card_name }}</option>
-                    {% endfor %}
+                    <!-- Les options seront chargées dynamiquement -->
                 </datalist>
             </div>
         </div>
@@ -303,10 +311,11 @@
     }
 
     document.getElementById('source').addEventListener('change', updateCards);
+    document.addEventListener('DOMContentLoaded', updateCards);
+
 </script>
 
 <script>
-    // Vérification avant d'envoyer le formulaire
     function validateAndSubmitForm(event) {
         const source = document.getElementById('source').value;
         const target = document.getElementById('target').value;
@@ -315,53 +324,51 @@
         const offloadStatus = document.getElementById('offload_status').value;
         const currentOffloadStatus = document.getElementById('current_offload_status').textContent;
 
-        // Vérification si la carte est dans la liste des cartes disponibles
-        if (!availableCards.includes(cardInput)) {
-            event.preventDefault(); // Empêcher l'envoi du formulaire
-            alert('Erreur : La carte sélectionnée n\'est pas disponible dans la source sélectionnée.');
-            return;
-        }
+        // Vérification quarantaine
+        fetch(`/get_offload_status/${cardInput}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.quarantine) {
+                    event.preventDefault();
+                    alert('Cette carte est en quarantaine et ne peut pas être sélectionnée');
+                    document.getElementById('card_input').value = '';
+                    return;
+                }
 
-        // Si la case "Ne pas déplacer" est cochée, s'assurer que target = source
-        if (noMoveCheckbox.checked) {
-            document.getElementById('target').value = source;
-            
-            // Vérifier si le statut d'offload est identique au statut actuel
-            if (currentOffloadStatus.includes(offloadStatus)) {
-                event.preventDefault();
-                alert('Erreur : Vous avez coché "Offload seulement" mais le statut d\'offload choisi est identique au statut actuel. Aucune modification n\'est nécessaire.');
-                return;
-            }
-        }
+                // Vérification existence carte
+                if (!availableCards.includes(cardInput)) {
+                    event.preventDefault();
+                    alert('Erreur : La carte sélectionnée n\'est pas disponible dans la source sélectionnée.');
+                    return;
+                }
 
-        // Vérification que target n'est pas null/undefined/vide
-        if (!target || target.trim() === '') {
-            event.preventDefault();
-            alert('Erreur : La destination (target) doit être spécifiée.');
-            return;
-        }
+                // Vérification offload seulement
+                if (noMoveCheckbox.checked) {
+                    document.getElementById('target').value = source;
+                    if (currentOffloadStatus.includes(offloadStatus)) {
+                        event.preventDefault();
+                        alert('Erreur : Aucune modification nécessaire du statut offload.');
+                        return;
+                    }
+                }
 
-        // Vérification si la source et la target sont identiques sans case cochée
-        if (source === target && !noMoveCheckbox.checked) {
-            event.preventDefault();
-            alert('Erreur : La source et la cible ne peuvent pas être identiques si la case "Offload seulement" n\'est pas cochée.');
-            return;
-        }
+                // Vérification source/target
+                if (source === target && !noMoveCheckbox.checked) {
+                    event.preventDefault();
+                    alert('Erreur : La source et la cible ne peuvent pas être identiques.');
+                    return;
+                }
 
-        // S'assurer que le champ target est bien défini dans le formulaire
-        const targetField = document.getElementById('target');
-        if (targetField.disabled) {
-            targetField.disabled = false; // Réactiver temporairement pour l'envoi
-        }
-
-        // Si tout est correct, le formulaire sera envoyé
+                // Réactivation du champ target si nécessaire
+                const targetField = document.getElementById('target');
+                if (targetField.disabled) {
+                    targetField.disabled = false;
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
     }
 
-    // Ajouter un gestionnaire d'événements au bouton "Déplacer la carte" 
     document.querySelector('form').addEventListener('submit', validateAndSubmitForm);
-
-    // Appeler la fonction de mise à jour lors de la sélection ou du focus sur le champ
-    document.getElementById('card_input').addEventListener('focus', updateCards);
 </script>
 
 {% endblock %}

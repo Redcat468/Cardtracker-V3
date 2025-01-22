@@ -33,10 +33,9 @@ with app.app_context():
     existing_user = User.query.filter_by(username='fabt').first()
     if not existing_user:
         new_user = User(username='fabt', level=48)
+        new_user.set_password('motdepassepardefaut')  # À changer en production
         db.session.add(new_user)
         db.session.commit()
-    else:
-        print("L'utilisateur 'fabt' existe déjà")
 
 # Gestion des sessions utilisateurs avec Flask-Login
 @login_manager.user_loader
@@ -47,14 +46,22 @@ def load_user(user_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form.get('username')
+        password = request.form.get('password')  # Utiliser get() au lieu de []
+        
+        if not username or not password:
+            flash("Veuillez remplir tous les champs", "danger")
+            return redirect(url_for('login'))
+
         user = User.query.filter_by(username=username).first()
-        if user:
+        
+        if user and user.check_password(password):
             login_user(user)
             flash("Connexion réussie.", "success")
             return redirect(request.args.get('next') or url_for('track'))
         else:
-            flash("Nom d'utilisateur incorrect.", "danger")
+            flash("Identifiants incorrects.", "danger")
+    
     return render_template('login.html')
 
 # Gestion des accès non autorisés
@@ -92,57 +99,61 @@ def search_cards():
 @app.route('/track', methods=['GET', 'POST'])
 @login_required
 def track():
-    # Récupérer tous les statuts géographiques
     status_geo = StatusGeo.query.all()
-
-    # Récupérer les statuts offload
     offload_statuses = OffloadStatus.query.all()
-
-    # Initialiser les opérations pour l'historique (limitées aux 50 dernières)
     operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
-    # Précharger les valeurs "Source" et "Carte" si présentes dans la requête GET
+    # Préchargement des valeurs
     preloaded_source = request.args.get('source', '')
     preloaded_card = request.args.get('card', '')
 
-    # Vérifier que la carte préchargée existe et est valide
-    if preloaded_card:
-        valid_card = Card.query.filter_by(card_name=preloaded_card).first()
-        if not valid_card:
-            preloaded_card = ''  # Réinitialiser si la carte n'existe pas
+    # Variables pour la persistance des champs
+    selected_source = preloaded_source
+    selected_target = ''
+    selected_card = preloaded_card
+    offload_only = False
 
-    # Logique pour déplacer les cartes (si nécessaire)
+    available_cards = []  # Cartes à afficher dans le datalist
+
     if request.method == 'POST':
-        source = request.form.get('source')
-        target = request.form.get('target')
-        card_name = request.form.get('card')
+        selected_source = request.form.get('source', preloaded_source)
+        selected_target = request.form.get('target', selected_source)
+        selected_card = request.form.get('card', preloaded_card)
+        offload_only = request.form.get('no_move') == 'on'
         offload_status = request.form.get('offload_status')
 
-        if card_name:
-            card = Card.query.filter_by(card_name=card_name).first()
+        if selected_card:
+            card = Card.query.filter_by(card_name=selected_card).first()
             if card:
-                # Créer une nouvelle opération
+                if card.quarantine:
+                    flash("Cette carte est en quarantaine et ne peut pas être déplacée", "danger")
+                    return redirect(url_for('track', source=selected_source, card=selected_card))
+
+                if offload_only:
+                    selected_target = selected_source
+
                 new_operation = Operation(
                     username=current_user.username,
-                    card_name=card_name,
-                    statut_geo=target,
+                    card_name=selected_card,
+                    statut_geo=selected_target,
                     timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S'),
                     offload_status=offload_status
                 )
                 db.session.add(new_operation)
-
-                # Mettre à jour la carte
-                card.statut_geo = target
+                card.statut_geo = selected_target
                 card.offload_status = offload_status
                 card.last_operation = datetime.now()
                 card.usage += 1
                 db.session.commit()
-
-                flash(f"Carte {card_name} déplacée avec succès et statut offload mis à jour.")
+                flash(f"Carte {selected_card} déplacée avec succès et statut offload mis à jour.")
             else:
                 flash("Carte introuvable.")
         else:
             flash("Veuillez sélectionner une carte.")
+
+    # Récupérer les cartes disponibles pour la source sélectionnée
+    if selected_source:
+        available_cards = Card.query.filter_by(statut_geo=selected_source).all()
 
     return render_template(
         'track.html',
@@ -150,8 +161,14 @@ def track():
         offload_statuses=offload_statuses,
         operations=operations,
         preloaded_source=preloaded_source,
-        preloaded_card=preloaded_card
+        preloaded_card=preloaded_card,
+        selected_source=selected_source,
+        selected_target=selected_target,
+        offload_only=offload_only,
+        available_cards=available_cards
     )
+
+
 
 @app.route('/update_card', methods=['POST'])
 @login_required
@@ -197,13 +214,29 @@ def update_card():
 
     return redirect(url_for('manage', current_tab='card_manager'))
 
-
+@app.route('/refresh_cards', methods=['GET'])
+@login_required
+def refresh_cards():
+    cards = Card.query.filter_by(quarantine=False).all()
+    return jsonify([{
+        "card_name": card.card_name,
+        "statut_geo": card.statut_geo
+    } for card in cards])
 
 @app.route('/get_cards_by_status/<status>', methods=['GET'])
 @login_required
 def get_cards_by_status(status):
-    cards = Card.query.filter_by(statut_geo=status).all()
-    return jsonify([{"card_name": card.card_name} for card in cards])
+    # Récupération actualisée depuis la base
+    cards = Card.query.filter(
+        Card.statut_geo == status,
+        Card.quarantine == False
+    ).all()
+    
+    return jsonify([{
+        "card_name": card.card_name,
+        "quarantine": card.quarantine,
+        "statut_geo": card.statut_geo
+    } for card in cards])
 
 
 
@@ -236,8 +269,11 @@ def get_operations():
 def get_offload_status(card_name):
     card = Card.query.filter_by(card_name=card_name).first()
     if card:
-        return jsonify({"offload_status": card.offload_status})
-    return jsonify({"offload_status": "Non défini"}), 404
+        return jsonify({
+            "offload_status": card.offload_status,
+            "quarantine": card.quarantine  # Ajout de l'état de quarantaine
+        })
+    return jsonify({"offload_status": "Non défini", "quarantine": False}), 404
 
 # Route pour annuler une opération
 @app.route('/cancel_operation/<int:operation_id>', methods=['POST'])
@@ -446,6 +482,10 @@ def home():
 @login_required
 def manage():
 
+    # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
 
     current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_manager')
     print(f"Current tab: {current_tab}")
@@ -509,6 +549,10 @@ def manage():
 @app.route('/create_card', methods=['GET', 'POST'])
 @login_required
 def create_card():
+    # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     # Récupérer les statuts géographiques et offload pour les menus déroulants
     status_geo = StatusGeo.query.all()
     offload_statuses = OffloadStatus.query.all()
@@ -555,6 +599,10 @@ def create_card():
 @app.route('/delete_card/<int:card_id>', methods=['POST'])
 @login_required
 def delete_card(card_id):
+    # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     card = Card.query.get(card_id)
     if card:
         db.session.delete(card)
@@ -568,20 +616,24 @@ def delete_card(card_id):
 @app.route('/add_user', methods=['GET', 'POST'])
 @login_required
 def add_user():
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
+    
     if request.method == 'POST':
         username = request.form.get('username')
+        password = request.form.get('password')
         level = request.form.get('level')
 
         if username and level.isdigit():
             new_user = User(username=username, level=int(level))
+            new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
             flash(f"L'utilisateur {username} a été créé avec succès.", "success")
+            return redirect(url_for('manage', current_tab='user_manager'))
         else:
-            flash("Veuillez entrer un nom d'utilisateur valide et un niveau valide.", "danger")
-
-        # Rediriger vers User Manager après ajout
-        return redirect(url_for('manage', current_tab='user_manager'))
+            flash("Veuillez remplir tous les champs correctement.", "danger")
 
     return render_template('add_user.html')
 
@@ -589,6 +641,10 @@ def add_user():
 @app.route('/create_user', methods=['POST'])
 @login_required
 def create_user():
+    # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     # Logique pour créer un utilisateur
     username = request.form.get('username')
     level = request.form.get('level')
@@ -607,14 +663,20 @@ def create_user():
 @app.route('/update_user', methods=['POST'])
 @login_required
 def update_user():
-    # Logique pour mettre à jour un utilisateur
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
+    
     user_id = request.form.get('user_id')
     username = request.form.get('username')
+    password = request.form.get('password')
     level = request.form.get('level')
 
     user = User.query.get(user_id)
     if user:
         user.username = username
+        if password:  # Si un nouveau mot de passe est fourni
+            user.set_password(password)
         user.level = level
         db.session.commit()
         flash(f"Utilisateur '{username}' mis à jour avec succès.", "success")
@@ -626,6 +688,10 @@ def update_user():
 @app.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     print(f"Route delete_user appelée pour user_id : {user_id}")
     # Vérifier que l'utilisateur existe
     user = User.query.get(user_id)
@@ -648,6 +714,10 @@ def delete_user(user_id):
 @app.route('/add_geo_status', methods=['GET', 'POST'])
 @login_required
 def add_geo_status():
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     if request.method == 'POST':
         status_name = request.form.get('status_name')
         if status_name:
@@ -665,6 +735,10 @@ def add_geo_status():
 @app.route('/update_geo_status', methods=['POST'])
 @login_required
 def update_geo_status():
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     status_geo_id = request.form.get('status_geo_id')
     status_name = request.form.get('status_name')
     
@@ -682,6 +756,10 @@ def update_geo_status():
 @app.route('/delete_status_geo/<int:status_id>', methods=['POST'])
 @login_required
 def delete_status_geo(status_id):
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     status = StatusGeo.query.get(status_id)
     if status:
         print(f"Tentative de suppression : {status.status_name} (ID: {status.id})")  # Debug
@@ -696,6 +774,10 @@ def delete_status_geo(status_id):
 @app.route('/add_offload_status', methods=['GET', 'POST'])
 @login_required
 def add_offload_status():
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     if request.method == 'POST':
         status_name = request.form.get('status_name')
         if status_name:
@@ -712,6 +794,10 @@ def add_offload_status():
 @app.route('/update_offload_status', methods=['POST'])
 @login_required
 def update_offload_status():
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     status_id = request.form.get('offload_status_id')
     status_name = request.form.get('status_name')
 
@@ -725,9 +811,14 @@ def update_offload_status():
 
     return redirect(url_for('manage', current_tab='offload_manager'))
 
+
 @app.route('/delete_offload_status/<int:status_id>', methods=['POST'])
 @login_required
 def delete_offload_status(status_id):
+        # Ajoutez ce code au début de chaque route de gestion
+    if current_user.level < 48:
+        flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+        return redirect(url_for('track'))
     status = OffloadStatus.query.get(status_id)
     if status:
         db.session.delete(status)
