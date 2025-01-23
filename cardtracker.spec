@@ -1,19 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
-
-datas = [('templates', 'templates'), ('static', 'static')]
-binaries = []
-hiddenimports = ['routes', 'models', 'sqlite3', 'flask_login']
-tmp_ret = collect_all('flask_sqlalchemy')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
     ['app.py'],
     pathex=[],
-    binaries=binaries,
-    datas=datas,
-    hiddenimports=hiddenimports,
+    binaries=[],
+    datas=[('templates', 'templates'), ('static', 'static'), ('instance', 'instance'), ('models.py', '.'), ('routes.py', '.'), ('database.py', '.')],
+    hiddenimports=['flask_sqlalchemy', 'flask_login', 'sqlalchemy.ext.declarative'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
