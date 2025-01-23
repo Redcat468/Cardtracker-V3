@@ -1,19 +1,6 @@
 (['C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\app.py'],
  ['C:\\DEV\\CARDTRACKER3'],
- ['routes',
-  'models',
-  'sqlite3',
-  'flask_login',
-  'flask_sqlalchemy',
-  'flask_sqlalchemy.cli',
-  'flask_sqlalchemy.extension',
-  'flask_sqlalchemy.model',
-  'flask_sqlalchemy.pagination',
-  'flask_sqlalchemy.query',
-  'flask_sqlalchemy.record_queries',
-  'flask_sqlalchemy.session',
-  'flask_sqlalchemy.table',
-  'flask_sqlalchemy.track_modifications'],
+ ['flask_sqlalchemy', 'flask_login', 'sqlalchemy.ext.declarative'],
  [('C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks',
    -1000),
@@ -27,74 +14,15 @@
  {},
  0,
  [],
- [('flask_sqlalchemy-3.0.5.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\INSTALLER',
+ [('database.py', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\database.py', 'DATA'),
+  ('instance\\__init__.py',
+   'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\instance\\__init__.py',
    'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\LICENSE.rst',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\LICENSE.rst',
+  ('instance\\card_tracker.db',
+   'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\instance\\card_tracker.db',
    'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\METADATA',
-   'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\RECORD',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\RECORD',
-   'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\REQUESTED',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\REQUESTED',
-   'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\WHEEL',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\WHEEL',
-   'DATA'),
-  ('flask_sqlalchemy\\__init__.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\__init__.py',
-   'DATA'),
-  ('flask_sqlalchemy\\cli.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\cli.py',
-   'DATA'),
-  ('flask_sqlalchemy\\extension.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\extension.py',
-   'DATA'),
-  ('flask_sqlalchemy\\model.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\model.py',
-   'DATA'),
-  ('flask_sqlalchemy\\pagination.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\pagination.py',
-   'DATA'),
-  ('flask_sqlalchemy\\py.typed',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\py.typed',
-   'DATA'),
-  ('flask_sqlalchemy\\query.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\query.py',
-   'DATA'),
-  ('flask_sqlalchemy\\record_queries.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\record_queries.py',
-   'DATA'),
-  ('flask_sqlalchemy\\session.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\session.py',
-   'DATA'),
-  ('flask_sqlalchemy\\table.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\table.py',
-   'DATA'),
-  ('flask_sqlalchemy\\track_modifications.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\track_modifications.py',
-   'DATA'),
+  ('models.py', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\models.py', 'DATA'),
+  ('routes.py', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\routes.py', 'DATA'),
   ('static\\css\\style.css',
    'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\static\\css\\style.css',
    'DATA'),
@@ -169,14 +97,14 @@
  [('pyi_rth_inspect',
    'C:\\Users\\fabt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
    'PYSOURCE'),
-  ('pyi_rth_setuptools',
-   'C:\\Users\\fabt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_setuptools.py',
-   'PYSOURCE'),
   ('pyi_rth_pkgutil',
    'C:\\Users\\fabt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
    'PYSOURCE'),
   ('pyi_rth_multiprocessing',
    'C:\\Users\\fabt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_multiprocessing.py',
+   'PYSOURCE'),
+  ('pyi_rth_setuptools',
+   'C:\\Users\\fabt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_setuptools.py',
    'PYSOURCE'),
   ('pyi_rth_pkgres',
    'C:\\Users\\fabt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgres.py',
@@ -1969,161 +1897,33 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\pathlib\\_abc.py',
    'PYMODULE'),
-  ('flask_sqlalchemy.track_modifications',
+  ('sqlalchemy.ext.declarative',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\track_modifications.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\declarative\\__init__.py',
    'PYMODULE'),
-  ('flask.signals',
+  ('sqlalchemy.ext',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask\\signals.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\__init__.py',
    'PYMODULE'),
-  ('blinker',
+  ('sqlalchemy.orm.decl_api',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker\\__init__.py',
-   'PYMODULE'),
-  ('blinker.base',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker\\base.py',
-   'PYMODULE'),
-  ('blinker._utilities',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker\\_utilities.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\__init__.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.dynamic',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\dynamic.py',
-   'PYMODULE'),
-  ('sqlalchemy.engine.result',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\result.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.base',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\base.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.traversals',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\traversals.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.compiler',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\compiler.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.util',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\util.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.ddl',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\ddl.py',
-   'PYMODULE'),
-  ('sqlalchemy.util.topological',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\topological.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.annotation',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\annotation.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.sqltypes',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\sqltypes.py',
-   'PYMODULE'),
-  ('sqlalchemy.util.compat',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\compat.py',
-   'PYMODULE'),
-  ('sqlalchemy.processors',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\processors.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.type_api',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\type_api.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.selectable',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\selectable.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\decl_api.py',
    'PYMODULE'),
   ('sqlalchemy.sql.schema',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\schema.py',
    'PYMODULE'),
-  ('sqlalchemy.sql.functions',
+  ('sqlalchemy.event',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\functions.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\__init__.py',
    'PYMODULE'),
-  ('sqlalchemy.sql.elements',
+  ('sqlalchemy.event.base',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\elements.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\base.py',
    'PYMODULE'),
-  ('sqlalchemy.sql.crud',
+  ('sqlalchemy.event.attr',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\crud.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.dml',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\dml.py',
-   'PYMODULE'),
-  ('sqlalchemy.types',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\types.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.coercions',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\coercions.py',
-   'PYMODULE'),
-  ('sqlalchemy.inspection',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\inspection.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.operators',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\operators.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.visitors',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\visitors.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.roles',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\roles.py',
-   'PYMODULE'),
-  ('sqlalchemy.engine.row',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\row.py',
-   'PYMODULE'),
-  ('sqlalchemy.engine',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\__init__.py',
-   'PYMODULE'),
-  ('sqlalchemy.engine.default',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\default.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.expression',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\expression.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.lambdas',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\lambdas.py',
-   'PYMODULE'),
-  ('sqlalchemy.pool',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\pool\\__init__.py',
-   'PYMODULE'),
-  ('sqlalchemy.pool.impl',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\pool\\impl.py',
-   'PYMODULE'),
-  ('sqlalchemy.util.queue',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\queue.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\attr.py',
    'PYMODULE'),
   ('sqlalchemy.util.concurrency',
    'C:\\Users\\Félix '
@@ -2137,9 +1937,193 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\_concurrency_py3k.py',
    'PYMODULE'),
+  ('sqlalchemy.util.langhelpers',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\langhelpers.py',
+   'PYMODULE'),
+  ('sqlalchemy.util._collections',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\_collections.py',
+   'PYMODULE'),
   ('greenlet',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\greenlet\\__init__.py',
+   'PYMODULE'),
+  ('sqlalchemy.util.compat',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\compat.py',
+   'PYMODULE'),
+  ('sqlalchemy.event.api',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\api.py',
+   'PYMODULE'),
+  ('sqlalchemy.event.registry',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\registry.py',
+   'PYMODULE'),
+  ('sqlalchemy.event.legacy',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\legacy.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.selectable',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\selectable.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.annotation',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\annotation.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.traversals',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\traversals.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.compiler',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\compiler.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.util',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\util.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.sqltypes',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\sqltypes.py',
+   'PYMODULE'),
+  ('sqlalchemy.processors',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\processors.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.functions',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\functions.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.crud',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\crud.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.dml',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\dml.py',
+   'PYMODULE'),
+  ('sqlalchemy.types',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\types.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.operators',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\operators.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.elements',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\elements.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.base',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\base.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.visitors',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\visitors.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.type_api',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\type_api.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.roles',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\roles.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.ddl',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\ddl.py',
+   'PYMODULE'),
+  ('sqlalchemy.util.topological',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\topological.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.coercions',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\coercions.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\__init__.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.naming',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\naming.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.lambdas',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\lambdas.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.events',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\events.py',
+   'PYMODULE'),
+  ('sqlalchemy.sql.expression',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\expression.py',
+   'PYMODULE'),
+  ('sqlalchemy.inspection',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\inspection.py',
+   'PYMODULE'),
+  ('sqlalchemy.exc',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\exc.py',
+   'PYMODULE'),
+  ('sqlalchemy.util._preloaded',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\_preloaded.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.descriptor_props',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\descriptor_props.py',
+   'PYMODULE'),
+  ('sqlalchemy.schema',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\schema.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.util',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\util.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.dependency',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\dependency.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.sync',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\sync.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.session',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\session.py',
+   'PYMODULE'),
+  ('sqlalchemy.engine.util',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\util.py',
+   'PYMODULE'),
+  ('sqlalchemy.engine',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\__init__.py',
+   'PYMODULE'),
+  ('sqlalchemy.engine.default',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\default.py',
+   'PYMODULE'),
+  ('sqlalchemy.pool',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\pool\\__init__.py',
+   'PYMODULE'),
+  ('sqlalchemy.pool.impl',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\pool\\impl.py',
+   'PYMODULE'),
+  ('sqlalchemy.util.queue',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\queue.py',
    'PYMODULE'),
   ('sqlalchemy.pool.dbapi_proxy',
    'C:\\Users\\Félix '
@@ -2149,6 +2133,10 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\pool\\base.py',
    'PYMODULE'),
+  ('sqlalchemy.log',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\log.py',
+   'PYMODULE'),
   ('sqlalchemy.pool.events',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\pool\\events.py',
@@ -2156,6 +2144,10 @@
   ('sqlalchemy.engine.characteristics',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\characteristics.py',
+   'PYMODULE'),
+  ('sqlalchemy.engine.row',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\row.py',
    'PYMODULE'),
   ('sqlalchemy.engine.reflection',
    'C:\\Users\\Félix '
@@ -2197,109 +2189,13 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\base.py',
    'PYMODULE'),
-  ('sqlalchemy.engine.util',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\util.py',
-   'PYMODULE'),
   ('sqlalchemy.engine.events',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\events.py',
    'PYMODULE'),
-  ('sqlalchemy.log',
+  ('sqlalchemy.orm.state',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\log.py',
-   'PYMODULE'),
-  ('sqlalchemy.exc',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\exc.py',
-   'PYMODULE'),
-  ('sqlalchemy.util._preloaded',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\_preloaded.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.strategies',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\strategies.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.events',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\events.py',
-   'PYMODULE'),
-  ('sqlalchemy.util.langhelpers',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\langhelpers.py',
-   'PYMODULE'),
-  ('sqlalchemy.util._collections',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\_collections.py',
-   'PYMODULE'),
-  ('sqlalchemy.util',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\__init__.py',
-   'PYMODULE'),
-  ('sqlalchemy.util.deprecations',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\deprecations.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\__init__.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.naming',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\naming.py',
-   'PYMODULE'),
-  ('sqlalchemy.sql.events',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\sql\\events.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.scoping',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\scoping.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.relationships',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\relationships.py',
-   'PYMODULE'),
-  ('sqlalchemy.schema',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\schema.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.descriptor_props',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\descriptor_props.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.decl_api',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\decl_api.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.decl_base',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\decl_base.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.clsregistry',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\clsregistry.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.properties',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\properties.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.strategy_options',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\strategy_options.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.dependency',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\dependency.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.mapper',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\mapper.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.session',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\session.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\state.py',
    'PYMODULE'),
   ('sqlalchemy.orm.query',
    'C:\\Users\\Félix '
@@ -2309,13 +2205,17 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\persistence.py',
    'PYMODULE'),
-  ('sqlalchemy.orm.sync',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\sync.py',
-   'PYMODULE'),
   ('sqlalchemy.orm.evaluator',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\evaluator.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.loading',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\loading.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.strategy_options',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\strategy_options.py',
    'PYMODULE'),
   ('sqlalchemy.orm.identity',
    'C:\\Users\\Félix '
@@ -2325,73 +2225,89 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\context.py',
    'PYMODULE'),
-  ('sqlalchemy.orm.loading',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\loading.py',
-   'PYMODULE'),
   ('sqlalchemy.orm.unitofwork',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\unitofwork.py',
    'PYMODULE'),
-  ('sqlalchemy.orm.util',
+  ('sqlalchemy.engine.result',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\util.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.instrumentation',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\instrumentation.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.state',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\state.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.attributes',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\attributes.py',
-   'PYMODULE'),
-  ('sqlalchemy.orm.interfaces',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\interfaces.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\engine\\result.py',
    'PYMODULE'),
   ('sqlalchemy.orm.path_registry',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\path_registry.py',
    'PYMODULE'),
-  ('sqlalchemy.orm.collections',
+  ('sqlalchemy.orm.decl_base',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\collections.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\decl_base.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.properties',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\properties.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.relationships',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\relationships.py',
    'PYMODULE'),
   ('sqlalchemy.orm.base',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\base.py',
    'PYMODULE'),
+  ('sqlalchemy.orm.mapper',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\mapper.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.interfaces',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\interfaces.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.instrumentation',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\instrumentation.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.collections',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\collections.py',
+   'PYMODULE'),
   ('sqlalchemy.orm.exc',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\exc.py',
    'PYMODULE'),
-  ('sqlalchemy.event',
+  ('sqlalchemy.orm.clsregistry',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\__init__.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\clsregistry.py',
    'PYMODULE'),
-  ('sqlalchemy.event.base',
+  ('sqlalchemy.orm.attributes',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\base.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\attributes.py',
    'PYMODULE'),
-  ('sqlalchemy.event.attr',
+  ('sqlalchemy.orm',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\attr.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\__init__.py',
    'PYMODULE'),
-  ('sqlalchemy.event.api',
+  ('sqlalchemy.orm.dynamic',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\api.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\dynamic.py',
    'PYMODULE'),
-  ('sqlalchemy.event.registry',
+  ('sqlalchemy.orm.strategies',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\registry.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\strategies.py',
    'PYMODULE'),
-  ('sqlalchemy.event.legacy',
+  ('sqlalchemy.orm.events',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\event\\legacy.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\events.py',
+   'PYMODULE'),
+  ('sqlalchemy.orm.scoping',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\orm\\scoping.py',
+   'PYMODULE'),
+  ('sqlalchemy.util',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\__init__.py',
+   'PYMODULE'),
+  ('sqlalchemy.util.deprecations',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\util\\deprecations.py',
    'PYMODULE'),
   ('sqlalchemy',
    'C:\\Users\\Félix '
@@ -2440,6 +2356,18 @@
   ('sqlite3.dbapi2',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\dbapi2.py',
+   'PYMODULE'),
+  ('sqlite3',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\__init__.py',
+   'PYMODULE'),
+  ('sqlite3.dump',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\dump.py',
+   'PYMODULE'),
+  ('sqlite3.__main__',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\__main__.py',
    'PYMODULE'),
   ('sqlalchemy.dialects.sqlite.pysqlcipher',
    'C:\\Users\\Félix '
@@ -2625,10 +2553,6 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\compiler.py',
    'PYMODULE'),
-  ('sqlalchemy.ext',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\__init__.py',
-   'PYMODULE'),
   ('sqlalchemy.dialects.mssql.base',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\dialects\\mssql\\base.py',
@@ -2664,6 +2588,22 @@
   ('sqlalchemy.events',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\events.py',
+   'PYMODULE'),
+  ('sqlalchemy.ext.declarative.extensions',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\declarative\\extensions.py',
+   'PYMODULE'),
+  ('flask_sqlalchemy',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\__init__.py',
+   'PYMODULE'),
+  ('flask_sqlalchemy.extension',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\extension.py',
+   'PYMODULE'),
+  ('flask_sqlalchemy.cli',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\cli.py',
    'PYMODULE'),
   ('flask_sqlalchemy.table',
    'C:\\Users\\Félix '
@@ -2776,6 +2716,22 @@
   ('flask.templating',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask\\templating.py',
+   'PYMODULE'),
+  ('flask.signals',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask\\signals.py',
+   'PYMODULE'),
+  ('blinker',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker\\__init__.py',
+   'PYMODULE'),
+  ('blinker.base',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker\\base.py',
+   'PYMODULE'),
+  ('blinker._utilities',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\blinker\\_utilities.py',
    'PYMODULE'),
   ('flask.sansio', '-', 'PYMODULE'),
   ('flask.typing',
@@ -3158,10 +3114,6 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug\\local.py',
    'PYMODULE'),
-  ('flask_sqlalchemy.record_queries',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\record_queries.py',
-   'PYMODULE'),
   ('flask_sqlalchemy.query',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\query.py',
@@ -3174,49 +3126,25 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\model.py',
    'PYMODULE'),
-  ('flask_sqlalchemy.extension',
+  ('flask_sqlalchemy.track_modifications',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\extension.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\track_modifications.py',
    'PYMODULE'),
-  ('flask_sqlalchemy.cli',
+  ('flask_sqlalchemy.record_queries',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\cli.py',
-   'PYMODULE'),
-  ('sqlite3',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\__init__.py',
-   'PYMODULE'),
-  ('sqlite3.dump',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\dump.py',
-   'PYMODULE'),
-  ('sqlite3.__main__',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\sqlite3\\__main__.py',
-   'PYMODULE'),
-  ('stringprep',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\stringprep.py',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\record_queries.py',
    'PYMODULE'),
   ('tracemalloc',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\tracemalloc.py',
    'PYMODULE'),
+  ('stringprep',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\stringprep.py',
+   'PYMODULE'),
   ('_py_abc',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\_py_abc.py',
-   'PYMODULE'),
-  ('sqlalchemy.ext.declarative',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\declarative\\__init__.py',
-   'PYMODULE'),
-  ('sqlalchemy.ext.declarative.extensions',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\sqlalchemy\\ext\\declarative\\extensions.py',
-   'PYMODULE'),
-  ('flask_sqlalchemy',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\__init__.py',
    'PYMODULE'),
   ('flask_login',
    'C:\\Users\\Félix '
@@ -3360,74 +3288,15 @@
    'BINARY')],
  [],
  [],
- [('flask_sqlalchemy-3.0.5.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\INSTALLER',
+ [('database.py', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\database.py', 'DATA'),
+  ('instance\\__init__.py',
+   'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\instance\\__init__.py',
    'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\LICENSE.rst',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\LICENSE.rst',
+  ('instance\\card_tracker.db',
+   'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\instance\\card_tracker.db',
    'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\METADATA',
-   'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\RECORD',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\RECORD',
-   'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\REQUESTED',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\REQUESTED',
-   'DATA'),
-  ('flask_sqlalchemy-3.0.5.dist-info\\WHEEL',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy-3.0.5.dist-info\\WHEEL',
-   'DATA'),
-  ('flask_sqlalchemy\\__init__.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\__init__.py',
-   'DATA'),
-  ('flask_sqlalchemy\\cli.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\cli.py',
-   'DATA'),
-  ('flask_sqlalchemy\\extension.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\extension.py',
-   'DATA'),
-  ('flask_sqlalchemy\\model.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\model.py',
-   'DATA'),
-  ('flask_sqlalchemy\\pagination.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\pagination.py',
-   'DATA'),
-  ('flask_sqlalchemy\\py.typed',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\py.typed',
-   'DATA'),
-  ('flask_sqlalchemy\\query.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\query.py',
-   'DATA'),
-  ('flask_sqlalchemy\\record_queries.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\record_queries.py',
-   'DATA'),
-  ('flask_sqlalchemy\\session.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\session.py',
-   'DATA'),
-  ('flask_sqlalchemy\\table.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\table.py',
-   'DATA'),
-  ('flask_sqlalchemy\\track_modifications.py',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask_sqlalchemy\\track_modifications.py',
-   'DATA'),
+  ('models.py', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\models.py', 'DATA'),
+  ('routes.py', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\routes.py', 'DATA'),
   ('static\\css\\style.css',
    'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\static\\css\\style.css',
    'DATA'),
@@ -3500,6 +3369,10 @@
   ('base_library.zip',
    'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\build\\cardtracker\\base_library.zip',
    'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
+   'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\LICENSE',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\LICENSE',
@@ -3508,13 +3381,13 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\WHEEL',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
-   'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\RECORD',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\RECORD',
+   'DATA'),
+  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\INSTALLER',
    'DATA'),
   ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\REQUESTED',
    'C:\\Users\\Félix '
@@ -3524,118 +3397,18 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\top_level.txt',
    'DATA'),
-  ('setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\importlib_metadata-8.0.0.dist-info\\METADATA',
-   'DATA'),
   ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\Lorem '
    'ipsum.txt',
    'DATA'),
-  ('werkzeug-3.1.3.dist-info\\RECORD',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\RECORD',
-   'DATA'),
-  ('MarkupSafe-3.0.2.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\INSTALLER',
-   'DATA'),
-  ('flask-3.1.0.dist-info\\entry_points.txt',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\entry_points.txt',
-   'DATA'),
-  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\entry_points.txt',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\entry_points.txt',
-   'DATA'),
-  ('MarkupSafe-3.0.2.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\METADATA',
-   'DATA'),
   ('werkzeug-3.1.3.dist-info\\LICENSE.txt',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\LICENSE.txt',
    'DATA'),
-  ('flask-3.1.0.dist-info\\REQUESTED',
+  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('werkzeug-3.1.3.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\INSTALLER',
-   'DATA'),
-  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\LICENSE.txt',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\LICENSE.txt',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\RECORD',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
-   'DATA'),
-  ('flask-3.1.0.dist-info\\RECORD',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\RECORD',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
-   'DATA'),
-  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\REQUESTED',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\REQUESTED',
-   'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\WHEEL',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
-   'DATA'),
-  ('werkzeug-3.1.3.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\METADATA',
-   'DATA'),
-  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\RECORD',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\RECORD',
-   'DATA'),
-  ('flask-3.1.0.dist-info\\WHEEL',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\WHEEL',
-   'DATA'),
-  ('MarkupSafe-3.0.2.dist-info\\WHEEL',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\WHEEL',
-   'DATA'),
-  ('flask-3.1.0.dist-info\\INSTALLER',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\INSTALLER',
-   'DATA'),
-  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\METADATA',
-   'DATA'),
-  ('MarkupSafe-3.0.2.dist-info\\top_level.txt',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\top_level.txt',
-   'DATA'),
-  ('werkzeug-3.1.3.dist-info\\WHEEL',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\WHEEL',
-   'DATA'),
-  ('MarkupSafe-3.0.2.dist-info\\LICENSE.txt',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\LICENSE.txt',
-   'DATA'),
-  ('flask-3.1.0.dist-info\\METADATA',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\METADATA',
-   'DATA'),
-  ('flask-3.1.0.dist-info\\LICENSE.txt',
-   'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\LICENSE.txt',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
    'DATA'),
   ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\WHEEL',
    'C:\\Users\\Félix '
@@ -3645,11 +3418,107 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\INSTALLER',
    'DATA'),
+  ('werkzeug-3.1.3.dist-info\\WHEEL',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\WHEEL',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\RECORD',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\RECORD',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\WHEEL',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.1.0.dist-info\\REQUESTED',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\METADATA',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\METADATA',
+   'DATA'),
+  ('flask-3.1.0.dist-info\\INSTALLER',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask-3.1.0.dist-info\\WHEEL',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\WHEEL',
+   'DATA'),
+  ('flask-3.1.0.dist-info\\RECORD',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\RECORD',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\INSTALLER',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\INSTALLER',
+   'DATA'),
+  ('werkzeug-3.1.3.dist-info\\RECORD',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\werkzeug-3.1.3.dist-info\\RECORD',
+   'DATA'),
+  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\RECORD',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\RECORD',
+   'DATA'),
+  ('flask-3.1.0.dist-info\\LICENSE.txt',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('MarkupSafe-3.0.2.dist-info\\METADATA',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\METADATA',
+   'DATA'),
+  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\LICENSE.txt',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\METADATA',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\METADATA',
+   'DATA'),
+  ('MarkupSafe-3.0.2.dist-info\\LICENSE.txt',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\INSTALLER',
+   'DATA'),
+  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\REQUESTED',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\REQUESTED',
+   'DATA'),
+  ('MarkupSafe-3.0.2.dist-info\\top_level.txt',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\top_level.txt',
+   'DATA'),
   ('MarkupSafe-3.0.2.dist-info\\RECORD',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\RECORD',
    'DATA'),
-  ('itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+  ('flask-3.1.0.dist-info\\entry_points.txt',
    'C:\\Users\\Félix '
-   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\itsdangerous-2.2.0.dist-info\\LICENSE.txt',
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\entry_points.txt',
+   'DATA'),
+  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\METADATA',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\METADATA',
+   'DATA'),
+  ('MarkupSafe-3.0.2.dist-info\\INSTALLER',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\INSTALLER',
+   'DATA'),
+  ('flask-3.1.0.dist-info\\METADATA',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\flask-3.1.0.dist-info\\METADATA',
+   'DATA'),
+  ('MarkupSafe-3.0.2.dist-info\\WHEEL',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\MarkupSafe-3.0.2.dist-info\\WHEEL',
+   'DATA'),
+  ('setuptools\\_vendor\\wheel-0.43.0.dist-info\\entry_points.txt',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\setuptools\\_vendor\\wheel-0.43.0.dist-info\\entry_points.txt',
    'DATA')])
