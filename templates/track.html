@@ -178,23 +178,33 @@
         const cardInput = document.getElementById('card_input');
 
         if (preloadedCard) {
-            // Ajouter la carte préchargée dans le datalist si elle n'existe pas
-            const existingOption = Array.from(datalist.options).find(option => option.value === preloadedCard);
-            if (!existingOption) {
-                const option = document.createElement('option');
-                option.value = preloadedCard;
-                datalist.appendChild(option);
-            }
-
-            // Ajouter à la liste des cartes disponibles
-            availableCards.push(preloadedCard);
-
-            // Précharger la valeur dans le champ de saisie
-            cardInput.value = preloadedCard;
+            // Attendre que les cartes soient chargées depuis la source
+            setTimeout(() => {
+                const existingOption = Array.from(datalist.options).find(option => option.value === preloadedCard);
+                if (!existingOption) {
+                    const option = document.createElement('option');
+                    option.value = preloadedCard;
+                    datalist.appendChild(option);
+                }
+                cardInput.value = preloadedCard;
+                
+                // Forcer la validation et la mise à jour du statut offload
+                updateOffloadStatus();
+            }, 500); // Délai pour laisser le temps au fetch de s'exécuter
         }
     }
 
-    document.addEventListener('DOMContentLoaded', preloadCard);
+    // Exécuter updateCards() au chargement si une source est pré-chargée
+    document.addEventListener('DOMContentLoaded', function() {
+        const preloadedSource = "{{ preloaded_source }}";
+        if (preloadedSource) {
+            // Déclencher manuellement le chargement des cartes
+            updateCards();
+            
+            // Après le chargement, pré-remplir la carte
+            setTimeout(preloadCard, 200);
+        }
+    });
 </script>
 
 

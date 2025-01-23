@@ -2,37 +2,45 @@ import os
 import sys
 from flask import Flask
 from flask_login import LoginManager
-from database import db  # Importer db depuis le nouveau fichier
+from pathlib import Path
+from database import db
 
 def create_app():
     app = Flask(__name__)
     
     # Configuration des chemins
     if getattr(sys, 'frozen', False):
-        base_dir = sys._MEIPASS
-        app.template_folder = os.path.join(base_dir, 'templates')
-        app.static_folder = os.path.join(base_dir, 'static')
+        # Mode exécutable : DB à côté du .exe
+        base_dir = Path(sys.executable).parent
+        app.template_folder = Path(sys._MEIPASS) / "templates"
+        app.static_folder = Path(sys._MEIPASS) / "static"
     else:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
+        # Mode développement : DB dans instance/
+        base_dir = Path(__file__).parent
+        app.template_folder = "templates"
+        app.static_folder = "static"
 
-    # Création du dossier instance
-    instance_path = os.path.join(base_dir, 'instance')
-    os.makedirs(instance_path, exist_ok=True)
+    # Chemin de la base de données
+    instance_path = base_dir / "instance"
+    instance_path.mkdir(exist_ok=True)
+    db_path = instance_path / "card_tracker.db"
 
-    # Configuration de la DB
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(instance_path, "card_tracker.db")}'
+    # Configuration SQLAlchemy
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.secret_key = os.urandom(24)
 
-    # Initialiser les extensions
+    # Initialisation des extensions
     db.init_app(app)
     login_manager = LoginManager(app)
     login_manager.login_view = 'login'
 
-    # Création des tables
+    # Création des tables ET import des modèles
     with app.app_context():
-        db.create_all()
-        from models import User  # Import local pour éviter la circularité
+        from models import User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus  # Import explicite
+        db.create_all()  # Doit être APRÈS l'import des modèles
+        
+        # Création de l'admin
         if not User.query.filter_by(username='fabt').first():
             admin = User(username='fabt', level=48)
             admin.set_password('motdepasse')
@@ -44,8 +52,8 @@ def create_app():
     def load_user(user_id):
         from models import User  # Import local
         return User.query.get(int(user_id))
-
-    # Importer les routes
+    
+    # Import des routes
     from routes import init_routes
     init_routes(app)
 
