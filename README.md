@@ -1,86 +1,86 @@
 # Card Tracker V3.0  
-**Gestion des cartes mémoires pour les tournages**  
+**Memory Card Management for Film Productions**  
 
 ---
 
-## 📌 Fonctionnalités  
-- **Suivi en temps réel** des cartes mémoires (statut géographique, statut d'offload, quarantaine).  
-- **Historique modulaire** avec timeline des opérations (déplacements, changements de statut).  
-- **Gestion centralisée** des utilisateurs, cartes, statuts géographiques et offload.  
-- **Tableaux de bord** pour visualiser les cartes par statut, utilisateur ou équipe.  
-- **Annulation sécurisée** des opérations et suivi des modifications.  
-- **Interface web responsive** avec authentification et droits d'accès (niveaux utilisateur).  
+## 📌 Key Features  
+- **Real-time tracking** of memory cards (geographic status, offload status, quarantine).  
+- **Modular history** with operation timeline (movements, status changes).  
+- **Centralized management** of users, cards, geographic/offload statuses.  
+- **Dashboards** to view cards by status, user, or team.  
+- **Secure rollback** of operations and change tracking.  
+- **Responsive web interface** with authentication and access levels.  
 
 ---
 
 ## 🛠️ Technologies  
-- **Backend** : Flask (Python), SQLite.  
-- **Frontend** : HTML/CSS, Tailwind, JavaScript.  
-- **Packaging** : PyInstaller (exécutable Windows).  
-- **Déploiement** : Service Windows via NSSM.  
+- **Backend**: Flask (Python), SQLite.  
+- **Frontend**: HTML/CSS, Tailwind, JavaScript.  
+- **Packaging**: PyInstaller (Windows executable).  
+- **Deployment**: Windows service via NSSM.  
 
 ---
 
 ## 🚀 Installation  
-Voici la section détaillée sur l'installation via NSSM, intégrée au README :
+### **NSSM-Specific Requirements**
+1. Download the [`latest release`](https://github.com/Redcat468/Cardtracker-V3/releases)
 
-### **Prérequis spécifiques**
-1. Téléchargez [`nssm.exe`](https://nssm.cc/download) (version Win64 recommandée)
-
-3. **Installer le service**  
-   - **Clique-droit** sur `install_service.bat` > **Exécuter en tant qu'administrateur**
-   - Le script effectue automatiquement :
-     - Vérification des droits admin
-     - Suppression d'une ancienne version du service
-     - Création d'un nouveau service Windows nommé `CardTracker`
-     - Configuration automatique :
+3. **Install Service**  
+   - Unzip the archive  
+   - **Right-click** on `install_service.bat` > **Run as administrator**  
+   - The script automatically performs:  
+     - Admin rights verification  
+     - Removal of previous service versions  
+     - Creation of new Windows service named `CardTracker`  
+     - Automatic configuration:  
        ```bash
-       nssm install CardTracker "C:\chemin\vers\dist\cardtracker.exe"
-       nssm set CardTracker AppDirectory "C:\chemin\vers\dist"
+       nssm install CardTracker "C:\path\to\dist\cardtracker.exe"
+       nssm set CardTracker AppDirectory "C:\path\to\dist"
        nssm set CardTracker Start SERVICE_AUTO_START
        ```
 
-4. **Vérifier l'installation**
-   - Ouvrez le *Gestionnaire de tâches* > Onglet *Services*
-   - Cherchez `CardTracker` - Statut devrait être **En cours d'exécution**
+5. **Verify Installation**  
+   - Open *Task Manager* > *Services* tab  
+   - Look for `CardTracker` - Status should be **Running**  
 
-5. **Accéder à l'application**  
-   Ouvrez `http://localhost:10000` dans votre navigateur.
-
-
-## 🖥️ Lancement manuel  
-- Depuis le dossier `dist/`, exécutez `cardtracker.exe`.  
-- L'appli est accessible sur : [`http://localhost:10000`](http://localhost:10000).  
+6. **Access Application**  
+   Open `http://localhost:10000` in your browser.  
 
 ---
 
-## 🔑 Première utilisation  
-1. **Connexion** :  
-   - **Admin par défaut** : `fabt` / `motdepasse` (à modifier après la première connexion).  
-   - Les utilisateurs standard doivent être créés via l'onglet *User Manager*.  
-
-2. **Workflow typique** :  
-   - **Créer une carte** : Via *Manage > Card Manager*.  
-   - **Déplacer une carte** : Via *Track* (choisir source, cible, et statut offload).  
-   - **Suivre une carte** : Via *Spot > Card Focus* (timeline et détails techniques).  
+## 🖥️ Manual Launch  
+- From the `dist/` folder, run `cardtracker.exe`.  
+- App available at: [`http://localhost:10000`](http://localhost:10000).  
 
 ---
 
-## 📂 Structure des dossiers  
-- `templates/` : Pages HTML (interface web).  
-- `static/` : CSS, images, JS.  
-- `instance/` : Base de données SQLite générée automatiquement.  
-- `dist/` : Exécutable et fichiers déployables après compilation.  
+## 🔑 First Use  
+1. **Login**  
+   - **Default admin**: `fabt` / `motdepasse` (change after first login)  
+   - Standard users must be created via *User Manager*.  
+
+2. **Typical Workflow**  
+   - **Create card**: Via *Manage > Card Manager*  
+   - **Move card**: Via *Track* (select source, target, offload status)  
+   - **Track card**: Via *Spot > Card Focus* (timeline and technical details)  
 
 ---
 
-## ⚠️ Notes importantes  
-- Le statut **quarantaine** bloque les déplacements des cartes.  
-- Les **niveaux utilisateur** :  
-  - **Niveau < 48** : Accès limité (Track/Spot).  
-  - **Niveau ≥ 48** : Accès complet (Manage).  
-- Les données sont stockées localement (adapté pour un usage hors-ligne).  
+## 📂 Folder Structure  
+- `templates/`: HTML pages (web interface)  
+- `static/`: CSS, images, JS  
+- `instance/`: Auto-generated SQLite database  
+- `dist/`: Compiled executable and deployment files  
+
+---
+
+## ⚠️ Important Notes  
+- **Quarantine status** blocks card movements  
+- **User levels**:  
+  - **Level < 48**: Limited access (Track/Spot)  
+  - **Level ≥ 48**: Full access (Manage)  
+- Data stored locally (optimized for offline use)  
 
 --- 
 
-*Développé par Félix Abt - Cairn Studios (Licence CC BY-NC-SA 4.0)*
+*Developed by Félix Abt - Cairn Studios (CC BY-NC-SA 4.0 License)*
