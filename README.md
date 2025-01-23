@@ -47,38 +47,6 @@ Voici la section détaillée sur l'installation via NSSM, intégrée au README :
 5. **Accéder à l'application**  
    Ouvrez `http://localhost:10000` dans votre navigateur.
 
-Cette méthode est recommandée pour une utilisation en production - l'application reste toujours active même sans utilisateur connecté.
-### Prérequis  
-- Windows 10/11.  
-- [Python 3.9+](https://www.python.org/downloads/) (avec `pip`).  
-- [nssm.exe](https://nssm.cc/download) (placé dans le dossier du projet pour l'installation en service).  
-
-### Étapes  
-1. **Cloner le dépôt** :  
-   ```bash 
-   git clone [URL_du_dépôt] 
-   cd cardtracker-v3 
-   ```  
-
-2. **Installer les dépendances** :  
-   ```bash 
-   pip install -r requirements.txt  # Si un fichier existe, sinon : 
-   pip install flask flask-login flask-sqlalchemy pyinstaller 
-   ```  
-
-3. **Compiler l'application** (via `build.bat`) :  
-   - Exécutez `build.bat` pour générer l'exécutable dans `dist/`.  
-   - Le dossier `dist/` contient `cardtracker.exe` et les assets nécessaires.  
-
-4. **Installer en tant que service Windows** :  
-   - Copiez `nssm.exe` dans le dossier `dist/`.  
-   - Exécutez `install_service.bat` **en tant qu'Administrateur**.  
-   - Le service `CardTracker` sera accessible via le *Gestionnaire de tâches*.  
-
-5. **Désinstaller** (si besoin) :  
-   - Exécutez `uninstall_service.bat` pour supprimer le service.  
-
----
 
 ## 🖥️ Lancement manuel  
 - Depuis le dossier `dist/`, exécutez `cardtracker.exe`.  
