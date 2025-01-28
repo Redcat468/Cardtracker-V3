@@ -309,14 +309,21 @@ def init_routes(app):
     @app.route('/spot', methods=['GET', 'POST'])
     @login_required
     def spot():
-        # Charger tous les statuts géographiques, utilisateurs et cartes
+        # Vérifier les permissions si nécessaires
+        if current_user.level < 24:  # Exemple de restriction
+            flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+            return redirect(url_for('track'))
+
+        # Définir l'onglet actif
+        current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_focus')
+
+        # Charger les données communes
         status_geo = StatusGeo.query.all()
         users = User.query.all()
         cards = Card.query.all()
-        offload_statuses = OffloadStatus.query.all()  # Ajout du chargement des statuts offload
+        offload_statuses = OffloadStatus.query.all()
 
-        # Variables pour différencier les onglets
-        current_tab = "card_focus"  # Par défaut, afficher Card Focus
+        # Variables spécifiques aux onglets
         selected_card = None
         card_info = None
         timeline_data = None
@@ -327,62 +334,11 @@ def init_routes(app):
         selected_offload = None
         cards_by_offload = []
 
+        # Gestion des actions spécifiques à chaque onglet
         if request.method == 'POST':
-            action = request.form.get('action')  # Identifier l'origine du formulaire
-            current_tab = request.form.get('current_tab', current_tab)
+            action = request.form.get('action')
 
-            if action == "status_geo":
-                current_tab = "status_geo"
-                selected_status = request.form.get('selected_status')
-                if selected_status:
-                    # Récupérer les cartes associées au statut sélectionné avec leur dernière opération
-                    cards_by_status = db.session.query(
-                        Card,
-                        db.session.query(Operation.timestamp)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar(),
-                        db.session.query(Operation.username)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar()
-                    ).filter(Card.statut_geo == selected_status).all()
-
-
-
-
-            elif action == "user_focus":
-                current_tab = "user_focus"
-                selected_user = request.form.get('selected_user')
-                if selected_user:
-                    # Récupérer les 100 dernières opérations de l'utilisateur sélectionné
-                    user_operations = Operation.query.filter_by(username=selected_user)\
-                        .order_by(Operation.timestamp.desc())\
-                        .limit(100).all()
-
-            elif action == "offload_focus":
-                current_tab = "offload_focus"
-                selected_offload = request.form.get('selected_offload')
-                if selected_offload:
-                    # Récupérer les cartes associées au statut offload avec leur dernière opération et utilisateur
-                    cards_by_offload = db.session.query(
-                        Card,
-                        db.session.query(Operation.timestamp)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar().label('last_timestamp'),
-                        db.session.query(Operation.username)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar().label('last_user')
-                    ).filter(Card.offload_status == selected_offload).all()
-
-            elif action == "card_focus":
-                current_tab = "card_focus"
+            if current_tab == "card_focus":
                 selected_card = request.form.get('selected_card')
                 if selected_card:
                     card_info = Card.query.filter_by(card_name=selected_card).first()
@@ -405,17 +361,60 @@ def init_routes(app):
                                 },
                                 "text": {
                                     "headline": f"Position : {op.statut_geo} / {op.offload_status}",
-                                    "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo} | Statut Offload: {op.offload_status}"
+                                    "text": f"Carte: {op.card_name} | User: {op.username} | "
+                                            f"Statut géo: {op.statut_geo} | Statut Offload: {op.offload_status}"
                                 }
                             })
                         except ValueError:
                             print(f"Erreur de conversion de la date pour l'opération {op.id}: {op.timestamp}")
 
+            elif current_tab == "user_focus":
+                selected_user = request.form.get('selected_user')
+                if selected_user:
+                    user_operations = Operation.query.filter_by(username=selected_user)\
+                        .order_by(Operation.timestamp.desc()).limit(100).all()
+
+            elif current_tab == "geo_focus":
+                selected_status = request.form.get('selected_status')
+                if selected_status:
+                    cards_by_status = db.session.query(
+                        Card,
+                        db.session.query(Operation.timestamp)
+                        .filter(Operation.card_name == Card.card_name)
+                        .order_by(Operation.timestamp.desc())
+                        .limit(1)
+                        .as_scalar(),
+                        db.session.query(Operation.username)
+                        .filter(Operation.card_name == Card.card_name)
+                        .order_by(Operation.timestamp.desc())
+                        .limit(1)
+                        .as_scalar()
+                    ).filter(Card.statut_geo == selected_status).all()
+
+            elif current_tab == "offload_focus":
+                selected_offload = request.form.get('selected_offload')
+                if selected_offload:
+                    cards_by_offload = db.session.query(
+                        Card,
+                        db.session.query(Operation.timestamp)
+                        .filter(Operation.card_name == Card.card_name)
+                        .order_by(Operation.timestamp.desc())
+                        .limit(1)
+                        .as_scalar().label('last_timestamp'),
+                        db.session.query(Operation.username)
+                        .filter(Operation.card_name == Card.card_name)
+                        .order_by(Operation.timestamp.desc())
+                        .limit(1)
+                        .as_scalar().label('last_user')
+                    ).filter(Card.offload_status == selected_offload).all()
+
         return render_template(
             'spot.html',
+            current_tab=current_tab,
             cards=cards,
             status_geo=status_geo,
             users=users,
+            offload_statuses=offload_statuses,
             selected_card=selected_card,
             card_info=card_info,
             timeline_data=timeline_data,
@@ -423,10 +422,8 @@ def init_routes(app):
             cards_by_status=cards_by_status,
             selected_user=selected_user,
             user_operations=user_operations,
-            current_tab=current_tab,
-            offload_statuses=offload_statuses,  # Ajout des statuts offload
-            selected_offload=selected_offload,  # Ajout du statut offload sélectionné
-            cards_by_offload=cards_by_offload  # Ajout des cartes filtrées par statut offload
+            selected_offload=selected_offload,
+            cards_by_offload=cards_by_offload
         )
 
 

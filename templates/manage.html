@@ -2,10 +2,10 @@
 
 {% block content %}
 <div class="flex items-center justify-center h-full space-x-4">
-    <img src="{{ url_for('static', filename='images/manage.png') }}" alt="Target Icon" 
+    <img src="{{ url_for('static', filename='images/manage.png') }}" alt="Manage Icon" 
         style="height: 3rem; width: auto;">
     <h1 style="font-size: 2rem; font-weight: 600;">Manage</h1>
-<div style="margin-bottom: 5rem;"></div>
+    <div style="margin-bottom: 5rem;"></div>
 </div>
 
 <!-- Onglets de navigation -->
@@ -60,13 +60,11 @@
                 </div>
             </form>
         </div>
-
         <datalist id="card_list">
             {% for card in cards %}
             <option value="{{ card.card_name }}">{{ card.card_name }}</option>
             {% endfor %}
         </datalist>
-
         <!-- Informations et modification de la carte sélectionnée -->
         {% if selected_card_info %}
             <div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
@@ -118,10 +116,9 @@
                 <form method="POST" action="{{ url_for('delete_card', card_id=selected_card_info.id) }}">
                     <button type="submit" class="btn btn-logout" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette carte ? Cette action est irréversible.')">Supprimer la carte</button>
                 </form>
-                    </div>
             </div>
-            {% endif %}
-        </div>
+        {% endif %}
+
     {% elif current_tab == 'user_manager' %}
         <!-- Contenu de User Manager -->
         <!-- Combo menu pour afficher les utilisateurs -->
@@ -141,7 +138,7 @@
                 <a href="{{ url_for('add_user') }}" class="btn btn-secondary">
                     Créer un utilisateur
                 </a>
-            </div>
+
         </form>
         <!-- Formulaire pour modifier un utilisateur -->
         {% if selected_user %}
@@ -179,86 +176,82 @@
             </form>
         </div>
         {% endif %}
-
-    </div>
+        
     {% elif current_tab == 'geo_manager' %}
-    <!-- Contenu de Géo Manager -->
-    <div class="flex items-center space-x-4 mb-4">
-        <form method="POST" action="{{ url_for('manage') }}" class="flex-1">
-            <input type="hidden" name="current_tab" value="geo_manager">
-            <div class="flex space-x-4">
-                <select id="status_geo_input" name="selected_status_geo" class="border p-2 rounded flex-1" required>
-                    <option value="">-- Sélectionnez un statut géographique --</option>
-                    {% for status in status_geo %}
-                        <option value="{{ status.id }}">{{ status.status_name }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit" name="action" value="edit_status_geo" class="btn btn-secondary">
-                    Modifier
-                </button>
-            </div>
-        </form>
-        <a href="{{ url_for('add_geo_status') }}" class="btn btn-secondary">
-            Créer un statut
-        </a>
-    </div>
-
-    <!-- Formulaire de modification -->
-    {% if selected_status_geo %}
-    <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
-        <h4 class="text-xl font-bold mb-4">Modifier le statut : {{ selected_status_geo.status_name }}</h4>
-        <form method="POST" action="{{ url_for('update_geo_status') }}" class="space-y-4">
-            <input type="hidden" name="status_geo_id" value="{{ selected_status_geo.id }}">
-            <div>
-                <label for="status_name" class="block text-sm font-medium text-gray-700">
-                    Nom du statut
-                </label>
-                <input type="text" 
-                    id="status_name" 
-                    name="status_name" 
-                    class="mt-1 block w-full border rounded-md shadow-sm p-2"
-                    value="{{ selected_status_geo.status_name }}" 
-                    required>
-            </div>
-            <div class="flex justify">
-                <button type="submit" class="btn">
-                    Enregistrer
-                </button>
-            </div>
+        <!-- Contenu de Géo Manager -->
+        <div class="flex items-center space-x-4 mb-4">
+            <form method="POST" action="{{ url_for('manage') }}" class="flex-1">
+                <input type="hidden" name="current_tab" value="geo_manager">
+                <div class="flex space-x-4">
+                    <select id="status_geo_input" name="selected_status_geo" class="border p-2 rounded flex-1" required>
+                        <option value="">-- Sélectionnez un statut géographique --</option>
+                        {% for status in status_geo %}
+                            <option value="{{ status.id }}">{{ status.status_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" name="action" value="edit_status_geo" class="btn btn-secondary">
+                        Modifier
+                    </button>
+                </div>
             </form>
-            <!-- Formulaire pour supprimer le statut -->
-            <form method="POST" action="{{ url_for('delete_status_geo', status_id=selected_status_geo.id) }}" class="mt-4">
-                <button type="submit" 
-                        class="btn btn-logout"
-                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce statut ?')">
-                    Supprimer
-                </button>
-            </form>
-    </div>
-    {% endif %}
-
+            <a href="{{ url_for('add_geo_status') }}" class="btn btn-secondary">
+                Créer un statut
+            </a>
+        </div>
+        <!-- Formulaire de modification -->
+        {% if selected_status_geo %}
+            <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
+                <h4 class="text-xl font-bold mb-4">Modifier le statut : {{ selected_status_geo.status_name }}</h4>
+                <form method="POST" action="{{ url_for('update_geo_status') }}" class="space-y-4">
+                    <input type="hidden" name="status_geo_id" value="{{ selected_status_geo.id }}">
+                    <div>
+                        <label for="status_name" class="block text-sm font-medium text-gray-700">
+                            Nom du statut
+                        </label>
+                        <input type="text" 
+                            id="status_name" 
+                            name="status_name" 
+                            class="mt-1 block w-full border rounded-md shadow-sm p-2"
+                            value="{{ selected_status_geo.status_name }}" 
+                            required>
+                    </div>
+                    <div class="flex justify">
+                        <button type="submit" class="btn">
+                            Enregistrer
+                        </button>
+                    </div>
+                    </form>
+                    <!-- Formulaire pour supprimer le statut -->
+                    <form method="POST" action="{{ url_for('delete_status_geo', status_id=selected_status_geo.id) }}" class="mt-4">
+                        <button type="submit" 
+                                class="btn btn-logout"
+                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce statut ?')">
+                            Supprimer
+                        </button>
+                    </form>
+            </div>
+        {% endif %}
     
     {% elif current_tab == 'offload_manager' %}
-    <div class="flex items-center space-x-4 mb-4">
-        <form method="POST" action="{{ url_for('manage') }}" class="flex-1">
-            <input type="hidden" name="current_tab" value="offload_manager">
-            <div class="flex space-x-4">
-                <select id="offload_status_input" name="selected_offload_status" class="border p-2 rounded flex-1" required>
-                    <option value="">-- Sélectionnez un statut d'offload --</option>
-                    {% for status in offload_statuses %}
-                        <option value="{{ status.id }}">{{ status.status_name }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit" name="action" value="edit_offload_status" class="btn btn-secondary">
-                    Modifier
-                </button>
-            </div>
-        </form>
-        <a href="{{ url_for('add_offload_status') }}" class="btn btn-secondary">
-            Créer un statut
-        </a>
-    </div>
-    
+        <div class="flex items-center space-x-4 mb-4">
+            <form method="POST" action="{{ url_for('manage') }}" class="flex-1">
+                <input type="hidden" name="current_tab" value="offload_manager">
+                <div class="flex space-x-4">
+                    <select id="offload_status_input" name="selected_offload_status" class="border p-2 rounded flex-1" required>
+                        <option value="">-- Sélectionnez un statut d'offload --</option>
+                        {% for status in offload_statuses %}
+                            <option value="{{ status.id }}">{{ status.status_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" name="action" value="edit_offload_status" class="btn btn-secondary">
+                        Modifier
+                    </button>
+                </div>
+            </form>
+            <a href="{{ url_for('add_offload_status') }}" class="btn btn-secondary">
+                Créer un statut
+            </a>
+        </div>
         <!-- Formulaire de modification -->
         {% if selected_offload_status %}
             <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
@@ -293,8 +286,6 @@
             </div>
         {% endif %}
     {% endif %}
-
-    
 </div>
 
 
