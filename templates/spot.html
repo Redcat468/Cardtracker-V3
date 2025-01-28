@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="flex items-center justify-center h-full space-x-4">
-    <img src="{{ url_for('static', filename='images/spot.png') }}" alt="Target Icon" 
+    <img src="{{ url_for('static', filename='images/spot.png') }}" alt="Spot Icon" 
         style="height: 3rem; width: auto;">
     <h1 style="font-size: 2rem; font-weight: 600;">Spot Cards</h1>
     <div style="margin-bottom: 5rem;"></div>
@@ -13,34 +13,40 @@
 <link rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 
 <!-- Onglets de navigation -->
-<ul class="flex border-b" id="tabs">
+<ul class="flex border-b">
     <li class="mr-1">
-        <a href="#" onclick="showTab('card_focus')"
-        class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="card_focus">Card Focus</a>
+        <a href="{{ url_for('spot', current_tab='card_focus') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'card_focus' else 'text-blue-500' }}">
+            Card Focus
+        </a>
     </li>
     <li class="mr-1">
-        <a href="#" onclick="showTab('user_focus')" class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="user_focus">User Focus</a>
+        <a href="{{ url_for('spot', current_tab='user_focus') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'user_focus' else 'text-blue-500' }}">
+            User Focus
+        </a>
     </li>
     <li class="mr-1">
-        <a href="#" onclick="showTab('status_geo')" class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="status_geo">Géo Focus</a>
+        <a href="{{ url_for('spot', current_tab='geo_focus') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'geo_focus' else 'text-blue-500' }}">
+            Géo Focus
+        </a>
     </li>
     <li class="mr-1">
-        <a href="#" onclick="showTab('offload_focus')" class="tab-link bg-white inline-block py-2 px-4 text-blue-500 font-semibold" 
-           data-tab="offload_focus">Offload Focus</a>
+        <a href="{{ url_for('spot', current_tab='offload_focus') }}" 
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'offload_focus' else 'text-blue-500' }}">
+            Offload Focus
+        </a>
     </li>
 </ul>
 
-<!-- Tab content -->
-<div id="tab_content" class="mt-4">
 
+<!-- Contenu des onglets -->
+<div class="mt-4">
+    {% if current_tab == 'user_focus' %}      <!-- Contenu de user Focus -->
     <!-- User Focus tab -->
-    <div id="user_focus" class="tab">
-    
         <!-- Champ de sélection de l'utilisateur -->
-        <form method="POST" action="{{ url_for('spot') }}">
+        <form method="POST" action="{{ url_for('spot') }}"class="w-full max-w-3xl">
             <input type="hidden" name="action" value="user_focus">
             <input type="hidden" name="current_tab" value="user_focus">
             <div class="flex items-center space-x-4">
@@ -58,7 +64,6 @@
             </div>
         </form>
 
-    
         <!-- Tableau des opérations associées à l'utilisateur sélectionné -->
         {% if selected_user and user_operations %}
         <div class="mt-4">
@@ -93,11 +98,9 @@
             </table>
         </div>
         {% endif %}
-    </div>
-    
 
+    {% elif current_tab == 'card_focus' %}    <!-- Contenu de Card Focus -->
     <!-- Card Focus tab -->
-    <div id="card_focus" class="tab">
 
         <!-- Sélection de carte avec menu déroulant filtré -->
         <form method="POST" action="{{ url_for('spot') }}">
@@ -148,11 +151,9 @@
                 });
             </script>       
         {% endif %}
-    </div>
 
+    {% elif current_tab == 'geo_focus' %}    <!-- Contenu de Géo Focus -->
     <!-- Statut Géo tab -->
-    <div id="status_geo" class="tab">
-
         <form method="POST" action="{{ url_for('spot') }}">
             <input type="hidden" name="action" value="status_geo">
             <input type="hidden" name="current_tab" value="status_geo">
@@ -218,10 +219,10 @@
             </table>
         </div>
         {% endif %}        
-        
-    </div>
 
-    <div id="offload_focus" class="tab">
+
+    {% elif current_tab == 'offload_focus' %}    <!-- Contenu de Offload Focus -->
+    <!-- Offload Focus tab -->
         <form method="POST" action="{{ url_for('spot') }}">
             <input type="hidden" name="action" value="offload_focus">
             <input type="hidden" name="current_tab" value="offload_focus">
@@ -288,71 +289,8 @@
             </table>
         </div>
         {% endif %}
-    </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const tabs = document.querySelectorAll('.tab-link');
-        const tabContents = document.querySelectorAll('.tab');
-
-        // Récupérer l'onglet actif envoyé par le serveur (si présent)
-        const activeTabFromServer = "{{ current_tab }}";
-
-        function setActiveTab(tabName) {
-            // Réinitialiser tous les onglets
-            tabs.forEach(tab => {
-                tab.classList.remove('border-b-4', 'border-blue-500', 'text-blue-600');
-                tab.classList.add('text-blue-500');
-            });
-
-            // Réinitialiser tout le contenu
-            tabContents.forEach(content => content.classList.add('hidden'));
-
-            // Activer l'onglet et afficher son contenu
-            const activeTab = document.querySelector(`.tab-link[data-tab="${tabName}"]`);
-            const activeContent = document.getElementById(tabName);
-
-            if (activeTab) {
-                activeTab.classList.add('border-b-4', 'border-blue-500', 'text-blue-600');
-                activeTab.classList.remove('text-blue-500');
-            }
-
-            if (activeContent) {
-                activeContent.classList.remove('hidden');
-            }
-        }
-
-        // Ajouter les gestionnaires d'événements pour chaque onglet
-        tabs.forEach(tab => {
-            tab.addEventListener('click', event => {
-                event.preventDefault();
-                const tabName = tab.getAttribute('data-tab');
-                setActiveTab(tabName);
-            });
-        });
-
-        // Définir l'onglet actif après rechargement
-        const initialTab = activeTabFromServer || 'user_focus'; // Défaut : user_focus
-        setActiveTab(initialTab);
-    });
-</script>
-    
-
-<script>
-    // Gestion des onglets
-    function showTab(tabName) {
-        var tabs = document.getElementsByClassName('tab');
-        for (var i = 0; i < tabs.length; i++) {
-            tabs[i].style.display = 'none';
-        }
-        document.getElementById(tabName).style.display = 'block';
-    }
-
-    // Activer l'onglet correspondant
-    document.addEventListener('DOMContentLoaded', function() {
-        const activeTab = "{{ current_tab }}";
-        showTab(activeTab);
-    });
-</script>
+    {% endif %}
+</div>
 
 {% endblock %}
