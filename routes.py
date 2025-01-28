@@ -316,6 +316,7 @@ def init_routes(app):
 
         # Définir l'onglet actif
         current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_focus')
+        selected_card = request.args.get('selected_card') or request.form.get('selected_card')
 
         # Charger les données communes
         status_geo = StatusGeo.query.all()
@@ -324,7 +325,6 @@ def init_routes(app):
         offload_statuses = OffloadStatus.query.all()
 
         # Variables spécifiques aux onglets
-        selected_card = None
         card_info = None
         timeline_data = None
         selected_status = None
@@ -335,78 +335,72 @@ def init_routes(app):
         cards_by_offload = []
 
         # Gestion des actions spécifiques à chaque onglet
-        if request.method == 'POST':
-            action = request.form.get('action')
+        if current_tab == "card_focus" and selected_card:
+            card_info = Card.query.filter_by(card_name=selected_card).first()
+            operations = Operation.query.filter_by(card_name=selected_card).all()
 
-            if current_tab == "card_focus":
-                selected_card = request.form.get('selected_card')
-                if selected_card:
-                    card_info = Card.query.filter_by(card_name=selected_card).first()
-                    operations = Operation.query.filter_by(card_name=selected_card).all()
+            timeline_data = {
+                "events": [],
+            }
 
-                    timeline_data = {
-                        "events": [],
-                    }
+            for op in operations:
+                try:
+                    timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
+                    timeline_data["events"].append({
+                        "start_date": {
+                            "year": timestamp.year,
+                            "month": timestamp.month,
+                            "day": timestamp.day,
+                            "hour": timestamp.hour,
+                            "minute": timestamp.minute
+                        },
+                        "text": {
+                            "headline": f"Position : {op.statut_geo} / {op.offload_status}",
+                            "text": f"Carte: {op.card_name} | User: {op.username} | Statut géo: {op.statut_geo} | Statut Offload: {op.offload_status}"
+                        }
+                    })
+                except ValueError:
+                    print(f"Erreur de conversion de la date pour l'opération {op.id}: {op.timestamp}")
 
-                    for op in operations:
-                        try:
-                            timestamp = datetime.strptime(op.timestamp, '%Y%m%d-%H:%M:%S')
-                            timeline_data["events"].append({
-                                "start_date": {
-                                    "year": timestamp.year,
-                                    "month": timestamp.month,
-                                    "day": timestamp.day,
-                                    "hour": timestamp.hour,
-                                    "minute": timestamp.minute
-                                },
-                                "text": {
-                                    "headline": f"Position : {op.statut_geo} / {op.offload_status}",
-                                    "text": f"Carte: {op.card_name} | User: {op.username} | "
-                                            f"Statut géo: {op.statut_geo} | Statut Offload: {op.offload_status}"
-                                }
-                            })
-                        except ValueError:
-                            print(f"Erreur de conversion de la date pour l'opération {op.id}: {op.timestamp}")
+        elif current_tab == "user_focus":
+            selected_user = request.form.get('selected_user')
+            if selected_user:
+                user_operations = Operation.query.filter_by(username=selected_user)\
+                    .order_by(Operation.timestamp.desc()).limit(100).all()
 
-            elif current_tab == "user_focus":
-                selected_user = request.form.get('selected_user')
-                if selected_user:
-                    user_operations = Operation.query.filter_by(username=selected_user)\
-                        .order_by(Operation.timestamp.desc()).limit(100).all()
+        elif current_tab == "geo_focus":
+            selected_status = request.form.get('selected_status')
+            if selected_status:
+                cards_by_status = db.session.query(
+                    Card,
+                    db.session.query(Operation.timestamp)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
+                    .as_scalar(),
+                    db.session.query(Operation.username)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
+                    .as_scalar()
+                ).filter(Card.statut_geo == selected_status).all()
 
-            elif current_tab == "geo_focus":
-                selected_status = request.form.get('selected_status')
-                if selected_status:
-                    cards_by_status = db.session.query(
-                        Card,
-                        db.session.query(Operation.timestamp)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar(),
-                        db.session.query(Operation.username)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar()
-                    ).filter(Card.statut_geo == selected_status).all()
-
-            elif current_tab == "offload_focus":
-                selected_offload = request.form.get('selected_offload')
-                if selected_offload:
-                    cards_by_offload = db.session.query(
-                        Card,
-                        db.session.query(Operation.timestamp)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar().label('last_timestamp'),
-                        db.session.query(Operation.username)
-                        .filter(Operation.card_name == Card.card_name)
-                        .order_by(Operation.timestamp.desc())
-                        .limit(1)
-                        .as_scalar().label('last_user')
-                    ).filter(Card.offload_status == selected_offload).all()
+        elif current_tab == "offload_focus":
+            selected_offload = request.form.get('selected_offload')
+            if selected_offload:
+                cards_by_offload = db.session.query(
+                    Card,
+                    db.session.query(Operation.timestamp)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
+                    .as_scalar().label('last_timestamp'),
+                    db.session.query(Operation.username)
+                    .filter(Operation.card_name == Card.card_name)
+                    .order_by(Operation.timestamp.desc())
+                    .limit(1)
+                    .as_scalar().label('last_user')
+                ).filter(Card.offload_status == selected_offload).all()
 
         return render_template(
             'spot.html',
@@ -425,6 +419,7 @@ def init_routes(app):
             selected_offload=selected_offload,
             cards_by_offload=cards_by_offload
         )
+
 
 
 

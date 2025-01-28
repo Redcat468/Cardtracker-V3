@@ -137,10 +137,11 @@
             <tr class="bg-gray-100">
                 <th class="px-4 py-2">Card Name</th>
                 <th class="px-4 py-2">Statut Géo</th>
-                <th class="px-4 py-2">Statut Offload</th> <!-- Nouvelle colonne -->
+                <th class="px-4 py-2">Statut Offload</th>
                 <th class="px-4 py-2">Timestamp</th>
                 <th class="px-4 py-2">Username</th>
-                <th class="px-4 py-2">Annuler</th>
+                <th class="px-4 py-2">Annuler</th> <!-- Nouvelle colonne -->
+                <th class="px-4 py-2">Spot</th> <!-- Nouvelle colonne -->
             </tr>
         </thead>
         <tbody id="operations_table_body">
@@ -211,28 +212,36 @@
 <script>
     // Fonction pour récupérer les opérations
     function fetchOperations() {
-        fetch('/get_operations')
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.getElementById('operations_table_body');
-                tableBody.innerHTML = ''; // Réinitialiser le tableau
-                data.forEach(operation => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="border px-4 py-2">${operation.card_name}</td>
-                        <td class="border px-4 py-2">${operation.statut_geo}</td>
-                        <td class="border px-4 py-2">${operation.offload_status}</td>
-                        <td class="border px-4 py-2">${operation.timestamp}</td>
-                        <td class="border px-4 py-2">${operation.username}</td>
-                        <td class="border px-4 py-2">
-                            <button onclick="confirmDeletion(${operation.id})" class="btn btn-logout">Annuler</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            })
-            .catch(error => console.error('Erreur lors de la récupération des opérations :', error));
+    fetch('/get_operations')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('operations_table_body');
+            tableBody.innerHTML = ''; // Réinitialiser le tableau
+            data.forEach(operation => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="border px-4 py-2">${operation.card_name}</td>
+                    <td class="border px-4 py-2">${operation.statut_geo}</td>
+                    <td class="border px-4 py-2">${operation.offload_status}</td>
+                    <td class="border px-4 py-2">${operation.timestamp}</td>
+                    <td class="border px-4 py-2">${operation.username}</td>
+                    <td class="border px-4 py-2">
+                        <button onclick="confirmDeletion(${operation.id})" class="btn btn-logout">Annuler</button>
+                    </td>
+                    <td class="border px-4 py-2">
+                        <a href="/spot?current_tab=card_focus&selected_card=${encodeURIComponent(operation.card_name)}" class="btn btn-secondary">Voir</a>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Erreur lors de la récupération des opérations :', error));
     }
+    // Charger les opérations immédiatement au chargement de la page
+    document.addEventListener('DOMContentLoaded', fetchOperations);
+</script>
+
+<script>
 
     // Fonction pour confirmer la suppression
     function confirmDeletion(operationId) {
@@ -251,12 +260,10 @@
         }
     }
 
-    // Mettre à jour l'historique toutes les 5 secondes
-    setInterval(fetchOperations, 5000);
-
-    // Charger les opérations immédiatement au chargement de la page
-    document.addEventListener('DOMContentLoaded', fetchOperations);
 </script>
+
+
+
 <script>
     function updateOffloadStatus() {
         const selectedCard = document.getElementById('card_input').value;
