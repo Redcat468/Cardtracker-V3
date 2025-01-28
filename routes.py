@@ -59,14 +59,15 @@ def init_routes(app):
         offload_statuses = OffloadStatus.query.all()
         operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
-        # Préchargement des valeurs
+        # Préchargement des valeurs à partir des paramètres de l'URL
         preloaded_source = request.args.get('source', '')
         preloaded_card = request.args.get('card', '')
+        from_spot = request.args.get('from_spot', 'false') == 'true'  # Vérifie si on vient de Spot
 
         # Variables pour la persistance des champs
         selected_source = preloaded_source
         selected_target = ''
-        selected_card = preloaded_card
+        selected_card = preloaded_card if from_spot else ''  # Précharger la carte uniquement si from_spot est vrai
         offload_only = False
 
         available_cards = []  # Cartes à afficher dans le datalist
@@ -78,34 +79,45 @@ def init_routes(app):
             offload_only = request.form.get('no_move') == 'on'
             offload_status = request.form.get('offload_status')
 
+            # Vérifier si la carte est valide et disponible dans la source sélectionnée
             if selected_card:
                 card = Card.query.filter_by(card_name=selected_card).first()
-                if card:
-                    if card.quarantine:
-                        flash("Cette carte est en quarantaine et ne peut pas être déplacée", "danger")
-                        return redirect(url_for('track', source=selected_source, card=selected_card))
+                if not card or card.statut_geo != selected_source:
+                    flash("Erreur : La carte sélectionnée n'est pas disponible dans la source sélectionnée.", "danger")
+                    return redirect(url_for('track', source=selected_source))
 
-                    if offload_only:
-                        selected_target = selected_source
+                # Vérifier si la source et la cible sont identiques (si ce n'est pas un offload uniquement)
+                if selected_source == selected_target and not offload_only:
+                    flash("Erreur : La source et la cible ne peuvent pas être identiques.", "danger")
+                    return redirect(url_for('track', source=selected_source, card=selected_card))
 
-                    new_operation = Operation(
-                        username=current_user.username,
-                        card_name=selected_card,
-                        statut_geo=selected_target,
-                        timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S'),
-                        offload_status=offload_status
-                    )
-                    db.session.add(new_operation)
-                    card.statut_geo = selected_target
-                    card.offload_status = offload_status
-                    card.last_operation = datetime.now()
-                    card.usage += 1
-                    db.session.commit()
-                    flash(f"Carte {selected_card} déplacée avec succès et statut offload mis à jour.")
-                else:
-                    flash("Carte introuvable.")
+                # Si tout est valide, créer l'opération
+                if card.quarantine:
+                    flash("Cette carte est en quarantaine et ne peut pas être déplacée", "danger")
+                    return redirect(url_for('track', source=selected_source, card=selected_card))
+
+                if offload_only:
+                    selected_target = selected_source
+
+                new_operation = Operation(
+                    username=current_user.username,
+                    card_name=selected_card,
+                    statut_geo=selected_target,
+                    timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S'),
+                    offload_status=offload_status
+                )
+                db.session.add(new_operation)
+                card.statut_geo = selected_target
+                card.offload_status = offload_status
+                card.last_operation = datetime.now()
+                card.usage += 1
+                db.session.commit()
+                flash(f"Carte {selected_card} déplacée avec succès et statut offload mis à jour.")
+                
+                # Redirection après succès
+                return redirect(url_for('track', source=selected_source))
             else:
-                flash("Veuillez sélectionner une carte.")
+                flash("Veuillez sélectionner une carte valide.", "danger")
 
         # Récupérer les cartes disponibles pour la source sélectionnée
         if selected_source:
@@ -117,7 +129,7 @@ def init_routes(app):
             offload_statuses=offload_statuses,
             operations=operations,
             preloaded_source=preloaded_source,
-            preloaded_card=preloaded_card,
+            preloaded_card=selected_card,  # Charger la carte si from_spot est vrai
             selected_source=selected_source,
             selected_target=selected_target,
             offload_only=offload_only,

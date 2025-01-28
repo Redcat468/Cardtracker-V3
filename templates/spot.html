@@ -131,10 +131,9 @@
                 <form method="GET" action="{{ url_for('track') }}" class="inline-block mt-4">
                     <input type="hidden" name="source" value="{{ card_info.statut_geo }}">
                     <input type="hidden" name="card" value="{{ card_info.card_name }}">
-                    <button type="submit" class="btn">
-                        Mettre à jour la carte
-                    </button>
-                </form>
+                    <input type="hidden" name="from_spot" value="true"> <!-- Indique qu'on vient de Spot -->
+                    <button type="submit" class="btn">Mettre à jour la carte</button>
+                </form>                
             </div>
         {% endif %}
 
