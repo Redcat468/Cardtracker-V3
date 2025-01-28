@@ -309,11 +309,6 @@ def init_routes(app):
     @app.route('/spot', methods=['GET', 'POST'])
     @login_required
     def spot():
-        # Vérifier les permissions si nécessaires
-        if current_user.level < 24:  # Exemple de restriction
-            flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
-            return redirect(url_for('track'))
-
         # Définir l'onglet actif
         current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_focus')
         selected_card = request.args.get('selected_card') or request.form.get('selected_card')
