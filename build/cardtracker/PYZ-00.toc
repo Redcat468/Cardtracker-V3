@@ -495,6 +495,9 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\curses\\has_key.py',
    'PYMODULE'),
+  ('database',
+   'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\database.py',
+   'PYMODULE'),
   ('dataclasses',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\dataclasses.py',
@@ -514,6 +517,26 @@
   ('dis',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\dis.py',
+   'PYMODULE'),
+  ('dotenv',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dotenv\\__init__.py',
+   'PYMODULE'),
+  ('dotenv.ipython',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dotenv\\ipython.py',
+   'PYMODULE'),
+  ('dotenv.main',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dotenv\\main.py',
+   'PYMODULE'),
+  ('dotenv.parser',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dotenv\\parser.py',
+   'PYMODULE'),
+  ('dotenv.variables',
+   'C:\\Users\\Félix '
+   'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\dotenv\\variables.py',
    'PYMODULE'),
   ('email',
    'C:\\Users\\Félix '
@@ -1081,6 +1104,7 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\mimetypes.py',
    'PYMODULE'),
+  ('models', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\models.py', 'PYMODULE'),
   ('multiprocessing',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\multiprocessing\\__init__.py',
@@ -1321,6 +1345,7 @@
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\rlcompleter.py',
    'PYMODULE'),
+  ('routes', 'C:\\DEV\\CARDTRACKER3\\Cardtracker-V3\\routes.py', 'PYMODULE'),
   ('runpy',
    'C:\\Users\\Félix '
    'Abt\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\runpy.py',
