@@ -397,6 +397,22 @@ def init_routes(app):
                     .as_scalar().label('last_user')
                 ).filter(Card.offload_status == selected_offload).all()
 
+        elif current_tab == "advanced_search":
+            # Pour l'onglet Recherche avancée, on passe la liste de toutes les cartes
+            advanced_cards = Card.query.all()
+
+            return render_template(
+                'spot.html',
+                current_tab=current_tab,
+                status_geo=status_geo,
+                users=users,
+                offload_statuses=offload_statuses,
+                cards=cards,
+                advanced_cards=advanced_cards,        # <- ajout
+                # on peut aussi passer ici les valeurs pré-séléctionnées si besoin
+            )
+
+
         return render_template(
             'spot.html',
             current_tab=current_tab,
