@@ -38,6 +38,12 @@
             Offload Focus
         </a>
     </li>
+    <li class="mr-1">
+        <a href="{{ url_for('spot', current_tab='advanced_search') }}"
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'advanced_search' else 'text-blue-500' }}">
+          Recherche avancée
+        </a>
+      </li>
 </ul>
 
 
@@ -290,7 +296,75 @@
         </div>
         {% endif %}
 
-    {% endif %}
+        {% elif current_tab == 'advanced_search' %}
+        <!-- Onglet Recherche avancée -->
+        <h2 class="text-2xl font-semibold mb-4">Recherche Avancée</h2>
+        
+        <!-- Filtres -->
+        <div class="flex space-x-4 mb-4">
+          <!-- Filtre Statut Géo -->
+          <div>
+            <label class="block text-sm">Statut Géo</label>
+            <select id="filter_geo" class="border p-2 rounded">
+              <option value="">Tous</option>
+              {% for s in status_geo %}
+                <option value="{{ s.status_name }}">{{ s.status_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <!-- Filtre Statut Offload -->
+          <div>
+            <label class="block text-sm">Statut Offload</label>
+            <select id="filter_offload" class="border p-2 rounded">
+              <option value="">Tous</option>
+              {% for o in offload_statuses %}
+                <option value="{{ o.status_name }}">{{ o.status_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        
+        <!-- Tableau des cartes -->
+        <table id="advanced-table" class="min-w-full table-auto border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2">Carte</th>
+              <th class="px-4 py-2">Statut Géo</th>
+              <th class="px-4 py-2">Statut Offload</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in advanced_cards %}
+              <tr>
+                <td class="border px-4 py-2">{{ c.card_name }}</td>
+                <td class="border px-4 py-2">{{ c.statut_geo }}</td>
+                <td class="border px-4 py-2">{{ c.offload_status }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <!-- Script de filtrage -->
+        <script>
+          function filterAdvanced() {
+            const geoVal = document.getElementById('filter_geo').value;
+            const oflVal = document.getElementById('filter_offload').value;
+        
+            document.querySelectorAll('#advanced-table tbody tr').forEach(row => {
+              const [, geo, ofl] = Array.from(row.children).map(td => td.textContent.trim());
+              const okGeo = !geoVal || geo === geoVal;
+              const okOfl = !oflVal || ofl === oflVal;
+              row.style.display = (okGeo && okOfl) ? '' : 'none';
+            });
+          }
+        
+          ['filter_geo', 'filter_offload'].forEach(id =>
+            document.getElementById(id).addEventListener('change', filterAdvanced)
+          );
+        </script>
+        {% endif %}
+        
+        
 </div>
 
 {% endblock %}
