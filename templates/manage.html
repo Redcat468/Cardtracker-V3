@@ -74,10 +74,16 @@
                     <div class="mb-4">
                         <label for="offload_status" class="block text-sm font-medium text-gray-700">Statut Offload</label>
                         <select id="offload_status" name="offload_status" class="border p-2 rounded w-full">
-                            {% for status in offload_statuses %}
-                            <option value="{{ status.status_name }}" {% if selected_card_info.offload_status == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
-                            {% endfor %}
+                          {% for status in offload_statuses %}
+                            {% if not (current_user.level <= 1 and status.status_name in ['Formatable','Backup Done']) %}
+                              <option value="{{ status.status_name }}"
+                                      {% if selected_card_info.offload_status == status.status_name %}selected{% endif %}>
+                                {{ status.status_name }}
+                              </option>
+                            {% endif %}
+                          {% endfor %}
                         </select>
+                        
                     </div>
 
                     <div class="mb-4">

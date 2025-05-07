@@ -14,6 +14,13 @@
 
 <!-- Onglets de navigation -->
 <ul class="flex border-b">
+
+    <li class="mr-1">
+        <a href="{{ url_for('spot', current_tab='fast_search') }}"
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'fast_search' else 'text-blue-500' }}">
+          Recherche Rapide
+        </a>
+      </li>
     <li class="mr-1">
         <a href="{{ url_for('spot', current_tab='card_focus') }}" 
            class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'card_focus' else 'text-blue-500' }}">
@@ -38,12 +45,6 @@
             Offload Focus
         </a>
     </li>
-    <li class="mr-1">
-        <a href="{{ url_for('spot', current_tab='advanced_search') }}"
-           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'advanced_search' else 'text-blue-500' }}">
-          Recherche avancée
-        </a>
-      </li>
 </ul>
 
 
@@ -296,13 +297,11 @@
         </div>
         {% endif %}
 
-        {% elif current_tab == 'advanced_search' %}
-        <!-- Onglet Recherche avancée -->
-        <h2 class="text-2xl font-semibold mb-4">Recherche Avancée</h2>
+        {% elif current_tab == 'fast_search' %}
+        <h2 class="text-2xl font-semibold mb-4">Recherche Rapide</h2>
         
         <!-- Filtres -->
         <div class="flex space-x-4 mb-4">
-          <!-- Filtre Statut Géo -->
           <div>
             <label class="block text-sm">Statut Géo</label>
             <select id="filter_geo" class="border p-2 rounded">
@@ -312,7 +311,6 @@
               {% endfor %}
             </select>
           </div>
-          <!-- Filtre Statut Offload -->
           <div>
             <label class="block text-sm">Statut Offload</label>
             <select id="filter_offload" class="border p-2 rounded">
@@ -322,48 +320,112 @@
               {% endfor %}
             </select>
           </div>
+          <div>
+            <label class="block text-sm">Utilisateur</label>
+            <select id="filter_user" class="border p-2 rounded">
+              <option value="">Tous</option>
+              {% for u in users %}
+                <option value="{{ u.username }}">{{ u.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
         
         <!-- Tableau des cartes -->
-        <table id="advanced-table" class="min-w-full table-auto border">
+        <table id="fast-table" class="min-w-full table-auto border">
           <thead>
-            <tr class="bg-gray-100">
-              <th class="px-4 py-2">Carte</th>
-              <th class="px-4 py-2">Statut Géo</th>
-              <th class="px-4 py-2">Statut Offload</th>
+            <tr class="bg-gray-100 cursor-pointer">
+              <th class="px-4 py-2 border" data-col="0">Carte</th>
+              <th class="px-4 py-2 border" data-col="1">Statut Géo</th>
+              <th class="px-4 py-2 border" data-col="2">Statut Offload</th>
+              <th class="px-4 py-2 border" data-col="3">Dernière Opération</th>
+              <th class="px-4 py-2 border" data-col="4">Dernier Utilisateur</th>
+              <th class="px-4 py-2 border">Action</th>
             </tr>
           </thead>
           <tbody>
-            {% for c in advanced_cards %}
+            {% for c, last_user in fast_cards %}
               <tr>
                 <td class="border px-4 py-2">{{ c.card_name }}</td>
                 <td class="border px-4 py-2">{{ c.statut_geo }}</td>
                 <td class="border px-4 py-2">{{ c.offload_status }}</td>
+                <td class="border px-4 py-2">
+                  {% if c.last_operation %}
+                    {{ c.last_operation.strftime('%Y-%m-%d %H:%M:%S') }}
+                  {% else %}
+                    Aucune
+                  {% endif %}
+                </td>
+                <td class="border px-4 py-2">{{ last_user or 'Aucun' }}</td>
+                <td class="border px-4 py-2 flex">
+                  <!-- Track -->
+                  <form method="GET" action="{{ url_for('track') }}" style="margin-right:8px;">
+                    <input type="hidden" name="source"    value="{{ c.statut_geo }}">
+                    <input type="hidden" name="card"      value="{{ c.card_name }}">
+                    <input type="hidden" name="from_spot" value="true">
+                    <button type="submit" class="text-blue-500 hover:underline">Track</button>
+                  </form>
+                  <!-- Voir (Card Focus) -->
+                  <form method="POST" action="{{ url_for('spot') }}">
+                    <input type="hidden" name="current_tab"   value="card_focus">
+                    <input type="hidden" name="selected_card" value="{{ c.card_name }}">
+                    <button type="submit" class="text-blue-500 hover:underline">Voir</button>
+                  </form>
+                </td>
               </tr>
             {% endfor %}
           </tbody>
         </table>
         
-        <!-- Script de filtrage -->
+        <!-- Scripts de filtrage et de tri -->
         <script>
-          function filterAdvanced() {
-            const geoVal = document.getElementById('filter_geo').value;
-            const oflVal = document.getElementById('filter_offload').value;
-        
-            document.querySelectorAll('#advanced-table tbody tr').forEach(row => {
-              const [, geo, ofl] = Array.from(row.children).map(td => td.textContent.trim());
-              const okGeo = !geoVal || geo === geoVal;
-              const okOfl = !oflVal || ofl === oflVal;
-              row.style.display = (okGeo && okOfl) ? '' : 'none';
+          // Filtrage
+          function filterFast() {
+            const geoVal   = document.getElementById('filter_geo').value;
+            const oflVal   = document.getElementById('filter_offload').value;
+            const userVal  = document.getElementById('filter_user').value;
+            document.querySelectorAll('#fast-table tbody tr').forEach(row => {
+              const cells = Array.from(row.children).map(td => td.textContent.trim());
+              const geo     = cells[1];
+              const ofl     = cells[2];
+              const user    = cells[4];
+              const okGeo   = !geoVal  || geo  === geoVal;
+              const okOfl   = !oflVal  || ofl  === oflVal;
+              const okUser  = !userVal || user === userVal;
+              row.style.display = (okGeo && okOfl && okUser) ? '' : 'none';
             });
           }
-        
-          ['filter_geo', 'filter_offload'].forEach(id =>
-            document.getElementById(id).addEventListener('change', filterAdvanced)
+          ['filter_geo', 'filter_offload', 'filter_user'].forEach(id =>
+            document.getElementById(id).addEventListener('change', filterFast)
           );
+        
+          // Tri par colonne au double-clic
+          (function() {
+            const table = document.getElementById('fast-table');
+            const headers = table.querySelectorAll('thead th[data-col]');
+            headers.forEach(th => {
+              let asc = true;
+              th.addEventListener('dblclick', () => {
+                const colIndex = +th.dataset.col;
+                const tbody = table.tBodies[0];
+                const rows = Array.from(tbody.rows).filter(r => r.style.display !== 'none');
+                rows.sort((a, b) => {
+                  let aText = a.cells[colIndex].textContent.trim().toLowerCase();
+                  let bText = b.cells[colIndex].textContent.trim().toLowerCase();
+                  const aNum = parseFloat(aText), bNum = parseFloat(bText);
+                  if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return asc ? aNum - bNum : bNum - aNum;
+                  }
+                  return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                });
+                rows.forEach(r => tbody.appendChild(r));
+                asc = !asc;
+              });
+            });
+          })();
         </script>
         {% endif %}
-        
+           
         
 </div>
 
