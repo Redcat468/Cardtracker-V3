@@ -55,50 +55,64 @@ def init_routes(app):
     @app.route('/track', methods=['GET', 'POST'])
     @login_required
     def track():
+        # 1. Charger et filtrer les statuts offload en fonction du niveau utilisateur
         status_geo = StatusGeo.query.all()
-        offload_statuses = OffloadStatus.query.all()
+        # Charger tous les statuts d'offload
+        all_offload = OffloadStatus.query.all()
+        # Filtrer à l’entrée, une bonne fois pour toutes
+        if current_user.level <= 1:
+            offload_statuses = [
+                s for s in all_offload
+                if s.status_name not in ['FORMATABLE', 'BACKUP DONE']
+            ]
+        else:
+            offload_statuses = all_offload
+
+        # 2. Historique
         operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
-        # Préchargement des valeurs à partir des paramètres de l'URL
+        # 3. Préchargement des champs depuis l'URL
         preloaded_source = request.args.get('source', '')
-        preloaded_card = request.args.get('card', '')
-        from_spot = request.args.get('from_spot', 'false') == 'true'  # Vérifie si on vient de Spot
+        preloaded_card   = request.args.get('card', '')
+        from_spot        = request.args.get('from_spot', 'false') == 'true'
 
-        # Variables pour la persistance des champs
         selected_source = preloaded_source
         selected_target = ''
-        selected_card = preloaded_card if from_spot else ''  # Précharger la carte uniquement si from_spot est vrai
-        offload_only = False
-
-        available_cards = []  # Cartes à afficher dans le datalist
+        selected_card   = preloaded_card if from_spot else ''
+        offload_only    = False
+        available_cards = []
 
         if request.method == 'POST':
             selected_source = request.form.get('source', preloaded_source)
             selected_target = request.form.get('target', selected_source)
-            selected_card = request.form.get('card', preloaded_card)
-            offload_only = request.form.get('no_move') == 'on'
-            offload_status = request.form.get('offload_status')
+            selected_card   = request.form.get('card', preloaded_card)
+            offload_only    = (request.form.get('no_move') == 'on')
+            offload_status  = request.form.get('offload_status')
 
-            # Vérifier si la carte est valide et disponible dans la source sélectionnée
+            # 4. Blocage back-end supplémentaire
+            if current_user.level <= 1 and offload_status in ['FORMATABLE', 'BACKUP DONE']:
+                flash("Accès refusé : niveau insuffisant pour définir ce statut.", "danger")
+                return redirect(url_for('track', source=selected_source, card=selected_card))
+
+            # 5. Validation métier
             if selected_card:
                 card = Card.query.filter_by(card_name=selected_card).first()
                 if not card or card.statut_geo != selected_source:
-                    flash("Erreur : La carte sélectionnée n'est pas disponible dans la source sélectionnée.", "danger")
-                    return redirect(url_for('track', source=selected_source))
+                    flash("Erreur : Carte non disponible dans la source sélectionnée.", "danger")
+                    return redirect(url_for('track', source=selected_source, card=selected_card))
 
-                # Vérifier si la source et la cible sont identiques (si ce n'est pas un offload uniquement)
                 if selected_source == selected_target and not offload_only:
                     flash("Erreur : La source et la cible ne peuvent pas être identiques.", "danger")
                     return redirect(url_for('track', source=selected_source, card=selected_card))
 
-                # Si tout est valide, créer l'opération
                 if card.quarantine:
-                    flash("Cette carte est en quarantaine et ne peut pas être déplacée", "danger")
+                    flash("Cette carte est en quarantaine et ne peut pas être déplacée.", "danger")
                     return redirect(url_for('track', source=selected_source, card=selected_card))
 
                 if offload_only:
                     selected_target = selected_source
 
+                # 6. Création de l'opération
                 new_operation = Operation(
                     username=current_user.username,
                     card_name=selected_card,
@@ -107,21 +121,23 @@ def init_routes(app):
                     offload_status=offload_status
                 )
                 db.session.add(new_operation)
-                card.statut_geo = selected_target
+                card.statut_geo   = selected_target
                 card.offload_status = offload_status
                 card.last_operation = datetime.now()
-                card.usage += 1
+                card.usage       += 1
                 db.session.commit()
-                flash(f"Carte {selected_card} déplacée avec succès et statut offload mis à jour.")
-                
-                # Redirection après succès
+
+                flash(f"Carte {selected_card} déplacée avec succès et statut offload mis à jour.", "success")
                 return redirect(url_for('track', source=selected_source))
+
             else:
                 flash("Veuillez sélectionner une carte valide.", "danger")
 
-        # Récupérer les cartes disponibles pour la source sélectionnée
+        # 7. Liste des cartes pour le datalist
         if selected_source:
             available_cards = Card.query.filter_by(statut_geo=selected_source).all()
+
+        print([s.status_name for s in offload_statuses])
 
         return render_template(
             'track.html',
@@ -129,7 +145,7 @@ def init_routes(app):
             offload_statuses=offload_statuses,
             operations=operations,
             preloaded_source=preloaded_source,
-            preloaded_card=selected_card,  # Charger la carte si from_spot est vrai
+            preloaded_card=selected_card,
             selected_source=selected_source,
             selected_target=selected_target,
             offload_only=offload_only,
@@ -137,49 +153,51 @@ def init_routes(app):
         )
 
 
-
     @app.route('/update_card', methods=['POST'])
     @login_required
     def update_card():
-        card_id = request.form.get('card_id')
+        card_id        = request.form.get('card_id')
         offload_status = request.form.get('offload_status')
-        statut_geo = request.form.get('statut_geo')
-        quarantine = request.form.get('quarantine') == 'on'
-        capacity = request.form.get('capacity')
-        brand = request.form.get('brand')
-        card_type = request.form.get('card_type')
+        statut_geo     = request.form.get('statut_geo')
+        quarantine     = (request.form.get('quarantine') == 'on')
+        capacity       = request.form.get('capacity')
+        brand          = request.form.get('brand')
+        card_type      = request.form.get('card_type')
+
+        # Blocage back-end pour niveaux ≤1
+        if current_user.level <= 1 and offload_status in ['FORMATABLE', 'BACKUP DONE']:
+            flash("Accès refusé : niveau insuffisant pour définir ce statut.", "danger")
+            return redirect(url_for('manage', current_tab='card_manager'))
 
         card = Card.query.get(card_id)
-        if card:
-            # Conserver les anciens statuts pour l'opération
-            old_geo_status = card.statut_geo
-            old_offload_status = card.offload_status
-
-            # Mise à jour de la carte
-            card.offload_status = offload_status
-            card.statut_geo = statut_geo
-            card.quarantine = quarantine
-            card.capacity = capacity
-            card.brand = brand
-            card.card_type = card_type
-            card.last_operation = datetime.now()
-
-            # Ajouter une ligne dans la table Operation
-            new_operation = Operation(
-                username=current_user.username,
-                card_name=card.card_name,
-                statut_geo=statut_geo,
-                offload_status=offload_status,
-                timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S')
-            )
-            db.session.add(new_operation)
-
-            # Sauvegarder les modifications dans la base de données
-            db.session.commit()
-            flash(f"Carte {card.card_name} mise à jour avec succès.", "success")
-        else:
+        if not card:
             flash("Carte introuvable.", "danger")
+            return redirect(url_for('manage', current_tab='card_manager'))
 
+        # Mise à jour de la carte
+        old_geo    = card.statut_geo
+        old_off    = card.offload_status
+
+        card.offload_status = offload_status
+        card.statut_geo     = statut_geo
+        card.quarantine     = quarantine
+        card.capacity       = capacity
+        card.brand          = brand
+        card.card_type      = card_type
+        card.last_operation = datetime.now()
+
+        # Enregistrer l’opération
+        new_op = Operation(
+            username=current_user.username,
+            card_name=card.card_name,
+            statut_geo=statut_geo,
+            offload_status=offload_status,
+            timestamp=datetime.now().strftime('%Y%m%d-%H:%M:%S')
+        )
+        db.session.add(new_op)
+        db.session.commit()
+
+        flash(f"Carte {card.card_name} mise à jour avec succès.", "success")
         return redirect(url_for('manage', current_tab='card_manager'))
 
     @app.route('/refresh_cards', methods=['GET'])
@@ -310,7 +328,7 @@ def init_routes(app):
     @login_required
     def spot():
         # Définir l'onglet actif
-        current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'card_focus')
+        current_tab = request.form.get('current_tab') or request.args.get('current_tab', 'fast_search')
         selected_card = request.args.get('selected_card') or request.form.get('selected_card')
 
         # Charger les données communes
@@ -397,9 +415,16 @@ def init_routes(app):
                     .as_scalar().label('last_user')
                 ).filter(Card.offload_status == selected_offload).all()
 
-        elif current_tab == "advanced_search":
-            # Pour l'onglet Recherche avancée, on passe la liste de toutes les cartes
-            advanced_cards = Card.query.all()
+        elif current_tab == "fast_search":
+            # On prépare fast_cards comme liste de tuples (card, last_user)
+            fast_cards = []
+            for card in Card.query.all():
+                last_op = Operation.query\
+                    .filter_by(card_name=card.card_name)\
+                    .order_by(Operation.timestamp.desc())\
+                    .first()
+                last_user = last_op.username if last_op else None
+                fast_cards.append((card, last_user))
 
             return render_template(
                 'spot.html',
@@ -408,9 +433,9 @@ def init_routes(app):
                 users=users,
                 offload_statuses=offload_statuses,
                 cards=cards,
-                advanced_cards=advanced_cards,        # <- ajout
-                # on peut aussi passer ici les valeurs pré-séléctionnées si besoin
+                fast_cards=fast_cards,
             )
+
 
 
         return render_template(
@@ -430,8 +455,6 @@ def init_routes(app):
             selected_offload=selected_offload,
             cards_by_offload=cards_by_offload
         )
-
-
 
 
     @app.route('/card-focus', methods=['GET', 'POST'])
