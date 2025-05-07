@@ -1,6 +1,33 @@
 {% extends "layout.html" %}
 
 {% block content %}
+
+<!-- Modal de confirmation -->
+<div id="warning-modal" style="display:none;
+    position:fixed; top:0; left:0; width:100vw; height:100vh;
+    background:rgba(0,0,0,0.5); z-index:50;
+    align-items:center; justify-content:center;">
+  <div style="background:#f87171; color:white; padding:2rem; border-radius:0.5rem;
+      max-width:90%; text-align:center; box-shadow:0 0 10px rgba(0,0,0,0.3);">
+    <h2 style="font-size:1.5rem; margin-bottom:1rem;">⚠️ Attention !</h2>
+    <p style="margin-bottom:1.5rem;">
+      Vous n'êtes pas autorisé à mettre en SHOOTING une carte dont le statut actuel
+      <strong>n'est pas FORMATABLE</strong> sans confirmation explicite.
+    </p>
+    <button id="modal-confirm" style="background:white; color:#dc2626;
+        padding:0.5rem 1rem; margin-right:1rem; border:none; border-radius:0.25rem;
+        font-weight:bold; cursor:pointer;">
+      JE CONFIRME MON CHOIX
+    </button>
+    <button id="modal-cancel" style="background:#f87171; color:white;
+        padding:0.5rem 1rem; border:none; border-radius:0.25rem;
+        cursor:pointer;">
+      ANNULER
+    </button>
+  </div>
+</div>
+
+
 <div class="flex items-center justify-center h-full space-x-4">
     <img src="{{ url_for('static', filename='images/track.png') }}" alt="Target Icon" 
         style="height: 3rem; width: auto;">
@@ -390,5 +417,48 @@
 
     document.querySelector('form').addEventListener('submit', validateAndSubmitForm);
 </script>
+
+
+<script>
+    // Exposer le niveau utilisateur en JS
+    const userLevel = {{ current_user.level }};
+    const form = document.querySelector('form[action="{{ url_for("track") }}"]');
+  
+    form.addEventListener('submit', validateAndSubmitForm);
+  
+    function validateAndSubmitForm(event) {
+      const newStatus = document.getElementById('offload_status').value.trim().toUpperCase();
+      const currentText = document.getElementById('current_offload_status').textContent;
+      const currentStatus = (currentText.match(/:\s*(\S+)/)?.[1] || '').toUpperCase();
+  
+      // On ne popuplera que si :
+      // 1) level ≤ 1
+      // 2) nouveau statut == "SHOOTING"
+      // 3) statut actuel != "FORMATABLE"
+      if (userLevel <= 1
+          && newStatus === 'SHOOTING'
+          && currentStatus !== 'FORMATABLE') {
+        event.preventDefault();
+        showWarningModal();
+        return;
+      }
+  
+      // sinon on laisse passer
+    }
+  
+    function showWarningModal() {
+      const modal = document.getElementById('warning-modal');
+      modal.style.display = 'flex';
+  
+      document.getElementById('modal-confirm').onclick = () => {
+        modal.style.display = 'none';
+        form.submit();  // on valide malgré tout
+      };
+      document.getElementById('modal-cancel').onclick = () => {
+        modal.style.display = 'none';
+      };
+    }
+  </script>
+
 
 {% endblock %}
