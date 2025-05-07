@@ -381,40 +381,6 @@ def init_routes(app):
                 user_operations = Operation.query.filter_by(username=selected_user)\
                     .order_by(Operation.timestamp.desc()).limit(100).all()
 
-        elif current_tab == "geo_focus":
-            selected_status = request.form.get('selected_status')
-            if selected_status:
-                cards_by_status = db.session.query(
-                    Card,
-                    db.session.query(Operation.timestamp)
-                    .filter(Operation.card_name == Card.card_name)
-                    .order_by(Operation.timestamp.desc())
-                    .limit(1)
-                    .as_scalar(),
-                    db.session.query(Operation.username)
-                    .filter(Operation.card_name == Card.card_name)
-                    .order_by(Operation.timestamp.desc())
-                    .limit(1)
-                    .as_scalar()
-                ).filter(Card.statut_geo == selected_status).all()
-
-        elif current_tab == "offload_focus":
-            selected_offload = request.form.get('selected_offload')
-            if selected_offload:
-                cards_by_offload = db.session.query(
-                    Card,
-                    db.session.query(Operation.timestamp)
-                    .filter(Operation.card_name == Card.card_name)
-                    .order_by(Operation.timestamp.desc())
-                    .limit(1)
-                    .as_scalar().label('last_timestamp'),
-                    db.session.query(Operation.username)
-                    .filter(Operation.card_name == Card.card_name)
-                    .order_by(Operation.timestamp.desc())
-                    .limit(1)
-                    .as_scalar().label('last_user')
-                ).filter(Card.offload_status == selected_offload).all()
-
         elif current_tab == "fast_search":
             # On prépare fast_cards comme liste de tuples (card, last_user)
             fast_cards = []
