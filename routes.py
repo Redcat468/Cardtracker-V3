@@ -3,6 +3,35 @@ from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus
 from datetime import datetime
 
+# === NOUVEAU : import de config & requests ===
+import configparser, os, sys, requests
+
+# ==== LECTURE DU WEBHOOK DE CONFIG ====
+BASE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.path.dirname(__file__)
+CONF_PATH = os.path.join(BASE_DIR, 'config.ini')
+if not os.path.isfile(CONF_PATH):
+    raise RuntimeError(f"config.ini introuvable dans {BASE_DIR}")
+cfg = configparser.ConfigParser()
+cfg.read(CONF_PATH)
+WEBHOOK_URL = cfg['discord']['webhook_url'].strip()
+
+def send_discord_notification(card_name, username, geo_status):
+    """
+    Envoie une notif sur Discord si le statut est TO BACKUP.
+    Nève pas lever d’erreur si Discord est HS.
+    """
+    content = (
+        f":warning: **Carte en TO BACKUP** @`{geo_status}`\n"
+        f"• Carte : `{card_name}`\n"
+        f"• Par   : `{username}`"
+    )
+    try:
+        r = requests.post(WEBHOOK_URL, json={"content": content}, timeout=5)
+        r.raise_for_status()
+    except Exception:
+        # on ignorer toute erreur ici
+        pass
+
 def init_routes(app):
     # Route de connexion
     @app.route('/login', methods=['GET', 'POST'])
@@ -55,11 +84,9 @@ def init_routes(app):
     @app.route('/track', methods=['GET', 'POST'])
     @login_required
     def track():
-        # 1. Charger et filtrer les statuts offload en fonction du niveau utilisateur
-        status_geo = StatusGeo.query.all()
-        # Charger tous les statuts d'offload
-        all_offload = OffloadStatus.query.all()
-        # Filtrer à l’entrée, une bonne fois pour toutes
+        # (1) Chargement des listes comme avant
+        status_geo   = StatusGeo.query.all()
+        all_offload  = OffloadStatus.query.all()
         if current_user.level <= 1:
             offload_statuses = [
                 s for s in all_offload
@@ -68,10 +95,10 @@ def init_routes(app):
         else:
             offload_statuses = all_offload
 
-        # 2. Historique
+        # (2) Historique
         operations = Operation.query.order_by(Operation.timestamp.desc()).limit(50).all()
 
-        # 3. Préchargement des champs depuis l'URL
+        # (3) Préchargements
         preloaded_source = request.args.get('source', '')
         preloaded_card   = request.args.get('card', '')
         from_spot        = request.args.get('from_spot', 'false') == 'true'
@@ -83,36 +110,33 @@ def init_routes(app):
         available_cards = []
 
         if request.method == 'POST':
+            # récupération des champs
             selected_source = request.form.get('source', preloaded_source)
             selected_target = request.form.get('target', selected_source)
             selected_card   = request.form.get('card', preloaded_card)
             offload_only    = (request.form.get('no_move') == 'on')
             offload_status  = request.form.get('offload_status')
 
-            # 4. Blocage back-end supplémentaire
+            # (4) / (5) validations inchangées…
             if current_user.level <= 1 and offload_status in ['FORMATABLE', 'BACKUP DONE']:
                 flash("Accès refusé : niveau insuffisant pour définir ce statut.", "danger")
                 return redirect(url_for('track', source=selected_source, card=selected_card))
 
-            # 5. Validation métier
             if selected_card:
                 card = Card.query.filter_by(card_name=selected_card).first()
                 if not card or card.statut_geo != selected_source:
                     flash("Erreur : Carte non disponible dans la source sélectionnée.", "danger")
                     return redirect(url_for('track', source=selected_source, card=selected_card))
-
                 if selected_source == selected_target and not offload_only:
                     flash("Erreur : La source et la cible ne peuvent pas être identiques.", "danger")
                     return redirect(url_for('track', source=selected_source, card=selected_card))
-
                 if card.quarantine:
                     flash("Cette carte est en quarantaine et ne peut pas être déplacée.", "danger")
                     return redirect(url_for('track', source=selected_source, card=selected_card))
-
                 if offload_only:
                     selected_target = selected_source
 
-                # 6. Création de l'opération
+                # (6) Création de l'opération
                 new_operation = Operation(
                     username=current_user.username,
                     card_name=selected_card,
@@ -121,11 +145,19 @@ def init_routes(app):
                     offload_status=offload_status
                 )
                 db.session.add(new_operation)
-                card.statut_geo   = selected_target
-                card.offload_status = offload_status
-                card.last_operation = datetime.now()
-                card.usage       += 1
+                card.statut_geo      = selected_target
+                card.offload_status  = offload_status
+                card.last_operation  = datetime.now()
+                card.usage          += 1
                 db.session.commit()
+
+                # <<< ENVOI DE LA NOTIF SI STATUT TO BACKUP >>>
+                if offload_status.upper() == 'TO BACKUP':
+                    send_discord_notification(
+                        card_name=new_operation.card_name,
+                        username=new_operation.username,
+                        geo_status=new_operation.statut_geo
+                    )
 
                 flash(f"Carte {selected_card} déplacée avec succès et statut offload mis à jour.", "success")
                 return redirect(url_for('track', source=selected_source))
@@ -133,11 +165,9 @@ def init_routes(app):
             else:
                 flash("Veuillez sélectionner une carte valide.", "danger")
 
-        # 7. Liste des cartes pour le datalist
+        # (7) Datalist
         if selected_source:
             available_cards = Card.query.filter_by(statut_geo=selected_source).all()
-
-        print([s.status_name for s in offload_statuses])
 
         return render_template(
             'track.html',
