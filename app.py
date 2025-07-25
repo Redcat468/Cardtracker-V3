@@ -4,6 +4,7 @@ from flask import Flask
 from flask_login import LoginManager
 from pathlib import Path
 from database import db
+from sqlalchemy import inspect
 
 def create_app():
     app = Flask(__name__)
@@ -37,10 +38,21 @@ def create_app():
 
     # Création des tables ET import des modèles
     with app.app_context():
-        from models import User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus  # Import explicite
-        db.create_all()  # Doit être APRÈS l'import des modèles
-        
-        # Création de l'admin
+        # Importer ici tous les modèles, y compris Team
+        from models import User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus, Team
+
+        # 1. Création des tables manquantes (y compris TEAM)
+        db.create_all()
+
+        # 2. Migration manuelle pour ajouter la colonne team_id s’il n’existe pas
+        inspector = inspect(db.engine)
+        cols = [col['name'] for col in inspector.get_columns('USERS')]
+        if 'team_id' not in cols:
+            # SQLite autorise l’ajout de colonnes simples avec ALTER TABLE
+            db.session.execute('ALTER TABLE USERS ADD COLUMN team_id INTEGER')
+            db.session.commit()
+
+        # 3. Création de l'utilisateur admin s’il n'existe pas
         if not User.query.filter_by(username='fabt').first():
             admin = User(username='fabt', level=48)
             admin.set_password('motdepasse')
@@ -50,7 +62,7 @@ def create_app():
     # Configuration Flask-Login
     @login_manager.user_loader
     def load_user(user_id):
-        from models import User  # Import local
+        from models import User
         return User.query.get(int(user_id))
     
     # Import des routes
