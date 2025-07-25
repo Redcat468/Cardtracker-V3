@@ -1,6 +1,6 @@
 from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
-from models import db, User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus
+from models import db, User, Operation, Card, StatusGeo, CanceledOperation, OffloadStatus, Team, team_status_geo
 from datetime import datetime
 
 # === NOUVEAU : import de config & requests ===
@@ -84,8 +84,10 @@ def init_routes(app):
     @app.route('/track', methods=['GET', 'POST'])
     @login_required
     def track():
-        # (1) Chargement des listes comme avant
-        status_geo   = StatusGeo.query.all()
+        if current_user.team:
+            allowed_geo = current_user.team.status_geo
+        else:
+            allowed_geo = StatusGeo.query.all()
         all_offload  = OffloadStatus.query.all()
         if current_user.level <= 1:
             offload_statuses = [
@@ -171,7 +173,7 @@ def init_routes(app):
 
         return render_template(
             'track.html',
-            status_geo=status_geo,
+            status_geo=allowed_geo,          # → on n’envoie plus tous les statuts
             offload_statuses=offload_statuses,
             operations=operations,
             preloaded_source=preloaded_source,
@@ -467,6 +469,86 @@ def init_routes(app):
     def home():
         return redirect(url_for('track'))
 
+    @app.route('/update_user_team', methods=['POST'])
+    @login_required
+    def update_user_team():
+        if current_user.level < 48:
+            flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+            return redirect(url_for('track'))
+
+        user_id = request.form.get('user_id')
+        team_id = request.form.get('team_id')
+        user = User.query.get(user_id)
+        if user:
+            user.team_id = int(team_id) if team_id else None
+            db.session.commit()
+            flash(f"Équipe de l'utilisateur {user.username} mise à jour avec succès.", "success")
+        else:
+            flash("Utilisateur introuvable.", "danger")
+
+        return redirect(url_for('manage', current_tab='team_manager'))
+
+    @app.route('/add_team', methods=['POST'])
+    @login_required
+    def add_team():
+        if current_user.level < 48:
+            flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+            return redirect(url_for('manage', current_tab='team_manager'))
+
+        team_name = request.form.get('team_name')
+        if team_name:
+            # Vérifier unicité
+            if Team.query.filter_by(team_name=team_name).first():
+                flash("Cette équipe existe déjà.", "warning")
+            else:
+                new_team = Team(team_name=team_name)
+                db.session.add(new_team)
+                db.session.commit()
+                flash(f"Équipe « {team_name} » créée avec succès.", "success")
+        else:
+            flash("Le nom de l'équipe est requis.", "danger")
+
+        return redirect(url_for('manage', current_tab='team_manager'))
+
+
+    @app.route('/delete_team', methods=['POST'])
+    @login_required
+    def delete_team():
+        if current_user.level < 48:
+            flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+            return redirect(url_for('manage', current_tab='team_manager'))
+
+        team_id = request.form.get('team_id')
+        team = Team.query.get(team_id)
+        if team:
+            db.session.delete(team)
+            db.session.commit()
+            flash(f"Équipe « {team.team_name} » supprimée avec succès.", "success")
+        else:
+            flash("Équipe introuvable.", "danger")
+
+        return redirect(url_for('manage', current_tab='team_manager'))
+
+    @app.route('/configure_team_geo', methods=['POST'])
+    @login_required
+    def configure_team_geo():
+        if current_user.level < 48:
+            flash("Accès refusé. Niveau d'autorisation insuffisant.", "danger")
+            return redirect(url_for('manage', current_tab='team_manager'))
+
+        team_id = request.form.get('team_id')
+        status_ids = request.form.getlist('status_geo_ids')  # liste des ID cochés
+        team = Team.query.get(team_id)
+        if not team:
+            flash("Équipe introuvable.", "danger")
+        else:
+            # Remplace la liste des statuts autorisés
+            team.status_geo = StatusGeo.query.filter(StatusGeo.id.in_(status_ids)).all()
+            db.session.commit()
+            flash(f"Statuts géo pour « {team.team_name} » mis à jour.", "success")
+
+        return redirect(url_for('manage', current_tab='team_manager'))
+
 
     @app.route('/manage', methods=['GET', 'POST'])
     @login_required
@@ -483,6 +565,7 @@ def init_routes(app):
         users = User.query.all()
         status_geo = StatusGeo.query.all()
         offload_statuses = OffloadStatus.query.all()
+        teams = Team.query.all() 
 
         selected_card = None
         selected_user = None
@@ -529,6 +612,7 @@ def init_routes(app):
             users=users,
             status_geo=status_geo,
             offload_statuses=offload_statuses,
+            teams=teams,
             selected_card_info=selected_card,
             selected_user=selected_user,
             selected_status_geo=selected_status_geo,

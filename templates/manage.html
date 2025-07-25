@@ -3,7 +3,7 @@
 {% block content %}
 <div class="flex items-center justify-center h-full space-x-4">
     <img src="{{ url_for('static', filename='images/manage.png') }}" alt="Manage Icon" 
-        style="height: 3rem; width: auto;">
+         style="height: 3rem; width: auto;">
     <h1 style="font-size: 2rem; font-weight: 600;">Manage</h1>
     <div style="margin-bottom: 5rem;"></div>
 </div>
@@ -11,49 +11,54 @@
 <!-- Onglets de navigation -->
 <ul class="flex border-b">
     <li class="mr-1">
-        <a href="{{ url_for('manage', current_tab='card_manager') }}" 
+        <a href="{{ url_for('manage', current_tab='card_manager') }}"
            class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'card_manager' else 'text-blue-500' }}">
             Card Manager
         </a>
     </li>
     <li class="mr-1">
-        <a href="{{ url_for('manage', current_tab='user_manager') }}" 
+        <a href="{{ url_for('manage', current_tab='user_manager') }}"
            class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'user_manager' else 'text-blue-500' }}">
             User Manager
         </a>
     </li>
     <li class="mr-1">
-        <a href="{{ url_for('manage', current_tab='geo_manager') }}" 
+        <a href="{{ url_for('manage', current_tab='team_manager') }}"
+           class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'team_manager' else 'text-blue-500' }}">
+            Team Manager
+        </a>
+    </li>
+    <li class="mr-1">
+        <a href="{{ url_for('manage', current_tab='geo_manager') }}"
            class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'geo_manager' else 'text-blue-500' }}">
             Géo Manager
         </a>
     </li>
     <li class="mr-1">
-        <a href="{{ url_for('manage', current_tab='offload_manager') }}" 
+        <a href="{{ url_for('manage', current_tab='offload_manager') }}"
            class="tab-link inline-block py-2 px-4 {{ 'border-b-4 border-blue-500 text-blue-600' if current_tab == 'offload_manager' else 'text-blue-500' }}">
             Offload Manager
         </a>
     </li>
 </ul>
 
-<!-- Contenu des onglets -->
 <div class="mt-4">
-    {% if current_tab == 'card_manager' %}        <!-- Contenu de Card Manager -->
-        <!-- Champ de recherche de carte avec menu déroulant filtré -->
+    {% if current_tab == 'card_manager' %}
+        <!-- Contenu de Card Manager -->
         <div class="flex justify-center">
             <form method="POST" action="{{ url_for('manage') }}" class="w-full max-w-3xl">
                 <input type="hidden" name="action" value="card_manager">
                 <input type="hidden" name="current_tab" value="card_manager">
                 <div class="flex justify-between items-center space-x-4">
-                    <!-- Champ de recherche -->
                     <div class="flex-1">
-                        <input list="card_list" id="card_input" name="selected_card" placeholder="Chercher une carte..." class="w-full border p-2 rounded" value="{{ selected_card if selected_card is not none }}">
+                        <input list="card_list" id="card_input" name="selected_card"
+                               placeholder="Chercher une carte..."
+                               class="w-full border p-2 rounded"
+                               value="{{ selected_card_info.card_name if selected_card_info else '' }}">
                     </div>
-                    <!-- Bouton Rechercher -->
                     <div>
                         <button type="submit" class="btn btn-secondary">Rechercher</button>
                     </div>
-                    <!-- Bouton Créer une carte -->
                     <div>
                         <a href="{{ url_for('create_card') }}" class="btn btn-secondary">Créer une carte</a>
                     </div>
@@ -62,10 +67,10 @@
         </div>
         <datalist id="card_list">
             {% for card in cards %}
-            <option value="{{ card.card_name }}">{{ card.card_name }}</option>
+                <option value="{{ card.card_name }}">{{ card.card_name }}</option>
             {% endfor %}
         </datalist>
-        <!-- Informations et modification de la carte sélectionnée -->
+
         {% if selected_card_info %}
             <div class="p-4 mt-4 bg-gray-100 rounded shadow-lg">
                 <h4 class="text-xl font-bold mb-4">{{ selected_card_info.card_name }} - Modifier la Carte</h4>
@@ -74,217 +79,338 @@
                     <div class="mb-4">
                         <label for="offload_status" class="block text-sm font-medium text-gray-700">Statut Offload</label>
                         <select id="offload_status" name="offload_status" class="border p-2 rounded w-full">
-                          {% for status in offload_statuses %}
-                            {% if not (current_user.level <= 1 and status.status_name in ['Formatable','Backup Done']) %}
-                              <option value="{{ status.status_name }}"
-                                      {% if selected_card_info.offload_status == status.status_name %}selected{% endif %}>
-                                {{ status.status_name }}
-                              </option>
-                            {% endif %}
-                          {% endfor %}
+                            {% for status in offload_statuses %}
+                                {% if not (current_user.level <= 1 and status.status_name in ['Formatable','Backup Done']) %}
+                                    <option value="{{ status.status_name }}"
+                                            {% if selected_card_info.offload_status == status.status_name %}selected{% endif %}>
+                                        {{ status.status_name }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
                         </select>
-                        
                     </div>
-
                     <div class="mb-4">
                         <label for="statut_geo" class="block text-sm font-medium text-gray-700">Statut Géo</label>
                         <select id="statut_geo" name="statut_geo" class="border p-2 rounded w-full">
                             {% for status in status_geo %}
-                            <option value="{{ status.status_name }}" {% if selected_card_info.statut_geo == status.status_name %}selected{% endif %}>{{ status.status_name }}</option>
+                                <option value="{{ status.status_name }}"
+                                        {% if selected_card_info.statut_geo == status.status_name %}selected{% endif %}>
+                                    {{ status.status_name }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
-
                     <div class="mb-4 flex items-center" style="gap: 0.2rem;">
-                        <input type="checkbox" id="quarantine" name="quarantine" class="mr-2" {% if selected_card_info.quarantine %}checked{% endif %}>
+                        <input type="checkbox" id="quarantine" name="quarantine" class="mr-2"
+                               {% if selected_card_info.quarantine %}checked{% endif %}>
                         <label for="quarantine" class="text-sm text-gray-700">En Quarantaine</label>
                     </div>
-
                     <div class="mb-4">
                         <label for="capacity" class="block text-sm font-medium text-gray-700">Capacité (Go)</label>
-                        <input type="number" id="capacity" name="capacity" class="border p-2 rounded w-full" value="{{ selected_card_info.capacity }}">
+                        <input type="number" id="capacity" name="capacity"
+                               class="border p-2 rounded w-full"
+                               value="{{ selected_card_info.capacity }}">
                     </div>
-
                     <div class="mb-4">
                         <label for="brand" class="block text-sm font-medium text-gray-700">Marque</label>
-                        <input type="text" id="brand" name="brand" class="border p-2 rounded w-full" value="{{ selected_card_info.brand }}">
+                        <input type="text" id="brand" name="brand"
+                               class="border p-2 rounded w-full"
+                               value="{{ selected_card_info.brand }}">
                     </div>
-
                     <div class="mb-4">
                         <label for="card_type" class="block text-sm font-medium text-gray-700">Type de Carte</label>
-                        <input type="text" id="card_type" name="card_type" class="border p-2 rounded w-full" value="{{ selected_card_info.card_type }}">
+                        <input type="text" id="card_type" name="card_type"
+                               class="border p-2 rounded w-full"
+                               value="{{ selected_card_info.card_type }}">
                     </div>
-
-                    <div class="flex gap-4" style="gap: 1rem;">
+                    <div class="flex gap-4">
                         <button type="submit" class="btn">Enregistrer les modifications</button>
+                    </div>
                 </form>
-                <!-- Bouton Supprimer -->
-                <form method="POST" action="{{ url_for('delete_card', card_id=selected_card_info.id) }}">
-                    <button type="submit" class="btn btn-logout" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette carte ? Cette action est irréversible.')">Supprimer la carte</button>
+                <form method="POST" action="{{ url_for('delete_card', card_id=selected_card_info.id) }}"
+                      class="mt-4">
+                    <button type="submit" class="btn btn-logout"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette carte ?')">
+                        Supprimer la carte
+                    </button>
                 </form>
             </div>
         {% endif %}
 
     {% elif current_tab == 'user_manager' %}
         <!-- Contenu de User Manager -->
-        <!-- Combo menu pour afficher les utilisateurs -->
-        <form method="POST" action="{{ url_for('manage') }}">
+        <form method="POST" action="{{ url_for('manage') }}" class="flex items-center space-x-4 mb-4">
             <input type="hidden" name="current_tab" value="user_manager">
             <select id="user_input" name="selected_user" class="border p-2 rounded w-1/3">
                 <option value="" selected>-- Sélectionnez un utilisateur --</option>
                 {% for user in users %}
-                    <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
+                    <option value="{{ user.id }}"
+                            {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
                         {{ user.username }}
                     </option>
                 {% endfor %}
-                </select>
-                <button type="submit" name="action" value="edit_user" class="btn btn-secondary" style="margin-right: 1rem;margin-left: 1rem;">
-                    Modifier un utilisateur
-                </button>
-                <a href="{{ url_for('add_user') }}" class="btn btn-secondary">
-                    Créer un utilisateur
-                </a>
-
+            </select>
+            <button type="submit" name="action" value="edit_user" class="btn btn-secondary">
+                Modifier un utilisateur
+            </button>
+            <a href="{{ url_for('add_user') }}" class="btn btn-secondary">Créer un utilisateur</a>
         </form>
-        <!-- Formulaire pour modifier un utilisateur -->
+
         {% if selected_user %}
-        <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
-            <h4 class="text-xl font-bold mb-4">Modifier l'utilisateur : {{ selected_user.username }}</h4>
-            <form method="POST" action="{{ url_for('update_user') }}">
-                <input type="hidden" name="user_id" value="{{ selected_user.id }}">
-
-                <div class="mb-4">
-                    <label for="username" class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
-                    <input type="text" id="username" name="username" class="border p-2 rounded w-full"
-                        value="{{ selected_user.username }}" required>
-                </div>
-
-                <div class="mb-4">
-                    <label for="level" class="block text-sm font-medium text-gray-700">Niveau</label>
-                    <input type="number" id="level" name="level" class="border p-2 rounded w-full"
-                        value="{{ selected_user.level }}" required>
-                </div>
-                <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
-                    <input type="password" id="password" name="password" class="border p-2 rounded w-full">
-                </div>
-                <button type="submit" class="btn">
-                    Enregistrer les modifications
-                </button>
-            </form>
-            <!-- Formulaire pour supprimer un utilisateur -->
-            <form method="POST" action="{{ url_for('delete_user', user_id=selected_user.id) }}" class="mt-4">
-                <input type="hidden" name="current_tab" value="user_manager">
-                <button type="submit" class="btn btn-logout"
-                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.')">
-                    Supprimer l'utilisateur
-                </button>
-            </form>
-        </div>
+            <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
+                <h4 class="text-xl font-bold mb-4">Modifier l'utilisateur : {{ selected_user.username }}</h4>
+                <form method="POST" action="{{ url_for('update_user') }}">
+                    <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm font-medium text-gray-700">Nom d'utilisateur</label>
+                        <input type="text" id="username" name="username" class="border p-2 rounded w-full"
+                               value="{{ selected_user.username }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="level" class="block text-sm font-medium text-gray-700">Niveau</label>
+                        <input type="number" id="level" name="level" class="border p-2 rounded w-full"
+                               value="{{ selected_user.level }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Nouveau mot de passe (laisser vide pour ne pas changer)
+                        </label>
+                        <input type="password" id="password" name="password"
+                               class="border p-2 rounded w-full">
+                    </div>
+                    <button type="submit" class="btn">Enregistrer</button>
+                </form>
+                <form method="POST" action="{{ url_for('delete_user', user_id=selected_user.id) }}"
+                      class="mt-4">
+                    <input type="hidden" name="current_tab" value="user_manager">
+                    <button type="submit" class="btn btn-logout"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                        Supprimer l'utilisateur
+                    </button>
+                </form>
+            </div>
         {% endif %}
-        
+
+        {% elif current_tab == 'team_manager' %}
+        <!-- Team Manager Controls -->
+        <div class="flex space-x-4 mb-4">
+          <button id="open-create-team" class="btn btn-secondary">Créer équipe</button>
+          <button id="open-delete-team" class="btn btn-secondary">Supprimer équipe</button>
+          <button id="open-config-team" class="btn btn-secondary">Configurer statuts géo</button>
+        </div>
+    
+        <!-- Create Team Modal -->
+        <div id="create-team-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+          <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h4 class="text-lg font-semibold mb-4">Créer une équipe</h4>
+            <form method="POST" action="{{ url_for('add_team') }}">
+              <div class="mb-4">
+                <label for="team_name" class="block text-sm font-medium text-gray-700">Nom de l'équipe</label>
+                <input type="text" id="team_name" name="team_name" required
+                       class="border p-2 rounded w-full">
+              </div>
+              <div class="flex justify-end space-x-2">
+                <button type="button" id="cancel-create-team" class="btn btn-logout">Annuler</button>
+                <button type="submit" class="btn">Créer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+    
+        <!-- Delete Team Modal -->
+        <div id="delete-team-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+          <div class="bg-white p-6 rounded shadow-lg w-96">
+            <h4 class="text-lg font-semibold mb-4">Supprimer une équipe</h4>
+            <form method="POST" action="{{ url_for('delete_team') }}">
+              <div class="mb-4">
+                <label for="team_id" class="block text-sm font-medium text-gray-700">Sélectionnez l'équipe</label>
+                <select id="team_id" name="team_id" required class="border p-2 rounded w-full">
+                  {% for team in teams %}
+                    <option value="{{ team.id }}">{{ team.team_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="flex justify-end space-x-2">
+                <button type="button" id="cancel-delete-team" class="btn btn-logout">Annuler</button>
+                <button type="submit" class="btn">Supprimer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Configure Team–StatusGeo Modal -->
+        <div id="config-team-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+            <div class="bg-white p-6 rounded shadow-lg w-96 max-h-[80vh] overflow-auto">
+            <h4 class="text-lg font-semibold mb-4">Configurer statuts géo pour l'équipe</h4>
+            <form method="POST" action="{{ url_for('configure_team_geo') }}">
+                <div class="mb-4">
+                <label for="team_id_config" class="block text-sm font-medium text-gray-700">Équipe</label>
+                <select id="team_id_config" name="team_id" required class="border p-2 rounded w-full">
+                    <option value="">-- Sélectionnez une équipe --</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}">{{ team.team_name }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                <div class="mb-4">
+                <span class="block text-sm font-medium text-gray-700 mb-2">Statuts géo autorisés</span>
+                <div class="space-y-2 max-h-40 overflow-auto border p-2 rounded">
+                    {% for status in status_geo %}
+                    <label class="block">
+                        <input type="checkbox" name="status_geo_ids" value="{{ status.id }}" class="mr-2">
+                        {{ status.status_name }}
+                    </label>
+                    {% endfor %}
+                </div>
+                </div>
+                <div class="flex justify-end space-x-2">
+                <button type="button" id="cancel-config-team" class="btn btn-logout">Annuler</button>
+                <button type="submit" class="btn">Enregistrer</button>
+                </div>
+            </form>
+            </div>
+        </div>
+  
+        <!-- Team Assignment Table -->
+        <div class="mt-6">
+          <h4 class="text-lg font-semibold mb-2">Assignation des utilisateurs</h4>
+          <table class="min-w-full table-auto border">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="px-4 py-2 border">Utilisateur</th>
+                <th class="px-4 py-2 border">Équipe</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+                <tr>
+                  <td class="border px-4 py-2">{{ user.username }}</td>
+                  <td class="border px-4 py-2">
+                    <form method="POST" action="{{ url_for('update_user_team') }}" class="flex items-center space-x-2">
+                      <input type="hidden" name="user_id" value="{{ user.id }}">
+                      <select name="team_id" class="border p-2 rounded flex-1">
+                        <option value="" {% if not user.team %}selected{% endif %}>-- Aucun --</option>
+                        {% for team in teams %}
+                          <option value="{{ team.id }}"
+                                  {% if user.team and user.team.id == team.id %}selected{% endif %}>
+                            {{ team.team_name }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                      <button type="submit" class="btn ml-5 pl-5" style="margin-left: 10px;">Enregistrer</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+    
+        <script>
+            // Modals visibility
+            document.getElementById('open-create-team').onclick = () => {
+              document.getElementById('create-team-modal').classList.remove('hidden');
+            };
+            document.getElementById('cancel-create-team').onclick = () => {
+              document.getElementById('create-team-modal').classList.add('hidden');
+            };
+      
+            document.getElementById('open-delete-team').onclick = () => {
+              document.getElementById('delete-team-modal').classList.remove('hidden');
+            };
+            document.getElementById('cancel-delete-team').onclick = () => {
+              document.getElementById('delete-team-modal').classList.add('hidden');
+            };
+      
+            document.getElementById('open-config-team').onclick = () => {
+              document.getElementById('config-team-modal').classList.remove('hidden');
+            };
+            document.getElementById('cancel-config-team').onclick = () => {
+              document.getElementById('config-team-modal').classList.add('hidden');
+            };
+          </script>
+
     {% elif current_tab == 'geo_manager' %}
         <!-- Contenu de Géo Manager -->
         <div class="flex items-center space-x-4 mb-4">
             <form method="POST" action="{{ url_for('manage') }}" class="flex-1">
                 <input type="hidden" name="current_tab" value="geo_manager">
                 <div class="flex space-x-4">
-                    <select id="status_geo_input" name="selected_status_geo" class="border p-2 rounded flex-1" required>
+                    <select id="status_geo_input" name="selected_status_geo"
+                            class="border p-2 rounded flex-1" required>
                         <option value="">-- Sélectionnez un statut géographique --</option>
                         {% for status in status_geo %}
                             <option value="{{ status.id }}">{{ status.status_name }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit" name="action" value="edit_status_geo" class="btn btn-secondary">
+                    <button type="submit" name="action" value="edit_status_geo"
+                            class="btn btn-secondary">
                         Modifier
                     </button>
                 </div>
             </form>
-            <a href="{{ url_for('add_geo_status') }}" class="btn btn-secondary">
-                Créer un statut
-            </a>
+            <a href="{{ url_for('add_geo_status') }}" class="btn btn-secondary">Créer un statut</a>
         </div>
-        <!-- Formulaire de modification -->
         {% if selected_status_geo %}
             <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
                 <h4 class="text-xl font-bold mb-4">Modifier le statut : {{ selected_status_geo.status_name }}</h4>
                 <form method="POST" action="{{ url_for('update_geo_status') }}" class="space-y-4">
                     <input type="hidden" name="status_geo_id" value="{{ selected_status_geo.id }}">
                     <div>
-                        <label for="status_name" class="block text-sm font-medium text-gray-700">
-                            Nom du statut
-                        </label>
-                        <input type="text" 
-                            id="status_name" 
-                            name="status_name" 
-                            class="mt-1 block w-full border rounded-md shadow-sm p-2"
-                            value="{{ selected_status_geo.status_name }}" 
-                            required>
+                        <label for="status_name" class="block text-sm font-medium text-gray-700">Nom du statut</label>
+                        <input type="text" id="status_name" name="status_name"
+                               class="mt-1 block w-full border rounded-md shadow-sm p-2"
+                               value="{{ selected_status_geo.status_name }}" required>
                     </div>
-                    <div class="flex justify">
-                        <button type="submit" class="btn">
-                            Enregistrer
-                        </button>
-                    </div>
-                    </form>
-                    <!-- Formulaire pour supprimer le statut -->
-                    <form method="POST" action="{{ url_for('delete_status_geo', status_id=selected_status_geo.id) }}" class="mt-4">
-                        <button type="submit" 
-                                class="btn btn-logout"
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce statut ?')">
-                            Supprimer
-                        </button>
-                    </form>
+                    <button type="submit" class="btn">Enregistrer</button>
+                </form>
+                <form method="POST" action="{{ url_for('delete_status_geo', status_id=selected_status_geo.id) }}"
+                      class="mt-4">
+                    <button type="submit" class="btn btn-logout"
+                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce statut ?')">
+                        Supprimer
+                    </button>
+                </form>
             </div>
         {% endif %}
-    
+
     {% elif current_tab == 'offload_manager' %}
+        <!-- Contenu de Offload Manager -->
         <div class="flex items-center space-x-4 mb-4">
             <form method="POST" action="{{ url_for('manage') }}" class="flex-1">
                 <input type="hidden" name="current_tab" value="offload_manager">
                 <div class="flex space-x-4">
-                    <select id="offload_status_input" name="selected_offload_status" class="border p-2 rounded flex-1" required>
+                    <select id="offload_status_input" name="selected_offload_status"
+                            class="border p-2 rounded flex-1" required>
                         <option value="">-- Sélectionnez un statut d'offload --</option>
                         {% for status in offload_statuses %}
                             <option value="{{ status.id }}">{{ status.status_name }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit" name="action" value="edit_offload_status" class="btn btn-secondary">
+                    <button type="submit" name="action" value="edit_offload_status"
+                            class="btn btn-secondary">
                         Modifier
                     </button>
                 </div>
             </form>
-            <a href="{{ url_for('add_offload_status') }}" class="btn btn-secondary">
-                Créer un statut
-            </a>
+            <a href="{{ url_for('add_offload_status') }}" class="btn btn-secondary">Créer un statut</a>
         </div>
-        <!-- Formulaire de modification -->
         {% if selected_offload_status %}
             <div class="mt-4 p-4 bg-gray-100 rounded shadow-lg">
                 <h4 class="text-xl font-bold mb-4">Modifier le statut : {{ selected_offload_status.status_name }}</h4>
                 <form method="POST" action="{{ url_for('update_offload_status') }}" class="space-y-4">
                     <input type="hidden" name="offload_status_id" value="{{ selected_offload_status.id }}">
                     <div>
-                        <label for="status_name" class="block text-sm font-medium text-gray-700">
-                            Nom du statut
-                        </label>
-                        <input type="text" 
-                            id="status_name" 
-                            name="status_name" 
-                            class="mt-1 block w-full border rounded-md shadow-sm p-2"
-                            value="{{ selected_offload_status.status_name }}" 
-                            required>
+                        <label for="status_name" class="block text-sm font-medium text-gray-700">Nom du statut</label>
+                        <input type="text" id="status_name" name="status_name"
+                               class="mt-1 block w-full border rounded-md shadow-sm p-2"
+                               value="{{ selected_offload_status.status_name }}" required>
                     </div>
-                    <div class="flex space-x-4">
-                        <button type="submit" class="btn">
-                            Enregistrer
-                        </button>
-                    </div>
+                    <button type="submit" class="btn">Enregistrer</button>
                 </form>
-                <!-- Formulaire pour supprimer le statut -->
-                <form method="POST" action="{{ url_for('delete_offload_status', status_id=selected_offload_status.id) }}" class="mt-4">
-                    <button type="submit" 
-                            class="btn btn-logout"
+                <form method="POST" action="{{ url_for('delete_offload_status', status_id=selected_offload_status.id) }}"
+                      class="mt-4">
+                    <button type="submit" class="btn btn-logout"
                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce statut ?')">
                         Supprimer
                     </button>
@@ -293,6 +419,4 @@
         {% endif %}
     {% endif %}
 </div>
-
-
 {% endblock %}
