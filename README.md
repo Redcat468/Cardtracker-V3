@@ -6,7 +6,7 @@
 ## 📌 Key Features  
 - **Real-time tracking** of memory cards (geographic status, offload status, quarantine).  
 - **Modular history** with operation timeline (movements, status changes).  
-- **Centralized management** of users, cards, geographic/offload statuses.  
+- **Centralized management** of users, teams, cards, and geographic/offload statuses.
 - **Dashboards** to view cards by status, user, or team.  
 - **Secure rollback** of operations and change tracking.  
 - **Responsive web interface** with authentication and access levels.  
@@ -76,10 +76,11 @@
 
 ## ⚠️ Important Notes  
 - **Quarantine status** blocks card movements  
-- **User levels**:  
-  - **Level < 48**: Limited access (Track/Spot)  
-  - **Level ≥ 48**: Full access (Manage)  
-- Data stored locally (optimized for offline use)  
+- **User levels**:
+  - **Level =< 1**: Limited "shooting" access (Track/Spot no formatting or backup actions)  
+  - **Level < 48**: Admin access (Track/Spot)  
+  - **Level ≥ 48**: Full access (Manage)
+- Data stored locally (optimized for offline use)
 
 --- 
 
