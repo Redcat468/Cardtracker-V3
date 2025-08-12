@@ -1,2 +1,2 @@
 instance/*.db
-/dist/instance/*.db
+/dist/instance/*.*
