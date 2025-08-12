@@ -24,7 +24,7 @@
 
 ## 🚀 Installation  
 ### **NSSM-Specific Requirements**
-1. Download the [`latest release`](https://github.com/Redcat468/Cardtracker-V3/releases)
+1. Download the latest release available in the "dist" folder of this repo
 
 3. **Install Service**  
    - Unzip the archive  
