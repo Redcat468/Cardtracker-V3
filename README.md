@@ -1,15 +1,16 @@
-# Card Tracker V3.0  
-**Memory Card Management for Film Productions**  
+# Card Tracker V3.3  
+**Centralized tracking dashboard for on-set media cards in high-volume film/TV productions**  
 
 ---
 
 ## 📌 Key Features  
 - **Real-time tracking** of memory cards (geographic status, offload status, quarantine).  
 - **Modular history** with operation timeline (movements, status changes).  
-- **Centralized management** of users, cards, geographic/offload statuses.  
+- **Centralized management** of users, teams, cards, and geographic/offload statuses.
 - **Dashboards** to view cards by status, user, or team.  
 - **Secure rollback** of operations and change tracking.  
-- **Responsive web interface** with authentication and access levels.  
+- **Responsive web interface** with authentication and access levels.
+- **Discord notifications** for new backup requests
 
 ---
 
@@ -23,10 +24,9 @@
 
 ## 🚀 Installation  
 ### **NSSM-Specific Requirements**
-1. Download the [`latest release`](https://github.com/Redcat468/Cardtracker-V3/releases)
+1. Download the latest release available in the "dist" folder of this repo
 
-3. **Install Service**  
-   - Unzip the archive  
+3. **Install Service** 
    - **Right-click** on `install_service.bat` > **Run as administrator**  
    - The script automatically performs:  
      - Admin rights verification  
@@ -76,10 +76,11 @@
 
 ## ⚠️ Important Notes  
 - **Quarantine status** blocks card movements  
-- **User levels**:  
-  - **Level < 48**: Limited access (Track/Spot)  
-  - **Level ≥ 48**: Full access (Manage)  
-- Data stored locally (optimized for offline use)  
+- **User levels**:
+  - **Level =< 1**: Limited "shooting" access (Track/Spot no formatting or backup actions)  
+  - **Level < 48**: Admin access (Track/Spot)  
+  - **Level ≥ 48**: Full access (Manage)
+- Data stored locally (optimized for offline use)
 
 --- 
 
