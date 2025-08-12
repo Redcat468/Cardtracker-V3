@@ -9,7 +9,8 @@
 - **Centralized management** of users, teams, cards, and geographic/offload statuses.
 - **Dashboards** to view cards by status, user, or team.  
 - **Secure rollback** of operations and change tracking.  
-- **Responsive web interface** with authentication and access levels.  
+- **Responsive web interface** with authentication and access levels.
+- **Discord notifications** for new backup requests
 
 ---
 
