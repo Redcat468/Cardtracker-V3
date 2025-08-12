@@ -26,8 +26,7 @@
 ### **NSSM-Specific Requirements**
 1. Download the latest release available in the "dist" folder of this repo
 
-3. **Install Service**  
-   - Unzip the archive  
+3. **Install Service** 
    - **Right-click** on `install_service.bat` > **Run as administrator**  
    - The script automatically performs:  
      - Admin rights verification  
