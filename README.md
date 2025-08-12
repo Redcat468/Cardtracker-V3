@@ -1,5 +1,5 @@
 # Card Tracker V3.3  
-**Memory Card Management for Film Productions**  
+**Centralized tracking dashboard for on-set media cards in high-volume film/TV productions**  
 
 ---
 
