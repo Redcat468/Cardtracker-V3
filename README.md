@@ -1,6 +1,8 @@
 # Card Tracker V3.3  
 **Centralized tracking dashboard for on-set media cards in high-volume film/TV productions**  
 
+<img width="1154" height="831" alt="image" src="https://github.com/user-attachments/assets/a75ffe2e-2fde-457d-a18f-f9c25d72dad3" />
+
 ---
 
 ## 📌 Key Features  
@@ -81,6 +83,12 @@
   - **Level < 48**: Admin access (Track/Spot)  
   - **Level ≥ 48**: Full access (Manage)
 - Data stored locally (optimized for offline use)
+- Team management allow administrators (managers) to authorize actions on specific geo status only for team members.
+
+## Screenshots 
+<img width="374" height="499" alt="login page" src="https://github.com/user-attachments/assets/e39cd6c2-df0b-49e3-8df5-4725306bc3ed" />
+<img width="1527" height="859" alt="card focus" src="https://github.com/user-attachments/assets/e38cd35d-c4d4-4d15-8de4-5977ff3e2bed" />
+
 
 --- 
 
